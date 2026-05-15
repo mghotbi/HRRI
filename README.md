@@ -1,225 +1,269 @@
 # RRI
 
-Quantifying **holobiont resilience** through coordinated redox buffering
-across plant, soil, and microbial domains.
-
+**RRI** quantifies holobiont redox resilience by integrating plant physiology,
+soil redox chemistry, and microbial resilience into a unified, interpretable
+Redox Resilience Index.
 
 ## Overview
 
-**RRI** is an R package for computing and visualizing a **Holobiont Redox Resilience Index (RRI)** by integrating **plant physiology**, **soil redox chemistry**, and **microbial resilience** into a unified, directionally identifiable framework.
+RRI is an R package for computing, visualizing, and interpreting a
+**Holobiont Redox Resilience Index (RRI)**. The framework treats resilience as
+an emergent property of coordinated redox buffering across three interacting
+domains:
 
-The package is designed for applications in **redox ecology**, **plant-soil-microbe interactions**, and **holobiont resilience research**, with explicit support for spatial structure, temporal dynamics, and the statistical challenges typical of ecological data.
+- **Physio**: plant physiological buffering and stress response.
+- **Soil**: soil redox chemistry and electron-acceptor stability.
+- **Micro**: microbial abundance, function, traits, or network resilience.
 
+The package supports spatial structure, temporal dynamics, directionally
+identified latent scores, ternary visualization, sensitivity analysis, and
+perturbation-recovery metrics.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/c64a2965-0413-41dc-952d-a7d0ce4017a4"
+       alt="Conceptual overview of the RRI framework"
        width="900">
 </p>
 
+## Key features
 
-## Key Features
+- Integrates plant, soil, and microbial redox-resilience indicators.
+- Computes per-sample RRI scores scaled to `[0, 1]`.
+- Produces ternary-ready Physio-Soil-Micro compositional scores.
+- Supports PCA, factor analysis, NMF, UMAP, WGCNA, and MFA-style workflows.
+- Uses direction anchoring so higher scores consistently indicate stronger resilience.
+- Supports microbial abundance, functional genes, MetaT expression, upregulation summaries, traits, and optional networks.
+- Computes perturbation-recovery metrics including amplitude, lag, overshoot, incomplete recovery, recovery rate, hysteresis, and trajectory class.
+- Provides diagnostic and sensitivity utilities for validation and robustness checks.
 
-### Multidomain integration
-- Plant physiological stress buffering (e.g. ROS-related traits)
-- Soil redox chemistry and electron-acceptor stability proxies
-- Microbial resilience derived from abundance data and/or ecological networks
+## Conceptual framework
 
-### Directionally identifiable latent scores
-- Dimension reduction via PCA, FA, NMF, WGCNA, and related approaches
-- Explicit sign control with optional anchor variables to ensure reproducibility
+Redox resilience at the holobiont scale emerges from interacting biological
+subsystems rather than any single measurable trait. RRI summarizes each domain
+using a latent score derived from multivariate indicators. These domain scores
+are directionally aligned, scaled, and integrated into a composite index.
 
-### Robustness to ecological data realities
-- Median imputation within spatial strata
-- Tolerance to MNAR missingness, zero inflation, and collinearity
+The three core domains are:
 
-### Complementary outputs
-- **Absolute domain scores**, scaled to \([0,1]\), suitable for statistical modeling
-- **Compositional domain contributions**, summing to 1, designed for ternary visualization
+- **Physio**: plant oxidative buffering and physiological stress response.
+- **Soil**: soil redox chemistry, hydrology, and electron-transfer stability.
+- **Micro**: microbial abundance, functional capacity, traits, genes, expression, or network organization.
 
----
-
-## Conceptual Framework
-
-Redox resilience at the holobiont scale emerges from **interacting biological subsystems**, rather than any single measurable trait.
-
-**RedoxRRI** formalizes this concept by quantifying three domains:
-
-- **Physio** — plant oxidative buffering and stress response  
-- **Soil** — redox chemistry and electron-acceptor stability  
-- **Micro** — microbial functional capacity and/or network resilience  
-
-Each domain is summarized using a **latent variable** derived from multivariate indicators. Domain scores are explicitly oriented so that higher values consistently indicate greater resilience, scaled to \([0,1]\), and integrated into a composite **Redox Resilience Index (RRI)**.
-
----
-
-## Design Principles
-
-- **Modular** — domains can be added, removed, or reweighted  
-- **Transparent** — all transformations are inspectable and reproducible  
-- **Flexible** — supports multiple dimension-reduction strategies  
-- **Mechanistic** — designed for inference, not black-box prediction  
-
----
-
-## Methodological Components
-
-### Dimension reduction
-- Principal Component Analysis (PCA)
-- Factor analysis
-- Nonlinear embeddings (e.g. UMAP)
-- Network-based summaries (e.g. WGCNA)
-
-### Microbial resilience metrics
-- Abundance- or function-based representations
-- Optional network topology metrics derived from ecological graphs
-
-### Aggregation
-- User-defined weighting across biological domains
-- Optional coupling terms to capture cross-domain coherence
-
----
-
-## Typical Workflow
-
-1. **Prepare domain-specific data**
-   - plant physiological traits  
-   - soil redox or chemical indicators  
-   - microbial abundance, functional profiles, or networks  
-
-2. **Derive latent scores** for each domain
-
-3. **Integrate domains** into a composite Redox Resilience Index
-
-4. **Evaluate and compare**
-   - alternative weighting schemes  
-   - stress or disturbance scenarios  
-   - ecological or experimental contexts  
-
----
+The microbial domain is flexible. It may contain taxonomic abundance,
+functional composition, microbial traits, gene abundance, functional gene
+coverage, metagenomic features, metatranscriptomic expression, gene
+upregulation summaries, pathway-level features, or ecological network metrics.
 
 ## Installation
 
 ```r
 install.packages("remotes")
-remotes::install_github("mghotbi/RedoxRRI")
 
-# with vignettes
+remotes::install_github("mghotbi/RRI")
+```
+
+To install with vignettes:
+
+```r
 install.packages("remotes")
 install.packages("BiocManager")
 
-BiocManager::install(c(
-  "BiocStyle",
-  "rmarkdown",
-  "knitr"))
+BiocManager::install(c("BiocStyle", "rmarkdown", "knitr"))
 
 remotes::install_github(
-  "mghotbi/RedoxRRI",
+  "mghotbi/RRI",
   build_vignettes = TRUE,
-  dependencies = TRUE)
-
+  dependencies = TRUE
+)
 ```
 
-## Example
+Basic example
+
 ```r
-library(RedoxRRI)
+library(RRI)
 
-# Simulate a holobiont redox system
 sim <- simulate_redox_holobiont(seed = 1)
-str(sim)
 
-# Compute the Redox Resilience Index
 res <- rri_pipeline_st(
-  ROS_flux     = sim$ROS_flux,
+  ROS_flux = sim$ROS_flux,
   Eh_stability = sim$Eh_stability,
-  micro_data   = sim$micro_data,
-  id           = sim$id,
-
-  # Direction anchoring 
+  micro_data = sim$micro_data,
+  id = sim$id,
+  reducer = "per_domain",
+  scaling = "pnorm",
   direction_phys = "auto",
   direction_anchor_phys = "FvFm",
   direction_soil = "auto",
-  direction_anchor_soil = "Eh"
+  direction_anchor_soil = "Eh",
+  direction_micro = "higher_is_better"
 )
 
-# Absolute domain scores (for analysis)
 head(res$row_scores)
-
-# Compositional domain contributions (for ternary)
 head(res$row_scores_comp)
-
-# Ternary visualization
-plot_RRI_ternary(res$row_scores_comp)
-
-
 ```
 
-<img src="https://github.com/user-attachments/assets/abf56f94-582a-49d3-a28d-83087a01dd61"
-     alt="Conceptual workflow of the Holobiont Redox Resilience Index (RRI)"
-     width="900">
 
-*Conceptual overview of the RedoxRRI framework. Multivariate indicators from plant physiology,
-soil redox chemistry, and microbial systems are summarized into domain-level latent scores,
-directionally aligned, scaled, and integrated into a unified holobiont-scale Redox
-Resilience Index (RRI).*
+Adding microbial functional information
 
-
-
-## Output Structure
-
-The primary output is an object of class RRI, containing:
-**row_scores**
-Absolute domain scores and per-sample RRI (all scaled to [0,1])
-**row_scores_comp**
-Compositional domain contributions (Physio + Soil + Micro = 1) and RRI
-**meta**
-Metadata including model settings and the system-level RRI index (rri_index)
-
-The compositional scores are directly suitable for ternary visualization.
-
-## Intended Use
-
-RedoxRRI is designed for hypothesis-driven analysis of stress resilience in complex biological systems, with a focus on interpretability and mechanistic insight.
-The package is particularly well suited for:
-Ecological and environmental research
-Quantifying resilience across abiotic stress gradients
-Integrative stress biology
-Soil–plant–microbiome interaction studies
-Comparative and sensitivity analyses
-Method development and exploratory modeling
-
-## Design Philosophy
-
-**RedoxRRI is not a black-box predictive model.**
-Instead, it prioritizes:
-explicit modeling choices
-traceable transformations from raw data to index values
-comparison of alternative hypotheses rather than automated optimization 
-This makes RedoxRRI especially suitable for research contexts where understanding why resilience changes is as important as measuring how much.
-
-
-#### Citation
-
-If you use RedoxRRI in your research, please cite:
+Users are not limited to microbial abundance data. Functional microbial
+information can be added to the microbial domain when available.
 
 ```r
-citation("RedoxRRI")
+micro_features <- sim$micro_data
+
+if (!is.null(sim$micro_traits)) {
+  micro_features <- cbind(micro_features, sim$micro_traits)
+}
+
+if (!is.null(sim$gene_abundance)) {
+  micro_features <- cbind(micro_features, sim$gene_abundance)
+}
+
+if (!is.null(sim$gene_log2fc)) {
+  micro_features <- cbind(micro_features, sim$gene_log2fc)
+}
+
+res_full <- rri_pipeline_st(
+  ROS_flux = sim$ROS_flux,
+  Eh_stability = sim$Eh_stability,
+  micro_data = micro_features,
+  id = sim$id,
+  reducer = "per_domain",
+  scaling = "pnorm",
+  direction_phys = "auto",
+  direction_anchor_phys = "FvFm",
+  direction_soil = "auto",
+  direction_anchor_soil = "Eh",
+  direction_micro = "higher_is_better"
+)
 ```
 
-Ghotbi, M. et al. RedoxRRI: A framework for holobiont-level redox resilience
-(manuscript in preparation)
+The minimal and expanded workflows are both valid. The expanded workflow simply
+uses a richer definition of microbial resilience.
+
+Ternary visualization
+
+```r
+plot_RRI_ternary(res$row_scores_comp)
+
+```
+
+<img src="https://github.com/user-attachments/assets/abf56f94-582a-49d3-a28d-83087a01dd61" alt="Ternary visualization of Physio, Soil, and Micro contributions to RRI" width="900">
+
+Perturbation-recovery metrics
+
+RRI trajectories can be summarized using direction-aware perturbation-recovery
+metrics.
+
+```r
+rec <- rri_recovery_metrics(
+  res = res,
+  id = sim$id,
+  time_col = "time",
+  group_cols = c("plot", "depth", "plant_id"),
+  perturb_start = 5,
+  perturb_end = 7
+)
+
+head(rec)
+
+rri_metric_table()
+
+```
+
+Recovery metrics include perturbation amplitude, lag time, overshoot,
+incomplete recovery, recovery rate, recovery fit diagnostics, recovery
+timescale, half-recovery time, hysteresis, and trajectory class.
 
 
-#### License
+Output structure
+
+The primary output from rri_pipeline_st() contains:
+
+row_scores: absolute Physio, Soil, Micro, and RRI scores.
+row_scores_comp: compositional Physio-Soil-Micro allocation scores.
+meta: model settings and system-level RRI metadata.
+
+The compositional output is directly compatible with plot_RRI_ternary().
+
+Additional utilities
+
+RRI includes helper functions for diagnostics, sensitivity analysis, recovery
+metrics, and visualization:
+
+
+```r
+rri_latent_correlation(res, sim$latent_truth)
+rri_compensation_index(res)
+rri_sensitivity(res)
+
+plot_RRI_ternary(res$row_scores_comp)
+plot_rri_recovery_map(rec)
+plot_rri_recovery_landscape(rec)
+
+```
+Design philosophy
+
+## Brief theory: redox resilience as buffering, connectivity, memory, and recovery
+
+Redox resilience reflects the capacity of a soil-plant-microbiome system to
+absorb, transmit, and recover from perturbations that alter electron flow.
+In this framework, resilience is not treated as a single trait, but as an
+emergent property of several interacting redox processes:
+
+- **Capacity**: the size of electron-accepting and electron-donating pools,
+  such as Fe/Mn oxides, organic matter, clays, humic substances, and other
+  redox-active phases. High capacity allows the system to buffer electron
+  imbalance before crossing critical redox thresholds.
+
+- **Connectivity**: the physical and biochemical linkage among electron
+  donors, electron acceptors, roots, microbes, minerals, and water-filled pore
+  networks. Connectivity controls whether electrons, oxygen, substrates, and
+  microbial processes remain spatially coupled or become locally isolated.
+
+- **Kinetics**: the rate at which redox reactions proceed relative to
+  hydrological or environmental forcing. Fast forcing combined with slow
+  microbial, mineral, or diffusion-mediated responses can generate lag,
+  transient disequilibrium, and redox pulses.
+
+- **Memory**: the persistence of altered mineral, organic, microbial, or plant
+  states after the original perturbation ends. Memory can arise from residual
+  reduced minerals, redox-active organic matter, shifted microbial communities,
+  enzyme pools, or plant acclimation.
+
+- **Hysteresis**: path dependence in which wetting and drying, reduction and
+  oxidation, or disturbance and recovery do not follow the same trajectory.
+  Hysteresis indicates that the current state depends not only on present
+  conditions, but also on the sequence of previous states.
+
+- **Recovery**: the trajectory after perturbation, including return to the
+  original state, transient overshoot, incomplete recovery, or transition to a
+  new equilibrium.
+
+RRI summarizes these interacting processes by integrating plant physiological
+buffering, soil redox stability, and microbial resilience into a single
+directionally aligned index. Perturbation-recovery functions then quantify how
+the RRI trajectory changes through time, including amplitude, lag, overshoot,
+incomplete recovery, recovery rate, hysteresis, and trajectory class.
+
+Citation
+```r
+citation("RRI")
+```
+
+Ghotbi, M. et al. RRI: A framework for holobiont-level redox resilience
+(manuscript in preparation).
+
+License
 
 GPL-3 © 2025 Mitra Ghotbi
 
-### Contact
+Contact
 
-**Maintainer:** Mitra Ghotbi  
-📧 mitra.ghotbi@gmail.com  
-🔗 ORCID: [0000-0001-9185-9993](https://orcid.org/0000-0001-9185-9993)
+Maintainer: Mitra Ghotbi
+Email: mitra.ghotbi@gmail.com
+ORCID: 0000-0001-9185-9993
 
-🔗  https://rpubs.com/mgh/RedoxRRI
-
+Project page: https://rpubs.com/mgh/RedoxRRI
 
 
