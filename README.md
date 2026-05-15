@@ -1,4 +1,4 @@
-# RedoxRRI
+# RRI
 
 Quantifying **holobiont resilience** through coordinated redox buffering
 across plant, soil, and microbial domains.
