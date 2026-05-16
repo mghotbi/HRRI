@@ -241,9 +241,7 @@ Ghotbi, M. et al. RRI: A framework for holobiont-level redox resilience (manuscr
 
 **License**   GPL-3 © 2025 Mitra Ghotbi
 
-**Contact**
-
-Maintainer: Mitra Ghotbi
+**Maintainer**: Mitra Ghotbi
 Email: mitra.ghotbi@gmail.com
 ORCID: 0000-0001-9185-9993
 
