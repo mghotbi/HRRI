@@ -1,12 +1,12 @@
-# RRI
+# HRRI
 
-**RRI** quantifies holobiont redox resilience by integrating plant physiology,
+**HRRI** quantifies holobiont redox resilience by integrating plant physiology,
 soil redox chemistry, and microbial resilience into a unified, interpretable
 Redox Resilience Index.
 
 ## Overview
 
-RRI is an R package for computing, visualizing, and interpreting a
+HRRI is an R package for computing, visualizing, and interpreting a
 **Holobiont Redox Resilience Index (RRI)**. The framework treats resilience as
 an emergent property of coordinated redox buffering across three interacting
 domains:
@@ -30,7 +30,7 @@ perturbation-recovery metrics.
 ## Key features
 
 - Integrates plant, soil, and microbial redox-resilience indicators.
-- Computes per-sample RRI scores scaled to `[0, 1]`.
+- Computes per-sample HRRI scores scaled to `[0, 1]`.
 - Produces ternary-ready Physio-Soil-Micro compositional scores.
 - Supports PCA, factor analysis, NMF, UMAP, WGCNA, and MFA-style workflows.
 - Uses direction anchoring so higher scores consistently indicate stronger resilience.
@@ -87,7 +87,7 @@ incomplete recovery, recovery rate, hysteresis, and trajectory class.
 ```r
 install.packages("remotes")
 
-remotes::install_github("mghotbi/RRI")
+remotes::install_github("mghotbi/HRRI")
 ```
 
 **To install with vignettes:**
@@ -99,7 +99,7 @@ install.packages("BiocManager")
 BiocManager::install(c("BiocStyle", "rmarkdown", "knitr"))
 
 remotes::install_github(
-  "mghotbi/RRI",
+  "mghotbi/HRRI",
   build_vignettes = TRUE,
   dependencies = TRUE)
 
@@ -108,7 +108,7 @@ remotes::install_github(
 **Basic example**
 
 ```r
-library(RRI)
+library(HRRI)
 
 sim <- simulate_redox_holobiont(seed = 1)
 
@@ -234,7 +234,7 @@ plot_rri_recovery_landscape(rec)
 **Citation**
 
 ```r
-citation("RRI")
+citation("HRRI")
 ```
 
 Ghotbi, M. et al. RRI: A framework for holobiont-level redox resilience (manuscript in preparation).
