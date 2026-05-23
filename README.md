@@ -7,7 +7,7 @@ Redox Resilience Index.
 ## Overview
 
 HRRI is an R package for computing, visualizing, and interpreting a
-**Holobiont Redox Resilience Index (RRI)**. The framework treats resilience as
+**Holobiont Redox Resilience Index (HRRI)**. The framework treats resilience as
 an emergent property of coordinated redox buffering across three interacting
 domains:
 
