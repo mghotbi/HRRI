@@ -23,7 +23,7 @@ perturbation-recovery metrics.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/c64a2965-0413-41dc-952d-a7d0ce4017a4"
-       alt="Conceptual overview of the RRI framework"
+       alt="Conceptual overview of the HRRI framework"
        width="900">
 </p>
 
