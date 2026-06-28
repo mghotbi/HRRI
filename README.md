@@ -66,14 +66,9 @@ emergent property of several interacting redox processes:
   reduced minerals, redox-active organic matter, shifted microbial communities,
   enzyme pools, or plant acclimation.
 
-- **Hysteresis**: path dependence in which wetting and drying, reduction and
-  oxidation, or disturbance and recovery do not follow the same trajectory.
-  Hysteresis indicates that the current state depends not only on present
-  conditions, but also on the sequence of previous states.
 
-- **Recovery**: the trajectory after perturbation, including return to the
-  original state, transient overshoot, incomplete recovery, or transition to a
-  new equilibrium.
+- **Recovery**: the observable trajectory after perturbation, including return to the
+  original state, hysteresis, lag, overshoot, pathway truncation, incomplete return and alternative stable routing. 
 
 RRI summarizes these interacting processes by integrating plant physiological
 buffering, soil redox stability, and microbial resilience into a single
