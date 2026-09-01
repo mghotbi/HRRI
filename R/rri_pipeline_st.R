@@ -1,12 +1,8 @@
-#' @title Holobiont Redox Resilience Index (RRI) with Spatio-Temporal Dynamics
-#'
-#' @description Computes a holobiont-level Redox Resilience Index (RRI) by integrating
-#' plant physiological traits, soil redox chemistry, and microbial resilience
-#' into a unified, directionally identifiable index. The framework supports
-#' static (snapshot), rolling-window, and event-based resilience modes,
-#' optional compositional geometry (clr), multiblock reduction via MFA,
-#' and covariance-based compensation.
-#'
+#' Exploratory domain-score integration (legacy interface)
+#' @description Integrates plant, soil and microbial latent scores. Direction is
+#' not biologically identifiable without justified anchors. All three domains
+#' may be incomplete. Available positive domain weights are renormalized per row.
+#' Use rri_reference_scores for externally anchored, fixed-reference comparisons.
 #' @param ROS_flux Data frame of plant physiological variables (rows = samples).
 #' @param Eh_stability Data frame of soil redox chemistry variables (rows = samples).
 #' @param micro_data Optional data frame of microbial abundance or functional features.
@@ -50,110 +46,63 @@
 #' @param add_compensation Logical. If TRUE, includes covariance-based compensation term.
 #' @param compensation_weight Numeric between 0 and 1 controlling compensation weight.
 #'
-#' @details
-#' When \code{reducer = "mfa"}, blocks are integrated using
-#' \pkg{FactoMineR} multiple factor analysis. If partial coordinates are
-#' unavailable, the function safely falls back to per-domain reduction.
-#'
-#' When \code{comp_space = "clr"}, domain scores are projected into
-#' Aitchison geometry using centered log-ratio transformation and
-#' returned in simplex form for ternary visualization.
-#'
-#' @return
-#' A list of class \code{"RRI"} containing:
-#' \itemize{
-#'   \item \code{row_scores}: Raw domain and RRI values.
-#'   \item \code{row_scores_comp}: Compositional domain scores and RRI.
-#'   \item \code{dyn_scores}: Dynamic resilience metrics (if applicable).
-#'   \item \code{meta}: Metadata describing model configuration.
-#' }
-#'
-#' @importFrom stats prcomp lm sd coef cor median cov complete.cases pnorm
+#' @details MFA is disabled pending a validated implementation. Scaling statistics
+#' do not freeze PCA/FA loadings, so ref_stats is not a trained prediction model.
+#' The CLR round trip changes display coordinates only: inversion returns closure.
+#' Grouping does not imply within-group scaling; request scale_by explicitly.
+#' Missing data are median-imputed for exploratory reduction, not corrected for MNAR.
+#' Event scores are descriptive products of resistance and reference proximity;
+#' baseline/recovery label defaults must be matched to the supplied data.
+#' @return RRI object; identifiers accompany scores and rolling output retains
+#' original input order. Stochastic and advanced reducers need separate validation.
+#' @importFrom stats median sd prcomp pnorm cov
+#' @importFrom igraph simplify vcount ecount edge_attr is_directed cluster_fast_greedy modularity transitivity global_efficiency centr_degree
 #' @examples
-#' # ---- Simulate small holobiont dataset ----
-#' sim <- simulate_redox_holobiont(
-#'   n_plot = 10,
-#'   n_depth = 10,
-#'   n_plant = 4,
-#'   n_time = 8,
-#'   p_micro = 20,
-#'   seed = 1234
-#' )
-#'
-#' # ---- Snapshot RRI computation ----
-#' res <- rri_pipeline_st(
-#'   ROS_flux = sim$ROS_flux,
-#'   Eh_stability = sim$Eh_stability,
-#'   micro_data = sim$micro_data,
-#'   id = sim$id,
-#'   reducer = "per_domain",
-#'   scaling = "pnorm"
-#' )
-#'
-#' # Per-sample domain scores and RRI
-#' head(res$row_scores)
-#'
-#' # Compositional (ternary-ready) allocation
-#' head(res$row_scores_comp)
-#'
-#' # ---- Rolling dynamic mode example ----
-#' res_roll <- rri_pipeline_st(
-#'   ROS_flux = sim$ROS_flux,
-#'   Eh_stability = sim$Eh_stability,
-#'   micro_data = sim$micro_data,
-#'   id = sim$id,
-#'   mode = "rolling",
-#'   time_col = "time",
-#'   group_cols = c("plot", "depth", "plant_id"),
-#'   window = 2
-#' )
-#'
-#' # Note: The first (window - 1) rows per group are NA
-#' # due to right-aligned rolling windows.
-#' head(res_roll$dyn_scores)
-#'
-#' # System-level mean RRI
-#' attr(res$row_scores_comp, "RRI_index")
+#' \dontrun{
+#'   sim <- simulate_redox_holobiont(seed = 1)
+#'   res <- rri_pipeline_st(sim$ROS_flux, sim$Eh_stability, id = sim$id)
+#'   head(res$row_scores)
+#' }
 #' @export
 rri_pipeline_st <- function(
-    ROS_flux,
-    Eh_stability,
-    micro_data = NULL,
-    graph = NULL,
-    id = NULL,
-    time_col = NULL,
-    group_cols = NULL,
-    mode = c("snapshot", "rolling", "event"),
-    window = 3,
-    align = c("right", "center", "left"),
-    event_col = NULL,
-    baseline_label = "pre",
-    recovery_labels = "recovery",
-    alpha_micro = 0.5,
-    method_phys = "pca",
-    method_soil = "pca",
-    method_micro = "pca",
-    direction_phys = c("auto", "higher_is_better", "lower_is_better"),
-    direction_soil = c("auto", "higher_is_better", "lower_is_better"),
-    direction_micro = c("auto", "higher_is_better", "lower_is_better"),
-    direction_anchor_phys = NULL,
-    direction_anchor_soil = NULL,
-    direction_anchor_micro = NULL,
-    scale_by = NULL,
-    network_agg = c("equation", "mean"),
-    w1 = 0.4,
-    w2 = 0.35,
-    w3 = 0.25,
-    add_coupling = FALSE,
-    coupling_weight = 0,
-    coupling_fun = c("geometric_mean", "agreement"),
-    norm_method = NULL,
-    reducer = c("per_domain", "mfa"),
-    scaling = c("minmax_legacy", "pnorm"),
-    comp_space = c("closure_legacy", "clr"),
-    ref_stats = NULL,
-    add_compensation = FALSE,
-    compensation_weight = 0
+  ROS_flux = NULL,
+  Eh_stability = NULL,
+  micro_data = NULL,
+  graph = NULL,
+  id = NULL,
+  time_col = NULL,
+  group_cols = NULL,
+  mode = c("snapshot", "rolling", "event"),
+  window = 3,
+  align = c("right", "center", "left"),
+  event_col = NULL,
+  baseline_label = "pre",
+  recovery_labels = "recovery",
+  alpha_micro = 0.5,
+  method_phys = "pca",
+  method_soil = "pca",
+  method_micro = "pca",
+  direction_phys = c("auto", "higher_is_better", "lower_is_better"),
+  direction_soil = c("auto", "higher_is_better", "lower_is_better"),
+  direction_micro = c("auto", "higher_is_better", "lower_is_better"),
+  direction_anchor_phys = NULL,
+  direction_anchor_soil = NULL,
+  direction_anchor_micro = NULL,
+  scale_by = NULL,
+  network_agg = c("equation", "mean"),
+  w1 = 0.4,
+  w2 = 0.35,
+  w3 = 0.25,
+  add_coupling = FALSE,
+  coupling_weight = 0,
+  coupling_fun = c("geometric_mean", "agreement"),
+  norm_method = NULL,
+  reducer = c("per_domain", "mfa"),
+  scaling = c("minmax_legacy", "pnorm"),
+  comp_space = c("closure_legacy", "clr"),
+  ref_stats = NULL,
+  add_compensation = FALSE,
+  compensation_weight = 0
 ) {
   mode <- match.arg(mode)
   align <- match.arg(align)
@@ -165,40 +114,46 @@ rri_pipeline_st <- function(
   reducer <- match.arg(reducer)
   scaling <- match.arg(scaling)
   comp_space <- match.arg(comp_space)
-  
+
   if (!is.null(norm_method)) {
     method_phys <- norm_method
     method_soil <- norm_method
     method_micro <- norm_method
   }
-  
+
+  if (isTRUE(add_compensation) && isTRUE(add_coupling))
+    stop("Combining compensation and coupling is unsupported; legacy coupling overwrote compensation.")
+  if (any(c(method_phys, method_soil, method_micro) %in% c("umap", "nmf", "wgcna")))
+    stop("UMAP, NMF and WGCNA routes are disabled in this audit patch pending reproducibility and row-alignment validation.")
+  if (is.null(direction_anchor_phys) || is.null(direction_anchor_soil) || is.null(direction_anchor_micro))
+    warning("Unanchored latent axes have arbitrary signs; RRI is exploratory, not directionally validated resilience.")
+  if (reducer == "mfa") stop("MFA is disabled pending a validated implementation.")
+  if (any(!c(method_phys, method_soil, method_micro) %in% c("mean", "scale", "pca", "fa")))
+    stop("Supported reducers are mean, scale, pca and fa.")
   # ---- validations --------------------------------------------------------
-  if (missing(ROS_flux) || missing(Eh_stability)) {
-    stop("Provide `ROS_flux` and `Eh_stability`.")
-  }
-  
-  ROS_flux <- as.data.frame(ROS_flux)
-  Eh_stability <- as.data.frame(Eh_stability)
-  
-  if (nrow(ROS_flux) != nrow(Eh_stability)) {
-    stop("`ROS_flux` and `Eh_stability` must have the same number of rows.")
-  }
-  n <- nrow(ROS_flux)
-  
+  # Assisted-by: OpenAI Codex. Do not use hidden simulator states as observations.
+  ROS_flux <- .rri_observed_block(ROS_flux)
+  Eh_stability <- .rri_observed_block(Eh_stability)
+  micro_data <- .rri_observed_block(micro_data)
+  blocks <- Filter(Negate(is.null), list(ROS_flux, Eh_stability, micro_data))
+  if (!length(blocks)) stop("At least one numeric observation block is required.")
+  ns <- vapply(blocks, nrow, integer(1))
+  if (length(unique(ns)) != 1L || ns[1L] < 1L)
+    stop("Observation blocks must have the same positive number of rows.")
+  n <- ns[1L]
+  observed <- lapply(list(ROS_flux, Eh_stability, micro_data), function(x)
+    if (is.null(x)) rep(FALSE, n) else rowSums(is.finite(as.matrix(x))) > 0L)
   if (!is.null(id)) {
     id <- as.data.frame(id)
-    if (nrow(id) != n) stop("`id` must have the same number of rows as `ROS_flux`.")
+    if (nrow(id) != n || anyDuplicated(names(id)))
+      stop("id must have one row per observation and uniquely named columns.")
   }
-  if (!is.null(micro_data)) {
-    micro_data <- as.data.frame(micro_data)
-    if (nrow(micro_data) != n) stop("`micro_data` must have the same number of rows as `ROS_flux`.")
-  }
-  
+  if (any(lengths(list(w1, w2, w3)) != 1L)) stop("Domain weights must be scalars.")
   if (any(!is.finite(c(w1, w2, w3))) || any(c(w1, w2, w3) < 0)) {
     stop("`w1`, `w2`, `w3` must be finite and >= 0.")
   }
   if (abs(w1 + w2 + w3 - 1) > 1e-8) stop("`w1 + w2 + w3` must sum to 1.")
-  
+
   if (!is.finite(alpha_micro) || alpha_micro < 0 || alpha_micro > 1) {
     stop("`alpha_micro` must be in [0, 1].")
   }
@@ -208,7 +163,7 @@ rri_pipeline_st <- function(
   if (!is.finite(compensation_weight) || compensation_weight < 0 || compensation_weight > 1) {
     stop("`compensation_weight` must be in [0, 1].")
   }
-  
+
   if (mode != "snapshot") {
     if (is.null(id) || is.null(time_col) || !time_col %in% names(id)) {
       stop("For mode != 'snapshot', provide `id` with a valid `time_col`.")
@@ -216,47 +171,46 @@ rri_pipeline_st <- function(
     if (is.null(group_cols) || any(!group_cols %in% names(id))) {
       stop("For mode != 'snapshot', provide valid `group_cols` in `id`.")
     }
-    if (!is.numeric(window) || length(window) != 1 || window < 2) {
+    if (!is.numeric(window) || length(window) != 1 || !is.finite(window) || window < 2 || window != floor(window)) {
       stop("`window` must be a single integer >= 2.")
     }
   }
-  
-  if (is.null(scale_by) && !is.null(group_cols)) scale_by <- group_cols
+
+  # Grouping trajectories must not silently change the normalization population.
   if (!is.null(scale_by) && (is.null(id) || any(!scale_by %in% names(id)))) {
     stop("If `scale_by` is provided, `id` must be provided and contain all `scale_by` columns.")
   }
-  
+
   # ---- helpers ------------------------------------------------------------
-  as_numeric_df <- function(x) {
-    x <- as.data.frame(x)
-    x[] <- lapply(x, function(v) suppressWarnings(as.numeric(as.character(v))))
-    x
-  }
-  
+  as_numeric_df <- function(x) .rri_numeric_df(x)
+
   impute_median_by <- function(df, id, by) {
+    if (is.null(df)) return(NULL)
     df <- as_numeric_df(df)
-    
+
     if (is.null(by) || is.null(id) || length(by) == 0) {
       for (j in seq_len(ncol(df))) {
         v <- df[[j]]
+        v[!is.finite(v)] <- NA_real_
         if (all(is.na(v))) next
         v[is.na(v)] <- stats::median(v, na.rm = TRUE)
         df[[j]] <- v
       }
       return(df)
     }
-    
-    key <- interaction(id[, by, drop = FALSE], drop = TRUE, lex.order = TRUE)
+
+    key <- .rri_key(id, by)
     for (k in unique(key)) {
       idx <- which(key == k)
       for (j in seq_len(ncol(df))) {
         v <- df[[j]][idx]
+        v[!is.finite(v)] <- NA_real_
         if (all(is.na(v))) next
         v[is.na(v)] <- stats::median(v, na.rm = TRUE)
         df[[j]][idx] <- v
       }
     }
-    
+
     for (j in seq_len(ncol(df))) {
       v <- df[[j]]
       if (anyNA(v) && !all(is.na(v))) {
@@ -264,25 +218,22 @@ rri_pipeline_st <- function(
         df[[j]] <- v
       }
     }
-    
+
     df
   }
-  
-  scale_01 <- function(v) {
-    if (all(is.na(v))) return(rep(NA_real_, length(v)))
-    r <- range(v, na.rm = TRUE)
-    if (!all(is.finite(r)) || diff(r) == 0) return(rep(0.5, length(v)))
-    (v - r[1]) / diff(r)
-  }
-  
+
+  scale_01 <- function(v) .rri_scale(v)
+
   scale_pnorm <- function(v, stats = NULL) {
-    if (all(is.na(v))) return(rep(NA_real_, length(v)))
+    if (all(is.na(v))) {
+      return(rep(NA_real_, length(v)))
+    }
     mu <- if (is.list(stats) && !is.null(stats$mean)) stats$mean else mean(v, na.rm = TRUE)
     si <- if (is.list(stats) && !is.null(stats$sd)) stats$sd else stats::sd(v, na.rm = TRUE)
     if (!is.finite(si) || si == 0) si <- 1
     stats::pnorm((v - mu) / si)
   }
-  
+
   scale_vec <- function(v, stats = NULL) {
     if (scaling == "minmax_legacy") {
       scale_01(v)
@@ -290,12 +241,12 @@ rri_pipeline_st <- function(
       scale_pnorm(v, stats)
     }
   }
-  
+
   scale_vec_by <- function(v, id, by, stats = NULL) {
     if (is.null(by) || is.null(id) || length(by) == 0) {
       return(scale_vec(v, stats))
     }
-    key <- interaction(id[, by, drop = FALSE], drop = TRUE, lex.order = TRUE)
+    key <- .rri_key(id, by)
     out <- v
     for (k in unique(key)) {
       idx <- which(key == k)
@@ -303,129 +254,91 @@ rri_pipeline_st <- function(
     }
     out
   }
-  
+
   orient_latent <- function(latent, df, direction, anchor) {
-    if (direction == "higher_is_better") return(latent)
-    if (direction == "lower_is_better") return(-latent)
-    
-    if (is.null(anchor) || !anchor %in% names(df)) return(latent)
-    
-    a <- df[[anchor]]
-    ok <- is.finite(latent) & is.finite(a)
-    if (!any(ok)) return(latent)
-    
-    if (stats::cor(latent[ok], a[ok]) < 0) -latent else latent
+    if (is.null(df) || all(!is.finite(latent))) return(latent)
+    # PCA/FA axis signs are arbitrary. Anchor before applying a desired direction.
+    if (is.null(anchor)) {
+      if (direction == "lower_is_better") return(-latent)
+      return(latent)
+    }
+    if (!anchor %in% names(df)) stop("Orientation anchor is absent: ", anchor)
+    cc <- .rri_cor(latent, df[[anchor]])
+    if (is.finite(cc) && cc < 0) latent <- -latent
+    if (direction == "lower_is_better") -latent else latent
   }
-  
+
   latent_dimension <- function(df, method) {
+    if (is.null(df)) return(rep(NA_real_, n))
     df <- as_numeric_df(df)
-    
+    varying <- vapply(df, function(x) {
+      z <- x[is.finite(x)]
+      length(z) > 1L && stats::sd(z) > 0
+    }, logical(1))
+    # All-NA columns are unmeasured; constants carry no latent variation.
+    df <- df[, varying, drop = FALSE]
+    if (ncol(df) > 1L && any(!is.finite(as.matrix(df))))
+      stop("Non-finite values remain after imputation.")
+
     if (ncol(df) == 0L) return(rep(NA_real_, nrow(df)))
-    if (ncol(df) == 1L) return(df[[1L]])
-    
-    if (method == "mean") return(rowMeans(df, na.rm = TRUE))
-    if (method == "scale") return(rowMeans(scale(df), na.rm = TRUE))
-    if (method == "pca") return(stats::prcomp(df, center = TRUE, scale. = TRUE)$x[, 1])
-    
+    if (ncol(df) == 1L) {
+      return(df[[1L]])
+    }
+
+    if (method == "mean") {
+      return(rowMeans(df, na.rm = TRUE))
+    }
+    if (method == "scale") {
+      return(rowMeans(scale(df), na.rm = TRUE))
+    }
+    if (method == "pca") {
+      return(stats::prcomp(df, center = TRUE, scale. = TRUE)$x[, 1])
+    }
+
     if (method == "fa") {
       if (!requireNamespace("psych", quietly = TRUE)) stop("`method = 'fa'` requires {psych}.")
       fa <- psych::fa(df, nfactors = 1, rotate = "none", scores = "regression")
       return(as.numeric(fa$scores[, 1]))
     }
-    
-    if (method == "umap") {
-      if (!requireNamespace("uwot", quietly = TRUE)) stop("`method = 'umap'` requires {uwot}.")
-      return(as.numeric(uwot::umap(df, n_components = 1)))
-    }
-    
-    if (method == "nmf") {
-      if (!requireNamespace("NMF", quietly = TRUE)) stop("`method = 'nmf'` requires {NMF}.")
-      x <- as.matrix(df)
-      mins <- apply(x, 2, min, na.rm = TRUE)
-      shift <- pmax(0, -mins)
-      x <- sweep(x, 2, shift, "+")
-      nm <- NMF::nmf(x, rank = 1, .options = "N")
-      return(as.numeric(t(NMF::coef(nm))))
-    }
-    
-    if (method == "wgcna") {
-      if (!requireNamespace("WGCNA", quietly = TRUE)) stop("`method = 'wgcna'` requires {WGCNA}.")
-      gsg <- WGCNA::goodSamplesGenes(df, verbose = 0)
-      df2 <- df
-      if (!gsg$allOK) df2 <- df2[gsg$goodSamples, gsg$goodGenes, drop = FALSE]
-      
-      if (nrow(df2) < 4L || ncol(df2) < 3L) {
-        return(stats::prcomp(df, center = TRUE, scale. = TRUE)$x[, 1])
-      }
-      
-      sft <- suppressWarnings(WGCNA::pickSoftThreshold(df2, verbose = 0))
-      power <- sft$powerEstimate
-      if (is.na(power) || !is.finite(power)) power <- 6
-      
-      net <- suppressWarnings(
-        WGCNA::blockwiseModules(
-          df2,
-          power = power,
-          TOMType = "unsigned",
-          minModuleSize = 5,
-          mergeCutHeight = 0.25,
-          numericLabels = TRUE,
-          verbose = 0
-        )
-      )
-      
-      cols <- net$colors
-      if (length(unique(cols)) <= 1L) {
-        out <- rep(NA_real_, nrow(df))
-        out[as.integer(rownames(df2))] <- stats::prcomp(df2, center = TRUE, scale. = TRUE)$x[, 1]
-        return(out)
-      }
-      
-      eig <- suppressWarnings(WGCNA::moduleEigengenes(df2, cols)$eigengenes)
-      if (is.null(eig) || ncol(eig) < 1L) {
-        out <- rep(NA_real_, nrow(df))
-        out[as.integer(rownames(df2))] <- stats::prcomp(df2, center = TRUE, scale. = TRUE)$x[, 1]
-        return(out)
-      }
-      
-      out <- rep(NA_real_, nrow(df))
-      out[as.integer(rownames(df2))] <- as.numeric(eig[, 1])
-      out
-    } else {
-      stop("Unknown method: ", method)
-    }
+
+    stop("Unknown method: ", method)
   }
-  
+
   network_scalar <- function(g, agg) {
     if (!requireNamespace("igraph", quietly = TRUE)) stop("`graph` requires {igraph}.")
+    if (!inherits(g, "igraph")) stop("Each graph must be an igraph object.")
     g <- igraph::simplify(g)
-    
-    comm <- igraph::cluster_louvain(g)
+    if (igraph::vcount(g) < 2L || igraph::ecount(g) == 0L) return(NA_real_)
+    gw <- igraph::edge_attr(g, "weight")
+    if (!is.null(gw) && any(!is.finite(gw))) stop("Graph weights must be finite.")
+    if (igraph::is_directed(g) || any(igraph::edge_attr(g, "weight") < 0))
+      stop("Network summary requires an undirected graph without negative weights.")
+
+    # Deterministic partition avoids modifying the caller RNG state.
+    comm <- igraph::cluster_fast_greedy(g, weights = NA)
     Q <- igraph::modularity(comm)
-    
+
     C_vec <- igraph::transitivity(g, type = "local", isolates = "zero")
     C <- mean(C_vec, na.rm = TRUE)
-    
-    D <- igraph::distances(g)
-    D[!is.finite(D)] <- NA_real_
-    Eglob <- 1 / mean(D, na.rm = TRUE)
-    
-    H <- igraph::centralization.degree(g)$centralization
-    
-    Qs <- pmin(pmax(Q, 0), 1)
+
+    Eglob <- igraph::global_efficiency(g, directed = FALSE, weights = NA)
+    H <- igraph::centr_degree(g)$centralization
+    Qs <- pmin(pmax(1 - Q, 0), 1)
     Cs <- pmin(pmax(C, 0), 1)
     Hs <- pmin(pmax(H, 0), 1)
-    Es <- scale_01(Eglob)
-    
+    Es <- Eglob
+
     metrics <- c(Qs, Cs, Es, (1 - Hs))
-    if (agg == "mean") return(mean(metrics, na.rm = TRUE))
+    if (agg == "mean") {
+      return(mean(metrics, na.rm = TRUE))
+    }
     sqrt(mean(metrics, na.rm = TRUE))
   }
-  
+
   roll_apply <- function(x, window, fun, align) {
     nloc <- length(x)
     out <- rep(NA_real_, nloc)
-    
+
     for (i in seq_len(nloc)) {
       if (align == "right") {
         idx <- (i - window + 1):i
@@ -435,34 +348,38 @@ rri_pipeline_st <- function(
         half <- floor(window / 2)
         idx <- (i - half):(i - half + window - 1)
       }
-      
+
       idx <- idx[idx >= 1 & idx <= nloc]
       if (length(idx) < window) next
       out[i] <- fun(x[idx])
     }
-    
+
     out
   }
-  
+
   event_features <- function(z, event, baseline_label, recovery_labels) {
     ok <- is.finite(z) & !is.na(event)
-    if (sum(ok) < 3) return(list(baseline = NA_real_, pulse = NA_real_, recovery = NA_real_))
-    
+    if (sum(ok) < 3) {
+      return(list(baseline = NA_real_, pulse = NA_real_, recovery = NA_real_))
+    }
+
     z <- z[ok]
     e <- event[ok]
     base_idx <- which(e == baseline_label)
     rec_idx <- which(e %in% recovery_labels)
-    stress_idx <- which(e != baseline_label)
-    
-    if (length(base_idx) < 1) return(list(baseline = NA_real_, pulse = NA_real_, recovery = NA_real_))
-    
+    stress_idx <- which(!e %in% c(baseline_label, recovery_labels))
+
+    if (length(base_idx) < 1) {
+      return(list(baseline = NA_real_, pulse = NA_real_, recovery = NA_real_))
+    }
+
     baseline <- mean(z[base_idx])
     pulse <- if (length(stress_idx) >= 1) max(abs(z[stress_idx] - baseline)) else NA_real_
     recovery <- if (length(rec_idx) >= 1) 1 - abs(mean(z[rec_idx]) - baseline) else NA_real_
-    
+
     list(baseline = baseline, pulse = pulse, recovery = recovery)
   }
-  
+
   coupling_term <- function(P, S, M, fun) {
     if (fun == "geometric_mean") {
       (P * S * M)^(1 / 3)
@@ -470,88 +387,35 @@ rri_pipeline_st <- function(
       1 - stats::sd(c(P, S, M))
     }
   }
-  
+
   compensation_index <- function(P, S, M) {
     X <- cbind(P, S, M)
-    if (nrow(X) < 3) return(NA_real_)
+    if (nrow(X) < 3) {
+      return(NA_real_)
+    }
     C <- stats::cov(X, use = "pairwise.complete.obs")
-    if (any(!is.finite(C))) return(NA_real_)
+    if (any(!is.finite(C))) {
+      return(NA_real_)
+    }
     -sum(C[upper.tri(C)])
   }
-  
+
   clr_transform <- function(X, eps = 1e-8) {
     X <- pmax(as.matrix(X), eps)
     gm <- exp(rowMeans(log(X)))
     log(X / gm)
   }
-  
+
   clr_to_simplex <- function(CLR) {
     X <- exp(CLR)
     X / rowSums(X)
   }
-  
-  extract_mfa_group_dim1 <- function(mfa, group_names) {
-    part <- NULL
-    
-    if (!is.null(mfa$partial) &&
-        !is.null(mfa$partial$ind) &&
-        !is.null(mfa$partial$ind$coord)) {
-      part <- mfa$partial$ind$coord
-    }
-    
-    if (is.null(part) &&
-        !is.null(mfa$ind) &&
-        !is.null(mfa$ind$coord.partiel)) {
-      part <- mfa$ind$coord.partiel
-    }
-    
-    if (is.null(part) &&
-        !is.null(mfa$ind) &&
-        !is.null(mfa$ind$coord.partial)) {
-      part <- mfa$ind$coord.partial
-    }
-    
-    if (is.null(part)) return(NULL)
-    
-    if (length(dim(part)) == 3) {
-      out <- lapply(seq_along(group_names), function(k) as.numeric(part[, 1, k]))
-      names(out) <- group_names
-      return(out)
-    }
-    
-    part_df <- as.data.frame(part)
-    cn <- colnames(part_df)
-    
-    pick_col <- function(g) {
-      patterns <- c(
-        paste0("^", g, "\\.Dim\\.?1$"),
-        paste0("^", g, "\\.Dim\\.1$"),
-        paste0("^", g, ".*Dim\\.?1$"),
-        paste0("^", g, ".*1$")
-      )
-      for (p in patterns) {
-        hit <- which(grepl(p, cn))
-        if (length(hit) == 1) return(hit)
-      }
-      integer(0)
-    }
-    
-    idxs <- lapply(group_names, pick_col)
-    
-    if (all(vapply(idxs, length, integer(1)) == 1L)) {
-      out <- lapply(seq_along(group_names), function(i) as.numeric(part_df[[idxs[[i]]]]))
-      names(out) <- group_names
-      return(out)
-    }
-    
-    NULL
-  }
-  
+
   # ---- impute (before latent extraction) ----------------------------------
   ROS_flux <- impute_median_by(ROS_flux, id, scale_by)
   Eh_stability <- impute_median_by(Eh_stability, id, scale_by)
   if (!is.null(micro_data)) micro_data <- impute_median_by(micro_data, id, scale_by)
-  
+
   # ---- microbial inputs: abundance + network -------------------------------
   micro_abund_raw <- rep(NA_real_, n)
   if (!is.null(micro_data)) {
@@ -562,7 +426,7 @@ rri_pipeline_st <- function(
       direction_anchor_micro
     )
   }
-  
+
   micro_net_raw <- rep(NA_real_, n)
   if (!is.null(graph)) {
     if (inherits(graph, "igraph")) {
@@ -574,11 +438,7 @@ rri_pipeline_st <- function(
       stop("`graph` must be NULL, an igraph object, or a list of igraph objects.")
     }
   }
-  
-  if (all(is.na(micro_abund_raw)) && all(is.na(micro_net_raw))) {
-    stop("Provide microbial input via `micro_data` and/or `graph`.")
-  }
-  
+
   # ---- domain raw scores (per-domain default) ------------------------------
   phys_raw <- orient_latent(
     latent_dimension(ROS_flux, method_phys),
@@ -586,105 +446,29 @@ rri_pipeline_st <- function(
     direction_phys,
     direction_anchor_phys
   )
-  
+
   soil_raw <- orient_latent(
     latent_dimension(Eh_stability, method_soil),
     Eh_stability,
     direction_soil,
     direction_anchor_soil
   )
-  
+
   # Only defined/used for MFA; keep as NA otherwise.
   micro_mfa_raw <- rep(NA_real_, n)
-  
-  # ---- MFA integration (robust & version-safe) ------------------------------
+
+  # Retained legacy fields; no unsupported MFA projections are calculated.
   mfa_global_dim1 <- rep(NA_real_, n)
   mfa_used_partials <- FALSE
   mfa_fallback_to_per_domain <- FALSE
-  
-  if (reducer == "mfa") {
-    
-    if (!requireNamespace("FactoMineR", quietly = TRUE)) {
-      stop("`reducer = 'mfa'` requires {FactoMineR}.")
-    }
-    
-    # ---- Build microbial block ----
-    micro_block <- NULL
-    if (!is.null(micro_data)) {
-      micro_block <- as_numeric_df(micro_data)
-    }
-    
-    if (!all(is.na(micro_net_raw))) {
-      micro_net_df <- data.frame(net_resilience = as.numeric(micro_net_raw))
-      micro_block <- if (is.null(micro_block)) micro_net_df else cbind(micro_block, micro_net_df)
-    }
-    
-    if (is.null(micro_block)) {
-      stop("MFA requires microbial input.")
-    }
-    
-    # ---- Numeric blocks ----
-    blocks <- list(
-      Physio = scale(as_numeric_df(ROS_flux)),
-      Soil   = scale(as_numeric_df(Eh_stability)),
-      Micro  = scale(as_numeric_df(micro_block))
-    )
-    
-    X <- do.call(cbind, blocks)
-    groups <- vapply(blocks, ncol, integer(1))
-    
-    mfa <- FactoMineR::MFA(
-      X,
-      group = groups,
-      type = rep("s", length(groups)),
-      ncp = 5,
-      graph = FALSE
-    )
-    
-    # Global axis
-    mfa_global_dim1 <- as.numeric(mfa$ind$coord[, 1])
-    
-    # ---- Domain projections via regression onto global axis ----
-    project_block <- function(block, global_axis) {
-      block <- as.matrix(block)
-      storage.mode(block) <- "double"
-      as.numeric(block %*% stats::coef(stats::lm(global_axis ~ block))[ -1 ])
-    }
-    
-    phys_raw  <- project_block(blocks$Physio, mfa_global_dim1)
-    soil_raw  <- project_block(blocks$Soil,   mfa_global_dim1)
-    micro_mfa_raw <- project_block(blocks$Micro,  mfa_global_dim1)
-    
-    # ---- Orientation ----
-    phys_raw <- orient_latent(
-      phys_raw,
-      ROS_flux,
-      direction_phys,
-      direction_anchor_phys
-    )
-    
-    soil_raw <- orient_latent(
-      soil_raw,
-      Eh_stability,
-      direction_soil,
-      direction_anchor_soil
-    )
-    
-    micro_anchor_df <- if (!is.null(micro_data)) micro_data else micro_block
-    
-    micro_mfa_raw <- orient_latent(
-      micro_mfa_raw,
-      micro_anchor_df,
-      direction_micro,
-      direction_anchor_micro
-    )
-    
-    mfa_used_partials <- TRUE
-  }
+  phys_raw[!observed[[1L]]] <- NA_real_
+  soil_raw[!observed[[2L]]] <- NA_real_
+  micro_abund_raw[!observed[[3L]]] <- NA_real_
+
   # ---- scale to [0, 1] -----------------------------------------------------
   phys <- scale_vec_by(phys_raw, id, scale_by, stats = if (is.list(ref_stats)) ref_stats$phys else NULL)
   soil <- scale_vec_by(soil_raw, id, scale_by, stats = if (is.list(ref_stats)) ref_stats$soil else NULL)
-  
+
   micro_abund <- scale_vec_by(
     micro_abund_raw,
     id,
@@ -703,38 +487,27 @@ rri_pipeline_st <- function(
     scale_by,
     stats = if (is.list(ref_stats)) ref_stats$micro_mfa else NULL
   )
-  
+
   # ---- blend microbial domain ---------------------------------------------
-  micro <- if (all(is.na(micro_abund))) {
-    micro_net
-  } else if (all(is.na(micro_net))) {
-    micro_abund
-  } else {
-    scale_vec(
-      alpha_micro * micro_abund + (1 - alpha_micro) * micro_net,
-      stats = if (is.list(ref_stats)) ref_stats$micro else NULL
-    )
+  micro <- .rri_weighted(cbind(micro_abund, micro_net),
+                         c(alpha_micro, 1 - alpha_micro))$score
+  domains <- cbind(Physio = phys, Soil = soil, Micro = micro)
+  scored <- .rri_weighted(domains, c(w1, w2, w3))
+  base_rri <- scored$score
+  if ((isTRUE(add_compensation) && compensation_weight > 0) ||
+      (isTRUE(add_coupling) && coupling_weight > 0)) {
+    if (any(!is.finite(domains)))
+      stop("Coupling and compensation require all three domains on every row.")
   }
-  
-  # If MFA partials exist, blend the MFA micro score with the legacy micro score
-  if (reducer == "mfa" && isTRUE(mfa_used_partials) && !all(is.na(micro_mfa))) {
-    micro <- scale_vec(
-      0.5 * micro + 0.5 * micro_mfa,
-      stats = if (is.list(ref_stats)) ref_stats$micro else NULL
-    )
-  }
-  
-  # ---- snapshot RRI -------------------------------------------------------
-  base_rri <- w1 * phys + w2 * soil + w3 * micro
-  
+
   if (isTRUE(add_compensation) && compensation_weight > 0) {
     comp_term <- rep(NA_real_, n)
-    
+
     if (!is.null(id) &&
-        !is.null(group_cols) &&
-        length(group_cols) > 0 &&
-        all(group_cols %in% names(id))) {
-      keyc <- interaction(id[, group_cols, drop = FALSE], drop = TRUE, lex.order = TRUE)
+      !is.null(group_cols) &&
+      length(group_cols) > 0 &&
+      all(group_cols %in% names(id))) {
+      keyc <- .rri_key(id, group_cols)
       for (k in unique(keyc)) {
         idx <- which(keyc == k)
         comp_term[idx] <- compensation_index(phys[idx], soil[idx], micro[idx])
@@ -742,23 +515,24 @@ rri_pipeline_st <- function(
     } else {
       comp_term[] <- compensation_index(phys, soil, micro)
     }
-    
+
     comp_term01 <- scale_vec(
       comp_term,
       stats = if (is.list(ref_stats)) ref_stats$comp else NULL
     )
-    comp_term01[!is.finite(comp_term01)] <- 0
-    
+    if (any(!is.finite(comp_term01)))
+      stop("Compensation is not estimable for every requested group.")
+
     ww <- c(w1, w2, w3)
     ww <- ww / sum(ww) * (1 - compensation_weight)
-    
+
     base_rri <- ww[1] * phys + ww[2] * soil + ww[3] * micro + compensation_weight * comp_term01
   }
-  
+
   if (isTRUE(add_coupling) && coupling_weight > 0) {
     ww <- c(w1, w2, w3)
     ww <- ww / sum(ww) * (1 - coupling_weight)
-    
+
     coup <- mapply(
       coupling_term,
       P = phys,
@@ -766,25 +540,31 @@ rri_pipeline_st <- function(
       M = micro,
       MoreArgs = list(fun = coupling_fun)
     )
-    
+
     base_rri <- ww[1] * phys + ww[2] * soil + ww[3] * micro + coupling_weight * coup
   }
-  
-  rri <- scale_vec(base_rri, stats = if (is.list(ref_stats)) ref_stats$rri else NULL)
-  
+
+  rri <- base_rri # weighted [0,1] domain mean; do not force extrema after aggregation
+
   row_scores <- data.frame(
     Physio = phys,
     Soil = soil,
     Micro = micro,
     RRI = rri,
+    domain_coverage = scored$coverage,
+    n_domains = scored$n_observed,
     Micro_abundance = micro_abund,
     Micro_network = micro_net,
     Micro_mfa = micro_mfa
   )
-  
+
+  if (!is.null(id)) {
+    if (any(names(id) %in% names(row_scores))) stop("id names conflict with score columns.")
+    row_scores <- cbind(id, row_scores)
+  }
   # ---- compositional projection (ternary-ready) ---------------------------
   comp <- row_scores[, c("Physio", "Soil", "Micro")]
-  
+
   if (comp_space == "clr") {
     clr <- clr_transform(comp)
     comp_simplex <- clr_to_simplex(clr)
@@ -795,49 +575,52 @@ rri_pipeline_st <- function(
     s[s == 0] <- NA_real_
     comp <- comp / s
   }
-  
+
   row_scores_comp <- cbind(comp, RRI = row_scores$RRI)
-  
-  rri_index <- mean(row_scores$RRI, na.rm = TRUE)
+
+  rri_index <- .rri_mean(row_scores$RRI)
   attr(row_scores_comp, "RRI_index") <- rri_index
-  
+
   # ---- dynamic modes -------------------------------------------------------
   dyn_scores <- NULL
-  
+
   if (mode != "snapshot") {
     id2 <- id
-    id2[[time_col]] <- suppressWarnings(as.numeric(id2[[time_col]]))
-    
-    key <- interaction(id2[, group_cols, drop = FALSE], drop = TRUE, lex.order = TRUE)
+    if (!is.numeric(id2[[time_col]]) || any(!is.finite(id2[[time_col]])))
+      stop("Time must be finite numeric values in explicitly stated units.")
+    if (anyDuplicated(.rri_key(id2, c(group_cols, time_col))))
+      stop("Duplicate times within trajectory: include all experimental-unit keys.")
+
+    key <- .rri_key(id2, group_cols)
     ord <- order(key, id2[[time_col]])
-    
+
     rs_ord <- row_scores[ord, , drop = FALSE]
     id_ord <- id2[ord, , drop = FALSE]
     key_ord <- key[ord]
-    
+
     if (mode == "rolling") {
       stab_fun <- function(x) 1 - stats::sd(x)
-      
+
       P_roll <- S_roll <- M_roll <- rep(NA_real_, nrow(rs_ord))
       P_stab <- S_stab <- M_stab <- rep(NA_real_, nrow(rs_ord))
-      
+
       for (k in unique(key_ord)) {
         idx <- which(key_ord == k)
         P_roll[idx] <- roll_apply(rs_ord$Physio[idx], window, mean, align)
         S_roll[idx] <- roll_apply(rs_ord$Soil[idx], window, mean, align)
         M_roll[idx] <- roll_apply(rs_ord$Micro[idx], window, mean, align)
-        
+
         P_stab[idx] <- roll_apply(rs_ord$Physio[idx], window, stab_fun, align)
         S_stab[idx] <- roll_apply(rs_ord$Soil[idx], window, stab_fun, align)
         M_stab[idx] <- roll_apply(rs_ord$Micro[idx], window, stab_fun, align)
       }
-      
+
       P_dyn <- scale_vec(0.5 * P_roll + 0.5 * P_stab)
       S_dyn <- scale_vec(0.5 * S_roll + 0.5 * S_stab)
       M_dyn <- scale_vec(0.5 * M_roll + 0.5 * M_stab)
-      
-      rri_dyn <- scale_vec(w1 * P_dyn + w2 * S_dyn + w3 * M_dyn)
-      
+
+      rri_dyn <- .rri_weighted(cbind(P_dyn, S_dyn, M_dyn), c(w1, w2, w3))$score
+
       dyn_scores <- data.frame(
         P_level = P_roll,
         P_stability = P_stab,
@@ -850,29 +633,35 @@ rri_pipeline_st <- function(
         Micro_dyn = M_dyn,
         RRI_dyn = rri_dyn
       )
+      dyn_scores <- cbind(id_ord, dyn_scores)
+      dyn_scores <- dyn_scores[order(ord), , drop = FALSE]
+      rownames(dyn_scores) <- NULL
     } else if (mode == "event") {
       if (is.null(event_col) || !event_col %in% names(id_ord)) {
         stop("mode = 'event' requires `event_col` in `id`.")
       }
+      if (any(baseline_label %in% recovery_labels))
+        stop("Baseline and recovery labels must not overlap.")
       e <- id_ord[[event_col]]
-      
+
       out_list <- vector("list", length(unique(key_ord)))
       names(out_list) <- unique(key_ord)
-      
+
       for (k in unique(key_ord)) {
         idx <- which(key_ord == k)
-        
+
         P_feat <- event_features(rs_ord$Physio[idx], e[idx], baseline_label, recovery_labels)
         S_feat <- event_features(rs_ord$Soil[idx], e[idx], baseline_label, recovery_labels)
         M_feat <- event_features(rs_ord$Micro[idx], e[idx], baseline_label, recovery_labels)
-        
-        P_res <- scale_vec(1 - P_feat$pulse) * scale_vec(P_feat$recovery)
-        S_res <- scale_vec(1 - S_feat$pulse) * scale_vec(S_feat$recovery)
-        M_res <- scale_vec(1 - M_feat$pulse) * scale_vec(M_feat$recovery)
-        
-        rri_e <- scale_vec(w1 * P_res + w2 * S_res + w3 * M_res)
+
+        P_res <- pmax(0, 1 - P_feat$pulse) * pmax(0, P_feat$recovery)
+        S_res <- pmax(0, 1 - S_feat$pulse) * pmax(0, S_feat$recovery)
+        M_res <- pmax(0, 1 - M_feat$pulse) * pmax(0, M_feat$recovery)
+
+        rri_e <- .rri_weighted(matrix(c(P_res, S_res, M_res), nrow = 1L),
+                               c(w1, w2, w3))$score
         gdat <- id_ord[idx[1], group_cols, drop = FALSE]
-        
+
         out_list[[k]] <- cbind(
           gdat,
           P_baseline = P_feat$baseline,
@@ -890,18 +679,24 @@ rri_pipeline_st <- function(
           RRI_event = rri_e
         )
       }
-      
+
       dyn_scores <- do.call(rbind, out_list)
       rownames(dyn_scores) <- NULL
     }
   }
-  
+
   out <- list(
     row_scores = row_scores,
+    effective_weights = sweep(ifelse(is.finite(domains), 1, 0), 2L,
+                              c(w1, w2, w3), "*") / ifelse(scored$coverage > 0, scored$coverage, NA_real_),
     row_scores_comp = row_scores_comp,
     dyn_scores = dyn_scores,
     meta = list(
       mode = mode,
+      graph = graph,
+      domain_observed_rows = observed,
+      missingness_policy = "Unmeasured domains and wholly missing rows remain NA; available positive weights are renormalized",
+      interpretation = "Exploratory feature composite; reference scaling does not freeze PCA loadings",
       time_col = time_col,
       group_cols = group_cols,
       scale_by = scale_by,
@@ -927,7 +722,7 @@ rri_pipeline_st <- function(
       mfa_fallback_to_per_domain = mfa_fallback_to_per_domain
     )
   )
-  
+
   class(out) <- "RRI"
   out
 }

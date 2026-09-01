@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_RRI_ternary.R
 \name{plot_RRI_ternary}
 \alias{plot_RRI_ternary}
-\title{Ternary Plot of Holobiont Redox Resilience Allocation}
+\title{Ternary Plot of Relative Domain Scores}
 \usage{
 plot_RRI_ternary(
   ternary_df,
@@ -47,24 +47,28 @@ plot_RRI_ternary(
 A \code{ggtern} object.
 }
 \description{
-Creates a ternary diagram visualising the compositional allocation of
-holobiont redox buffering capacity across plant physiology (\code{Physio}),
-soil redox chemistry (\code{Soil}), and microbial resilience (\code{Micro}).
-Points are filled according to per-sample \code{RRI} values.
+Creates a ternary diagram of the relative magnitudes of plant, soil and
+microbial domain scores after closure to a unit sum. These coordinates are
+display quantities, not fractions of causal buffering capacity. Points are
+filled according to the corresponding composite \code{RRI} value.
 }
 \details{
+Closure removes absolute score magnitude: rows with proportional domain scores
+occupy the same position even when their composite scores differ. Do not infer
+mechanistic allocation, causal contribution or substitution from this plot.
 If clr-transformed coordinates are attached as an attribute (\code{"clr"}),
-the centroid can be computed using the Aitchison mean, ensuring geometric
-coherence in compositional space. Otherwise, a simplex arithmetic mean is used.
+the centroid can be computed using the Aitchison mean. Otherwise, a simplex
+arithmetic mean is used.
 }
 \examples{
-# ---- Simulate holobiont dataset (snapshot) ----
+\dontrun{
+# Optional packages ggtern and viridis are required.
 sim <- simulate_redox_holobiont(
-  n_plot = 20,
-  n_depth = 30,
-  n_plant = 8,
-  n_time = 10,
-  p_micro = 30,
+  n_plot = 2,
+  n_depth = 2,
+  n_plant = 2,
+  n_time = 8,
+  p_micro = 6,
   seed = 1234
 )
 
@@ -87,5 +91,6 @@ p <- plot_RRI_ternary(
   point_size = 3,
   show_centroid = TRUE
 )
+}
 
 }

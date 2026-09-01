@@ -1,13 +1,13 @@
-#' @title Latent Recovery Correlation for RedoxRRI
+#' @title Correlation with a Simulator-Defined Target
 #'
 #' @description
-#' Computes the Pearson correlation between the per-sample Redox Resilience
-#' Index (RRI) and a known latent truth vector. This function is intended
-#' for simulation-based validation only and should not be interpreted as
-#' predictive accuracy.
+#' Computes a descriptive correlation between per-sample RRI and a prescribed
+#' simulator target. This is an internal simulation benchmark and is not
+#' predictive accuracy, empirical validation or recovery of a true latent state.
 #'
 #' @param res An object returned by \code{rri_pipeline_st()}.
-#' @param latent_truth Numeric vector of true latent values.
+#' @param latent_truth Numeric simulator-target vector. The legacy argument name
+#' is retained for compatibility.
 #' @param method Correlation method. One of \code{"pearson"},
 #'   \code{"spearman"}, or \code{"kendall"}.
 #'
@@ -15,25 +15,32 @@
 #'
 #' @details
 #' This function is designed for simulation benchmarking. In empirical
-#' datasets, no latent truth exists and this metric should not be used.
+#' datasets, no known latent state exists and this metric should not be used.
 #'
+#' @importFrom stats cor
+#' @examples
+#' \dontrun{
+#'   sim <- simulate_redox_holobiont(seed = 1)
+#'   res <- rri_pipeline_st(sim$ROS_flux, sim$Eh_stability)
+#'   rri_latent_correlation(res, sim$latent_truth)
+#' }
 #' @export
 rri_latent_correlation <- function(res,
                                    latent_truth,
                                    method = c("pearson", "spearman", "kendall")) {
-  
   method <- match.arg(method)
-  
+
   if (is.null(res$row_scores$RRI)) {
     stop("res must contain a row_scores$RRI column.", call. = FALSE)
   }
-  
-  rri <- as.numeric(res$row_scores$RRI)
-  latent_truth <- as.numeric(latent_truth)
-  
+
+  rri <- res$row_scores$RRI
+  if (!is.numeric(rri) || !is.numeric(latent_truth))
+    stop("RRI and latent_truth must be numeric vectors.", call. = FALSE)
+
   if (length(rri) != length(latent_truth)) {
     stop("RRI and latent_truth must have equal length.", call. = FALSE)
   }
-  
-  stats::cor(rri, latent_truth, method = method, use = "complete.obs")
+
+  .rri_cor(rri, latent_truth, method = method)
 }

@@ -1,95 +1,37 @@
-#' @title Sensitivity Analysis for RedoxRRI
-#'
-#' @description
-#' Evaluates robustness of RRI rankings under alternative domain
-#' aggregation weights using already computed domain scores.
-#'
-#' @param res An object returned by \code{rri_pipeline_st()}.
-#' @param weight_grid Numeric vector of Physio weights in (0,1).
-#'
-#' @return A data frame containing tested weights and Spearman rank
-#'   correlations relative to the baseline RRI.
-#'
-#' @details
-#' This function perturbs only the aggregation step and does not
-#' recompute latent domain scores. It therefore evaluates stability
-#' of domain integration rather than reducer sensitivity.
+#' Sensitivity to domain aggregation weights
+#' @param res RRI result.
+#' @param weight_grid Plant weights in (0,1), or a data frame/matrix with
+#' named Physio, Soil, Micro columns specifying complete alternative weights.
+#' @return Alternative normalized weights, finite-pair count and Spearman correlation.
+#' This conditions on the already computed features, reductions and missingness.
+#' @importFrom stats cor
 #' @examples
-#' # ---- Simulate a small holobiont dataset ----
-#' sim <- simulate_redox_holobiont(
-#'   n_plot = 2,
-#'   n_depth = 4,
-#'   n_plant = 2,
-#'   n_time = 8,
-#'   p_micro = 20,
-#'   seed = 1
-#' )
-#'
-#' # ---- Compute RedoxRRI ----
-#' res <- rri_pipeline_st(
-#'   ROS_flux = sim$ROS_flux,
-#'   Eh_stability = sim$Eh_stability,
-#'   micro_data = sim$micro_data,
-#'   id = sim$id,
-#'   reducer = "per_domain",
-#'   scaling = "pnorm"
-#' )
-#'
-#' # ---- Evaluate aggregation sensitivity ----
-#' sens <- rri_sensitivity(
-#'   res,
-#'   weight_grid = seq(0.3, 0.5, by = 0.1)
-#' )
-#'
-#' 
+#' \dontrun{
+#'   sim <- simulate_redox_holobiont(seed = 1)
+#'   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
+#'   rri_sensitivity(res)
+#' }
 #' @export
-rri_sensitivity <- function(res,
-                            weight_grid = seq(0.2, 0.6, by = 0.1)) {
-  
-  required <- c("Physio", "Soil", "Micro", "RRI")
-  
-  if (!all(required %in% names(res$row_scores))) {
-    stop("res$row_scores must contain Physio, Soil, Micro, and RRI.",
-         call. = FALSE)
+rri_sensitivity <- function(res, weight_grid = seq(0.2, 0.6, by = 0.1)) {
+  rs <- res$row_scores; domains <- c("Physio", "Soil", "Micro")
+  if (!all(c(domains, "RRI") %in% names(rs))) stop("Required score columns absent.")
+  if (is.numeric(weight_grid) && is.null(dim(weight_grid))) {
+    if (!length(weight_grid) || any(!is.finite(weight_grid)) || any(weight_grid <= 0 | weight_grid >= 1))
+      stop("Vector weights must lie in (0,1).")
+    weights <- cbind(Physio = weight_grid, Soil = (1 - weight_grid)/2, Micro = (1 - weight_grid)/2)
+  } else {
+    weights <- as.matrix(weight_grid)
+    if (!is.numeric(weights) || nrow(weights) < 1L)
+      stop("Weight alternatives must be a nonempty numeric matrix or data frame.")
+    if (!all(domains %in% colnames(weights))) stop("Use Physio, Soil, Micro weight columns.")
+    weights <- weights[, domains, drop = FALSE]
   }
-  
-  if (!is.numeric(weight_grid) || any(!is.finite(weight_grid))) {
-    stop("weight_grid must be a numeric vector of finite values.",
-         call. = FALSE)
-  }
-  
-  if (any(weight_grid <= 0 | weight_grid >= 1)) {
-    stop("All weights must lie strictly between 0 and 1.",
-         call. = FALSE)
-  }
-  
-  dom <- res$row_scores[, c("Physio", "Soil", "Micro")]
-  baseline_rri <- res$row_scores$RRI
-  
-  results <- lapply(weight_grid, function(w_phys) {
-    
-    remaining <- 1 - w_phys
-    w_soil  <- remaining / 2
-    w_micro <- remaining / 2
-    
-    alt_rri <- w_phys  * dom$Physio +
-      w_soil  * dom$Soil +
-      w_micro * dom$Micro
-    
-    cor_val <- stats::cor(
-      baseline_rri,
-      alt_rri,
-      method = "spearman",
-      use = "complete.obs"
-    )
-    
-    data.frame(
-      weight_physio = w_phys,
-      weight_soil   = w_soil,
-      weight_micro  = w_micro,
-      spearman_rank_correlation = cor_val
-    )
+  rows <- lapply(seq_len(nrow(weights)), function(i) {
+    w <- .rri_weights(weights[i, ])
+    alt <- .rri_weighted(rs[, domains], w)$score
+    data.frame(weight_physio = w[1], weight_soil = w[2], weight_micro = w[3],
+      n_pairs = sum(is.finite(alt) & is.finite(rs$RRI)),
+      spearman_rank_correlation = .rri_cor(rs$RRI, alt, "spearman"))
   })
-  
-  do.call(rbind, results)
+  do.call(rbind, rows)
 }

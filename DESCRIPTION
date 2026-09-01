@@ -1,4 +1,4 @@
-Package: RRI
+Package: HRRI
 Type: Package
 Title: Holobiont Redox Resilience Index for Integrative Stress Biology
 Version: 0.99.6
@@ -56,5 +56,5 @@ biocViews:
 URL: https://github.com/mghotbi/RRI, https://mghotbi.github.io/RRI/
 BugReports: https://github.com/mghotbi/RRI/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0

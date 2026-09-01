@@ -2,7 +2,7 @@
 % Please edit documentation in R/rri_latent_correlation.R
 \name{rri_latent_correlation}
 \alias{rri_latent_correlation}
-\title{Latent Recovery Correlation for RedoxRRI}
+\title{Correlation with a Simulator-Defined Target}
 \usage{
 rri_latent_correlation(
   res,
@@ -13,7 +13,8 @@ rri_latent_correlation(
 \arguments{
 \item{res}{An object returned by \code{rri_pipeline_st()}.}
 
-\item{latent_truth}{Numeric vector of true latent values.}
+\item{latent_truth}{Numeric simulator-target vector. The legacy argument name
+is retained for compatibility.}
 
 \item{method}{Correlation method. One of \code{"pearson"},
 \code{"spearman"}, or \code{"kendall"}.}
@@ -22,12 +23,18 @@ rri_latent_correlation(
 A single numeric correlation coefficient.
 }
 \description{
-Computes the Pearson correlation between the per-sample Redox Resilience
-Index (RRI) and a known latent truth vector. This function is intended
-for simulation-based validation only and should not be interpreted as
-predictive accuracy.
+Computes a descriptive correlation between per-sample RRI and a prescribed
+simulator target. This is an internal simulation benchmark and is not
+predictive accuracy, empirical validation or recovery of a true latent state.
 }
 \details{
 This function is designed for simulation benchmarking. In empirical
-datasets, no latent truth exists and this metric should not be used.
+datasets, no known latent state exists and this metric should not be used.
+}
+\examples{
+\dontrun{
+  sim <- simulate_redox_holobiont(seed = 1)
+  res <- rri_pipeline_st(sim$ROS_flux, sim$Eh_stability)
+  rri_latent_correlation(res, sim$latent_truth)
+}
 }

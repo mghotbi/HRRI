@@ -2,11 +2,11 @@
 % Please edit documentation in R/rri_pipeline_st.R
 \name{rri_pipeline_st}
 \alias{rri_pipeline_st}
-\title{Holobiont Redox Resilience Index (RRI) with Spatio-Temporal Dynamics}
+\title{Exploratory domain-score integration (legacy interface)}
 \usage{
 rri_pipeline_st(
-  ROS_flux,
-  Eh_stability,
+  ROS_flux = NULL,
+  Eh_stability = NULL,
   micro_data = NULL,
   graph = NULL,
   id = NULL,
@@ -127,74 +127,28 @@ abundance and network components.}
 \item{compensation_weight}{Numeric between 0 and 1 controlling compensation weight.}
 }
 \value{
-A list of class \code{"RRI"} containing:
-\itemize{
-\item \code{row_scores}: Raw domain and RRI values.
-\item \code{row_scores_comp}: Compositional domain scores and RRI.
-\item \code{dyn_scores}: Dynamic resilience metrics (if applicable).
-\item \code{meta}: Metadata describing model configuration.
-}
+RRI object; identifiers accompany scores and rolling output retains
+original input order. Stochastic and advanced reducers need separate validation.
 }
 \description{
-Computes a holobiont-level Redox Resilience Index (RRI) by integrating
-plant physiological traits, soil redox chemistry, and microbial resilience
-into a unified, directionally identifiable index. The framework supports
-static (snapshot), rolling-window, and event-based resilience modes,
-optional compositional geometry (clr), multiblock reduction via MFA,
-and covariance-based compensation.
+Integrates plant, soil and microbial latent scores. Direction is
+not biologically identifiable without justified anchors. All three domains
+may be incomplete. Available positive domain weights are renormalized per row.
+Use rri_reference_scores for externally anchored, fixed-reference comparisons.
 }
 \details{
-When \code{reducer = "mfa"}, blocks are integrated using
-\pkg{FactoMineR} multiple factor analysis. If partial coordinates are
-unavailable, the function safely falls back to per-domain reduction.
-
-When \code{comp_space = "clr"}, domain scores are projected into
-Aitchison geometry using centered log-ratio transformation and
-returned in simplex form for ternary visualization.
+MFA is disabled pending a validated implementation. Scaling statistics
+do not freeze PCA/FA loadings, so ref_stats is not a trained prediction model.
+The CLR round trip changes display coordinates only: inversion returns closure.
+Grouping does not imply within-group scaling; request scale_by explicitly.
+Missing data are median-imputed for exploratory reduction, not corrected for MNAR.
+Event scores are descriptive products of resistance and reference proximity;
+baseline/recovery label defaults must be matched to the supplied data.
 }
 \examples{
-# ---- Simulate small holobiont dataset ----
-sim <- simulate_redox_holobiont(
-  n_plot = 10,
-  n_depth = 10,
-  n_plant = 4,
-  n_time = 8,
-  p_micro = 20,
-  seed = 1234
-)
-
-# ---- Snapshot RRI computation ----
-res <- rri_pipeline_st(
-  ROS_flux = sim$ROS_flux,
-  Eh_stability = sim$Eh_stability,
-  micro_data = sim$micro_data,
-  id = sim$id,
-  reducer = "per_domain",
-  scaling = "pnorm"
-)
-
-# Per-sample domain scores and RRI
-head(res$row_scores)
-
-# Compositional (ternary-ready) allocation
-head(res$row_scores_comp)
-
-# ---- Rolling dynamic mode example ----
-res_roll <- rri_pipeline_st(
-  ROS_flux = sim$ROS_flux,
-  Eh_stability = sim$Eh_stability,
-  micro_data = sim$micro_data,
-  id = sim$id,
-  mode = "rolling",
-  time_col = "time",
-  group_cols = c("plot", "depth", "plant_id"),
-  window = 2
-)
-
-# Note: The first (window - 1) rows per group are NA
-# due to right-aligned rolling windows.
-head(res_roll$dyn_scores)
-
-# System-level mean RRI
-attr(res$row_scores_comp, "RRI_index")
+\dontrun{
+  sim <- simulate_redox_holobiont(seed = 1)
+  res <- rri_pipeline_st(sim$ROS_flux, sim$Eh_stability, id = sim$id)
+  head(res$row_scores)
+}
 }

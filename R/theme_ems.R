@@ -4,13 +4,20 @@
 #'
 #' @param base_size Base font size
 #' @return A ggplot2 theme object
+#' @importFrom ggplot2 theme_classic theme element_text element_blank
+#' @examples
+#' \dontrun{
+#'   library(ggplot2)
+#'   ggplot(data.frame(x = 1:3, y = 1:3), aes(x, y)) +
+#'     geom_point() + theme_ems()
+#' }
 #' @export
 theme_ems <- function(base_size = 12) {
   ggplot2::theme_classic(base_size = base_size) +
     ggplot2::theme(
-      plot.title  = ggplot2::element_text(face = "bold"),
-      axis.title  = ggplot2::element_text(face = "bold"),
+      plot.title = ggplot2::element_text(face = "bold"),
+      axis.title = ggplot2::element_text(face = "bold"),
       legend.title = ggplot2::element_text(face = "bold"),
-      panel.grid  = ggplot2::element_blank()
+      panel.grid = ggplot2::element_blank()
     )
 }

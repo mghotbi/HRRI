@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2026-09-01" />
+
+<title>HRRI: Holobiont Redox Resilience Index — End-to-End Workflow</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">
+:root {
+--hrri-ink: #1c2321; 
+--hrri-ink-soft: #4a5451; 
+--hrri-rule: #dde3e1; 
+--hrri-bg: #ffffff;
+--hrri-bg-soft: #f7f9f8; 
+--hrri-fe: #8c4a2f; 
+--hrri-mn: #6b5b8a; 
+--hrri-redox: #2f6b6b; 
+--hrri-accent: #2f6b6b;
+--hrri-warn: #9a6a24; 
+--hrri-serif: "Source Serif 4", "Iowan Old Style", Palatino, Georgia, serif;
+--hrri-sans: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI",
+Helvetica, Arial, sans-serif;
+--hrri-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+body {
+font-family: var(--hrri-sans);
+font-size: 16px;
+line-height: 1.65;
+color: var(--hrri-ink);
+background: var(--hrri-bg);
+max-width: 46rem;
+margin: 0 auto;
+padding: 3.5rem 1.5rem 6rem;
+-webkit-font-smoothing: antialiased;
+text-rendering: optimizeLegibility;
+}
+
+h1.title {
+font-family: var(--hrri-serif);
+font-size: 2.15rem;
+font-weight: 600;
+line-height: 1.2;
+letter-spacing: -0.015em;
+color: var(--hrri-ink);
+margin: 0 0 0.4rem;
+padding-bottom: 1.1rem;
+border-bottom: 2px solid var(--hrri-redox);
+}
+h4.author, h4.date {
+font-family: var(--hrri-sans);
+font-size: 0.9rem;
+font-weight: 400;
+color: var(--hrri-ink-soft);
+margin: 0.35rem 0 0;
+}
+h4.author { margin-top: 1rem; }
+
+h1, h2, h3, h4 {
+font-family: var(--hrri-serif);
+font-weight: 600;
+color: var(--hrri-ink);
+letter-spacing: -0.01em;
+}
+h1 { font-size: 1.75rem; margin: 3.2rem 0 1rem; }
+h2 {
+font-size: 1.34rem;
+margin: 2.8rem 0 0.9rem;
+padding-bottom: 0.4rem;
+border-bottom: 1px solid var(--hrri-rule);
+}
+h3 {
+font-size: 1.1rem;
+margin: 2rem 0 0.6rem;
+color: var(--hrri-ink-soft);
+}
+h4 {
+font-size: 0.97rem;
+font-family: var(--hrri-sans);
+text-transform: uppercase;
+letter-spacing: 0.07em;
+color: var(--hrri-ink-soft);
+margin: 1.6rem 0 0.5rem;
+}
+
+p { margin: 0 0 1.15rem; }
+a {
+color: var(--hrri-accent);
+text-decoration: none;
+border-bottom: 1px solid rgba(47, 107, 107, 0.32);
+transition: border-color 0.15s ease;
+}
+a:hover { border-bottom-color: var(--hrri-accent); }
+strong { font-weight: 650; color: var(--hrri-ink); }
+
+#TOC {
+background: var(--hrri-bg-soft);
+border: 1px solid var(--hrri-rule);
+border-radius: 6px;
+padding: 1.2rem 1.5rem;
+margin: 2rem 0 3rem;
+font-size: 0.9rem;
+}
+#TOC ul { list-style: none; padding-left: 1rem; margin: 0.3rem 0; }
+#TOC > ul { padding-left: 0; }
+#TOC a {
+border-bottom: none;
+color: var(--hrri-ink-soft);
+display: block;
+padding: 0.16rem 0;
+}
+#TOC a:hover { color: var(--hrri-accent); }
+
+code {
+font-family: var(--hrri-mono);
+font-size: 0.855em;
+background: var(--hrri-bg-soft);
+color: var(--hrri-fe);
+padding: 0.12em 0.36em;
+border-radius: 3px;
+}
+pre {
+font-family: var(--hrri-mono);
+font-size: 0.83rem;
+line-height: 1.55;
+background: var(--hrri-bg-soft);
+border: 1px solid var(--hrri-rule);
+border-left: 3px solid var(--hrri-redox);
+border-radius: 4px;
+padding: 1rem 1.15rem;
+margin: 1.3rem 0;
+overflow-x: auto;
+}
+pre code {
+background: none;
+color: var(--hrri-ink);
+padding: 0;
+font-size: inherit;
+}
+
+pre:not([class]), pre.r + pre {
+border-left-color: var(--hrri-rule);
+color: var(--hrri-ink-soft);
+background: #fbfcfc;
+}
+
+code span.fu { color: var(--hrri-redox); font-weight: 600; } 
+code span.st { color: var(--hrri-fe); } 
+code span.co { color: #7d8886; font-style: italic; } 
+code span.dv, code span.fl { color: var(--hrri-mn); } 
+code span.kw { color: var(--hrri-ink); font-weight: 600; } 
+
+table {
+width: 100%;
+border-collapse: collapse;
+font-size: 0.88rem;
+font-variant-numeric: tabular-nums;
+margin: 1.6rem 0;
+}
+th {
+font-family: var(--hrri-sans);
+font-size: 0.78rem;
+font-weight: 600;
+text-transform: uppercase;
+letter-spacing: 0.05em;
+color: var(--hrri-ink-soft);
+text-align: left;
+padding: 0.55rem 0.7rem;
+border-bottom: 2px solid var(--hrri-ink);
+}
+td {
+padding: 0.5rem 0.7rem;
+border-bottom: 1px solid var(--hrri-rule);
+}
+tbody tr:nth-child(even) { background: var(--hrri-bg-soft); }
+tbody tr:last-child td { border-bottom: 2px solid var(--hrri-ink); }
+
+td:not(:first-child) { text-align: right; }
+th:not(:first-child) { text-align: right; }
+
+img, .figure {
+max-width: 100%;
+height: auto;
+display: block;
+margin: 1.9rem auto;
+}
+p.caption, .figure p {
+font-size: 0.84rem;
+color: var(--hrri-ink-soft);
+text-align: left;
+margin-top: 0.7rem;
+padding-left: 0.9rem;
+border-left: 2px solid var(--hrri-rule);
+line-height: 1.5;
+}
+
+.math.display {
+margin: 1.8rem 0;
+padding: 1.1rem 0;
+overflow-x: auto;
+border-top: 1px solid var(--hrri-rule);
+border-bottom: 1px solid var(--hrri-rule);
+}
+
+.note, .caution, .method {
+border-radius: 5px;
+padding: 1rem 1.25rem;
+margin: 1.7rem 0;
+font-size: 0.92rem;
+line-height: 1.6;
+}
+.note p:last-child, .caution p:last-child, .method p:last-child { margin-bottom: 0; }
+.note {
+background: #f2f7f7;
+border-left: 3px solid var(--hrri-redox);
+}
+.caution {
+background: #fbf6ec;
+border-left: 3px solid var(--hrri-warn);
+}
+.method {
+background: var(--hrri-bg-soft);
+border: 1px solid var(--hrri-rule);
+border-left: 3px solid var(--hrri-mn);
+}
+.note::before, .caution::before, .method::before {
+display: block;
+font-family: var(--hrri-sans);
+font-size: 0.71rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.1em;
+margin-bottom: 0.45rem;
+}
+.note::before { content: "Note"; color: var(--hrri-redox); }
+.caution::before { content: "Caution"; color: var(--hrri-warn); }
+.method::before { content: "Method note"; color: var(--hrri-mn); }
+
+blockquote {
+margin: 1.6rem 0;
+padding: 0.2rem 0 0.2rem 1.3rem;
+border-left: 3px solid var(--hrri-rule);
+color: var(--hrri-ink-soft);
+font-style: italic;
+}
+
+ul, ol { margin: 0 0 1.15rem; padding-left: 1.4rem; }
+li { margin-bottom: 0.38rem; }
+li::marker { color: var(--hrri-ink-soft); }
+
+hr {
+border: none;
+border-top: 1px solid var(--hrri-rule);
+margin: 3rem 0;
+}
+
+@media print {
+body { max-width: none; padding: 0; font-size: 10.5pt; }
+#TOC { display: none; }
+pre, table, .figure, .note, .caution, .method { page-break-inside: avoid; }
+h1, h2, h3 { page-break-after: avoid; }
+a { border-bottom: none; color: var(--hrri-ink); }
+}
+
+@media (max-width: 640px) {
+body { padding: 2rem 1.1rem 4rem; font-size: 15px; }
+h1.title { font-size: 1.7rem; }
+table { font-size: 0.8rem; }
+pre { font-size: 0.76rem; padding: 0.8rem; }
+}
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">HRRI: Holobiont Redox Resilience Index —
+End-to-End Workflow</h1>
+<h4 class="author">Mitra Ghotbi</h4>
+<a class="author_email" href="mailto:#"><a href="mailto:mitra.ghotbi@gmail.com" class="email">mitra.ghotbi@gmail.com</a></a>
+</address>
+<h4 class="date">2026-09-01</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#in-silico-data-generation" id="toc-in-silico-data-generation"><span class="toc-section-number">2</span> In-silico Data Generation</a>
+<ul>
+<li><a href="#design-identifiers" id="toc-design-identifiers"><span class="toc-section-number">2.1</span> Design identifiers</a></li>
+<li><a href="#soil-geochemical-outputs" id="toc-soil-geochemical-outputs"><span class="toc-section-number">2.2</span> Soil geochemical outputs</a></li>
+<li><a href="#fe-mass-balance-verification" id="toc-fe-mass-balance-verification"><span class="toc-section-number">2.3</span> Fe mass-balance
+verification</a></li>
+<li><a href="#plant-physiology" id="toc-plant-physiology"><span class="toc-section-number">2.4</span> Plant physiology</a></li>
+<li><a href="#microbial-functional-genes" id="toc-microbial-functional-genes"><span class="toc-section-number">2.5</span> Microbial functional
+genes</a></li>
+</ul></li>
+<li><a href="#accessible-capacity-estimation" id="toc-accessible-capacity-estimation"><span class="toc-section-number">3</span> Accessible-Capacity Estimation</a>
+<ul>
+<li><a href="#effect-of-event-timescale-%CF%84" id="toc-effect-of-event-timescale-τ"><span class="toc-section-number">3.1</span> Effect of event timescale
+τ</a></li>
+</ul></li>
+<li><a href="#rri-pipeline" id="toc-rri-pipeline"><span class="toc-section-number">4</span> RRI Pipeline</a>
+<ul>
+<li><a href="#correlation-with-latent-truth" id="toc-correlation-with-latent-truth"><span class="toc-section-number">4.1</span> Correlation with latent
+truth</a></li>
+</ul></li>
+<li><a href="#recovery-signatures" id="toc-recovery-signatures"><span class="toc-section-number">5</span> Recovery Signatures</a></li>
+<li><a href="#disturbance-history-sensitivity" id="toc-disturbance-history-sensitivity"><span class="toc-section-number">6</span> Disturbance-History
+Sensitivity</a></li>
+<li><a href="#session-information" id="toc-session-information"><span class="toc-section-number">7</span> Session Information</a></li>
+<li><a href="#reference" id="toc-reference"><span class="toc-section-number">8</span> Reference</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>The <strong>HRRI</strong> package implements exploratory,
+multi-domain diagnostics for describing how soil–plant–microbiome
+systems buffer and recover from hydroclimatic redox disturbances (Ghotbi
+<em>et al.</em>, 2026). The theoretical framing distinguishes four
+properties. They are not all identifiable from a single observation
+curve:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Property</th>
+<th>Symbol</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Capacity</td>
+<td><span class="math inline">\(Q\)</span></td>
+<td>Total electron-accepting/donating inventory (mmol e⁻ kg⁻¹)</td>
+</tr>
+<tr class="even">
+<td>Connectivity</td>
+<td><span class="math inline">\(\alpha\)</span></td>
+<td>Fraction of <span class="math inline">\(Q\)</span> electrochemically
+accessible to porewater</td>
+</tr>
+<tr class="odd">
+<td>Kinetics</td>
+<td><span class="math inline">\(k\)</span></td>
+<td>Exchange rate (h⁻¹); encodes mineralogical crystallinity</td>
+</tr>
+<tr class="even">
+<td>Memory</td>
+<td><span class="math inline">\(M\)</span></td>
+<td>Legacy of prior disturbances; encoded in Fe-phase composition</td>
+</tr>
+</tbody>
+</table>
+<p>These combine through the accessible-capacity formula:</p>
+<p><span class="math display">\[C_{\rm acc} = \sum_i Q_i \cdot \alpha_i
+\cdot \left(1 - e^{-k_i \tau}\right)\]</span></p>
+<p>and aggregate into the Holobiont Redox Resilience Index:</p>
+<p><span class="math display">\[\mathrm{RRI}_{it} = w_P \cdot P_{it} +
+w_S \cdot S_{it} + w_M \cdot M_{it}\]</span></p>
+<p>where <span class="math inline">\(P\)</span> (Physiology), <span class="math inline">\(S\)</span> (Soil), and <span class="math inline">\(M\)</span> (Microbial) are domain scores.</p>
+<p>This vignette walks through the full workflow from in-silico data
+generation to RRI computation, accessible-capacity estimation, and
+recovery-signature metrics — all driven by
+<code>simulate_redox_holobiont()</code>.</p>
+</div>
+<div id="in-silico-data-generation" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> In-silico Data
+Generation</h1>
+<code>simulate_redox_holobiont()</code> is the package’s master
+simulator. It generates synthetic longitudinal observations across all
+three holobiont domains.
+<div class="caution">
+<p>Only Fe and Mn inventories carry closed-balance checks. Carbon,
+nitrogen, sulfur and oxygen budgets are <strong>not</strong> closed, and
+all rate parameters are illustrative rather than field-calibrated.
+Simulated output supports software demonstration and falsifiable model
+checks, not empirical ecological inference.</p>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(HRRI)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">&quot;HRRI&quot;</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; [1] &#39;0.99.6&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="do">## Compatibility shim -----------------------------------------------------</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="do">## rri_pipeline() is the convenience wrapper around rri_pipeline_st().</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="do">## If the *installed* HRRI predates the wrapper, define an equivalent local</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="do">## version so this vignette knits against either release. Reinstall the</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="do">## package (see README) to use the exported function directly.</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">exists</span>(<span class="st">&quot;rri_pipeline&quot;</span>, <span class="at">mode =</span> <span class="st">&quot;function&quot;</span>)) {</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="fu">message</span>(<span class="st">&quot;Installed HRRI has no rri_pipeline(); using a vignette-local wrapper.&quot;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  rri_pipeline <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">dat =</span> <span class="cn">NULL</span>, <span class="at">soil =</span> <span class="cn">NULL</span>, <span class="at">plant =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>                           <span class="at">micro =</span> <span class="cn">NULL</span>, <span class="at">id =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>                           <span class="at">domain_weights =</span> <span class="fu">c</span>(<span class="at">Physio =</span> <span class="fl">0.4</span>, <span class="at">Soil =</span> <span class="fl">0.35</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>                                              <span class="at">Micro =</span> <span class="fl">0.25</span>), ...) {</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="fu">stopifnot</span>(<span class="fu">setequal</span>(<span class="fu">names</span>(domain_weights),</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>                       <span class="fu">c</span>(<span class="st">&quot;Physio&quot;</span>, <span class="st">&quot;Soil&quot;</span>, <span class="st">&quot;Micro&quot;</span>)))</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>    w <span class="ot">&lt;-</span> domain_weights[<span class="fu">c</span>(<span class="st">&quot;Physio&quot;</span>, <span class="st">&quot;Soil&quot;</span>, <span class="st">&quot;Micro&quot;</span>)]</span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>    w <span class="ot">&lt;-</span> w <span class="sc">/</span> <span class="fu">sum</span>(w)</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>    res <span class="ot">&lt;-</span> <span class="fu">rri_pipeline_st</span>(</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>      <span class="at">ROS_flux =</span> plant, <span class="at">Eh_stability =</span> soil, <span class="at">micro_data =</span> micro, <span class="at">id =</span> id,</span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a>      <span class="at">w1 =</span> <span class="fu">unname</span>(w[<span class="dv">1</span>]), <span class="at">w2 =</span> <span class="fu">unname</span>(w[<span class="dv">2</span>]), <span class="at">w3 =</span> <span class="fu">unname</span>(w[<span class="dv">3</span>]), ...</span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a>    )</span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>    res<span class="sc">$</span>scores <span class="ot">&lt;-</span> res<span class="sc">$</span>row_scores</span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>    res</span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>  }</span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>}</span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="do">## Reproducible 1-cycle flood-drain experiment</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="do">## n_plot=2, n_depth=2, n_plant=3, n_time=30 -&gt; 360 rows</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>sim <span class="ot">&lt;-</span> <span class="fu">simulate_redox_holobiont</span>(</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>  <span class="at">n_plot               =</span> <span class="dv">2</span>,</span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>  <span class="at">n_depth              =</span> <span class="dv">2</span>,</span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a>  <span class="at">n_plant              =</span> <span class="dv">3</span>,</span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>  <span class="at">n_time               =</span> <span class="dv">30</span>,</span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>  <span class="at">p_micro              =</span> <span class="dv">20</span>,</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>  <span class="at">seed                 =</span> <span class="dv">42</span>,</span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a>  <span class="at">scenario             =</span> <span class="st">&quot;flood_drain&quot;</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a>  <span class="at">n_cycles             =</span> <span class="dv">1</span>,</span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a>  <span class="at">disturbance_strength =</span> <span class="fl">0.70</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a>  <span class="at">history_strength     =</span> <span class="fl">0.55</span>,</span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a>  <span class="at">decoupling           =</span> <span class="fl">0.20</span></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a>)</span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a><span class="do">## Top-level structure</span></span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a><span class="fu">names</span>(sim)</span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;id&quot;                   &quot;forcing&quot;              &quot;latent_state&quot;        </span></span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a><span class="co">#&gt;  [4] &quot;soil_data&quot;            &quot;plant_data&quot;           &quot;micro_gene_abundance&quot;</span></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;micro_metat_counts&quot;   &quot;micro_metat_metadata&quot; &quot;micro_traits&quot;        </span></span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a><span class="co">#&gt; [10] &quot;fluxes&quot;               &quot;conservation_checks&quot;  &quot;ROS_flux&quot;            </span></span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a><span class="co">#&gt; [13] &quot;Eh_stability&quot;         &quot;micro_data&quot;           &quot;latent_truth&quot;        </span></span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a><span class="co">#&gt; [16] &quot;graph&quot;                &quot;metadata&quot;</span></span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a><span class="fu">nrow</span>(sim<span class="sc">$</span>id)                   <span class="co"># one row per plot × depth × plant × time</span></span>
+<span id="cb1-54"><a href="#cb1-54" tabindex="-1"></a><span class="co">#&gt; [1] 360</span></span></code></pre></div>
+<div id="design-identifiers" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Design
+identifiers</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">head</span>(sim<span class="sc">$</span>id[, <span class="fu">c</span>(<span class="st">&quot;plot&quot;</span>,<span class="st">&quot;depth&quot;</span>,<span class="st">&quot;plant_id&quot;</span>,<span class="st">&quot;time&quot;</span>,<span class="st">&quot;cycle&quot;</span>,<span class="st">&quot;phase&quot;</span>,<span class="st">&quot;WFPS&quot;</span>)])</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt;   plot depth plant_id time cycle    phase      WFPS</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; 1   P1    D1   Plant1    1     1 baseline 0.6489965</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; 2   P2    D1   Plant1    1     1 baseline 0.5812486</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; 3   P1    D2   Plant1    1     1 baseline 0.7989965</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; 4   P2    D2   Plant1    1     1 baseline 0.7312486</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; 5   P1    D1   Plant2    1     1 baseline 0.6489965</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; 6   P2    D1   Plant2    1     1 baseline 0.5812486</span></span></code></pre></div>
+</div>
+<div id="soil-geochemical-outputs" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Soil geochemical
+outputs</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">head</span>(sim<span class="sc">$</span>soil_data[, <span class="fu">c</span>(<span class="st">&quot;EAC&quot;</span>,<span class="st">&quot;EDC&quot;</span>,<span class="st">&quot;Cacc_EAC&quot;</span>,<span class="st">&quot;Cacc_total&quot;</span>,<span class="st">&quot;Cacc_fraction&quot;</span>,</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                        <span class="st">&quot;FeIII_poor_crystalline_mmol_kg&quot;</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                        <span class="st">&quot;FeII_mmol_kg&quot;</span>,<span class="st">&quot;Eh&quot;</span>,<span class="st">&quot;pH&quot;</span>)])</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt;        EAC      EDC Cacc_EAC Cacc_total Cacc_fraction</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; 1 266.3053 112.0382 110.4102   147.6319     0.3902060</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; 2 298.1276 119.3425 125.0644   162.0105     0.3880769</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; 3 337.3575 141.5196 107.5981   155.6755     0.3250845</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="co">#&gt; 4 356.4329 146.4849 135.8578   188.5886     0.3749889</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; 5 279.5978 104.1723 113.5038   146.9287     0.3828560</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; 6 286.3268 115.3987 116.9400   152.2080     0.3788855</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt;   FeIII_poor_crystalline_mmol_kg FeII_mmol_kg        Eh       pH</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; 1                       67.13652     17.26132 46.285671 6.657346</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; 2                       70.93895     17.91741 79.808173 6.544344</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; 3                       93.28308     24.82342 -4.972318 6.653453</span></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; 4                       99.62313     26.34155 19.816007 6.475302</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; 5                       67.21437     17.18353 56.597319 6.725813</span></span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; 6                       70.95279     17.89324        NA 6.800352</span></span></code></pre></div>
+</div>
+<div id="fe-mass-balance-verification" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Fe mass-balance
+verification</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">## Maximum absolute error should be &lt; 0.01 mmol kg-1</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>sim<span class="sc">$</span>conservation_checks</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt;                                    check        value</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; 1 maximum_absolute_Fe_mass_balance_error 1.136868e-13</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; 2 maximum_absolute_Mn_mass_balance_error 1.421085e-14</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; 3                 minimum_simulated_pool 1.875881e-04</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; 4                 nonnegative_pool_check 1.000000e+00</span></span></code></pre></div>
+</div>
+<div id="plant-physiology" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Plant physiology</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">head</span>(sim<span class="sc">$</span>plant_data[, <span class="fu">c</span>(<span class="st">&quot;SPAD&quot;</span>,<span class="st">&quot;FvFm&quot;</span>,<span class="st">&quot;ROL&quot;</span>,<span class="st">&quot;ROS_load&quot;</span>,<span class="st">&quot;aerenchyma&quot;</span>)])</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt;       SPAD      FvFm       ROL  ROS_load aerenchyma</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; 1 41.64823 0.8149366 0.3165926 0.1962837  0.1169200</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; 2 41.74653 0.8053264 0.3388381 0.1817459  0.1169200</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; 3 43.48615 0.7906729 0.3122744 0.2424776  0.1313152</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; 4 43.51788 0.8002860 0.3490689 0.1989678  0.1169200</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; 5 43.79311 0.8167222 0.3719281 0.1988047  0.2164600</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; 6 42.65734 0.7955340 0.4006285 0.1607862  0.2164600</span></span></code></pre></div>
+</div>
+<div id="microbial-functional-genes" class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> Microbial functional
+genes</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="do">## 18 genes spanning Fe-cycling, denitrification, nitrification,</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="do">## methanogenesis, and sulfur cycling</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">colnames</span>(sim<span class="sc">$</span>micro_gene_abundance)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;mtrA&quot;     &quot;omcS&quot;     &quot;cyc2&quot;     &quot;mnxG&quot;     &quot;narG&quot;     &quot;napA&quot;    </span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;nirK&quot;     &quot;nirS&quot;     &quot;norB&quot;     &quot;nosZ&quot;     &quot;nrfA&quot;     &quot;amoA_AOA&quot;</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; [13] &quot;amoA_AOB&quot; &quot;nxrB&quot;     &quot;dsrA&quot;     &quot;dsrB&quot;     &quot;mcrA&quot;     &quot;pmoA&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">summary</span>(sim<span class="sc">$</span>micro_gene_abundance[, <span class="st">&quot;mcrA&quot;</span>])   <span class="co"># methanogenesis gene</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="co">#&gt;   56717  140868  185855  195049  233312  578788</span></span></code></pre></div>
+</div>
+</div>
+<div id="accessible-capacity-estimation" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Accessible-Capacity
+Estimation</h1>
+<p><code>rri_accessible_capacity()</code> computes <span class="math inline">\(C_{\rm acc}\)</span> for arbitrary mineralogical
+reservoirs with explicitly supplied accessibility and exchange-rate
+parameters. The values below are illustrative model inputs, not
+estimates or validated literature defaults.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="do">## Subset one plot-depth unit for illustration</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>idx <span class="ot">&lt;-</span> sim<span class="sc">$</span>id<span class="sc">$</span>plot <span class="sc">==</span> <span class="st">&quot;P1&quot;</span> <span class="sc">&amp;</span> sim<span class="sc">$</span>id<span class="sc">$</span>depth <span class="sc">==</span> <span class="st">&quot;D1&quot;</span> <span class="sc">&amp;</span> sim<span class="sc">$</span>id<span class="sc">$</span>plant_id <span class="sc">==</span> <span class="st">&quot;Plant1&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>sdf <span class="ot">&lt;-</span> sim<span class="sc">$</span>soil_data[idx, ]</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="do">## Define reservoir specifications</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="do">## (Q_col names must match columns in sdf)</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>res_spec <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="at">reactive_FeIII =</span> <span class="fu">list</span>(</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="at">Q_col =</span> <span class="st">&quot;FeIII_poor_crystalline_mmol_kg&quot;</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="st">&quot;alpha_accept&quot;</span>,   <span class="co"># column name: per-row connectivity</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    <span class="at">k     =</span> <span class="st">&quot;k_accept_h&quot;</span>,     <span class="co"># column name: per-row kinetics</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    <span class="at">type  =</span> <span class="st">&quot;EAC&quot;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  ),</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="at">crystalline_FeIII =</span> <span class="fu">list</span>(</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>    <span class="at">Q_col =</span> <span class="st">&quot;FeIII_crystalline_mmol_kg&quot;</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.20</span>,             <span class="co"># attenuated connectivity for crystalline phases</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">k     =</span> <span class="fl">0.008</span>,            <span class="co"># h-1: slow exchange (goethite/hematite)</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>    <span class="at">type  =</span> <span class="st">&quot;EAC&quot;</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>  ),</span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>  <span class="at">FeII_pool =</span> <span class="fu">list</span>(</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a>    <span class="at">Q_col =</span> <span class="st">&quot;FeII_mmol_kg&quot;</span>,</span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="st">&quot;alpha_donate&quot;</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a>    <span class="at">k     =</span> <span class="st">&quot;k_donate_h&quot;</span>,</span>
+<span id="cb7-24"><a href="#cb7-24" tabindex="-1"></a>    <span class="at">type  =</span> <span class="st">&quot;EDC&quot;</span></span>
+<span id="cb7-25"><a href="#cb7-25" tabindex="-1"></a>  )</span>
+<span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a>)</span>
+<span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a><span class="do">## tau = 24 h (diurnal event timescale)</span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a>cap <span class="ot">&lt;-</span> <span class="fu">rri_accessible_capacity</span>(sdf, res_spec, <span class="at">tau =</span> <span class="dv">24</span>,</span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a>                                <span class="at">normalise =</span> <span class="cn">FALSE</span>, <span class="at">return_components =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="do">## Per-component summary (returned because return_components = TRUE)</span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a>cap<span class="sc">$</span>components</span>
+<span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a><span class="co">#&gt;           reservoir type  alpha k_per_tau_unit saturation_fraction mean_Q</span></span>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="co">#&gt; 1    reactive_FeIII  EAC 0.5061         0.0672              0.7931 62.820</span></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#&gt; 2 crystalline_FeIII  EAC 0.2000         0.0080              0.1747 54.059</span></span>
+<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a><span class="co">#&gt; 3         FeII_pool  EDC 0.4807         0.0453              0.6602 20.946</span></span>
+<span id="cb7-38"><a href="#cb7-38" tabindex="-1"></a><span class="co">#&gt;   mean_contribution</span></span>
+<span id="cb7-39"><a href="#cb7-39" tabindex="-1"></a><span class="co">#&gt; 1            25.339</span></span>
+<span id="cb7-40"><a href="#cb7-40" tabindex="-1"></a><span class="co">#&gt; 2             1.889</span></span>
+<span id="cb7-41"><a href="#cb7-41" tabindex="-1"></a><span class="co">#&gt; 3             6.623</span></span>
+<span id="cb7-42"><a href="#cb7-42" tabindex="-1"></a></span>
+<span id="cb7-43"><a href="#cb7-43" tabindex="-1"></a><span class="do">## Mean accessible vs. total inventory</span></span>
+<span id="cb7-44"><a href="#cb7-44" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Mean Cacc_raw:&quot;</span>, <span class="fu">mean</span>(cap<span class="sc">$</span>cacc_raw, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="st">&quot;mmol e- kg-1</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-45"><a href="#cb7-45" tabindex="-1"></a><span class="co">#&gt; Mean Cacc_raw: 33.85065 mmol e- kg-1</span></span>
+<span id="cb7-46"><a href="#cb7-46" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Mean fraction :&quot;</span>, <span class="fu">mean</span>(cap<span class="sc">$</span>cacc_fraction, <span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-47"><a href="#cb7-47" tabindex="-1"></a><span class="co">#&gt; Mean fraction : 0.2455965</span></span>
+<span id="cb7-48"><a href="#cb7-48" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&quot;ck_limited&quot;</span> <span class="sc">%in%</span> <span class="fu">names</span>(cap) <span class="sc">&amp;&amp;</span> <span class="fu">length</span>(cap<span class="sc">$</span>ck_limited)) {</span>
+<span id="cb7-49"><a href="#cb7-49" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;CK-limited rows:&quot;</span>, <span class="fu">sum</span>(cap<span class="sc">$</span>ck_limited, <span class="at">na.rm=</span><span class="cn">TRUE</span>),</span>
+<span id="cb7-50"><a href="#cb7-50" tabindex="-1"></a>      <span class="st">&quot;/&quot;</span>, <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(cap<span class="sc">$</span>ck_limited)), <span class="st">&quot;classified rows</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-51"><a href="#cb7-51" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb7-52"><a href="#cb7-52" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;CK-limited classification is not returned by this HRRI version.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb7-53"><a href="#cb7-53" tabindex="-1"></a>}</span>
+<span id="cb7-54"><a href="#cb7-54" tabindex="-1"></a><span class="co">#&gt; CK-limited rows: 0 / 0 classified rows</span></span></code></pre></div>
+<div id="effect-of-event-timescale-τ" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Effect of event
+timescale τ</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>tau_vals <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">6</span>, <span class="dv">24</span>, <span class="dv">72</span>, <span class="dv">168</span>, <span class="dv">720</span>)   <span class="co"># 1 h to 30 d</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>cacc_tau <span class="ot">&lt;-</span> <span class="fu">sapply</span>(tau_vals, <span class="cf">function</span>(tt) {</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  r <span class="ot">&lt;-</span> <span class="fu">rri_accessible_capacity</span>(sdf, res_spec, <span class="at">tau =</span> tt, <span class="at">normalise =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="fu">mean</span>(r<span class="sc">$</span>cacc_raw, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>})</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">tau_h =</span> tau_vals, <span class="at">Cacc_mean =</span> <span class="fu">round</span>(cacc_tau, <span class="dv">2</span>))</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt;   tau_h Cacc_mean</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; 1     1      2.61</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; 2     6     13.47</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; 3    24     33.85</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; 4    72     45.84</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 5   168     49.84</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 6   720     52.63</span></span></code></pre></div>
+</div>
+</div>
+<div id="rri-pipeline" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> RRI Pipeline</h1>
+<p><code>rri_pipeline()</code> integrates available observed domains
+into an exploratory composite. The simulator’s hidden architecture
+columns are excluded. We use explicit measured anchors to orient
+otherwise arbitrary PCA axes.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>rri_out <span class="ot">&lt;-</span> <span class="fu">rri_pipeline</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">plant        =</span> sim<span class="sc">$</span>ROS_flux,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">soil         =</span> sim<span class="sc">$</span>Eh_stability,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">micro        =</span> <span class="fu">log1p</span>(sim<span class="sc">$</span>micro_gene_abundance),</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="at">id           =</span> sim<span class="sc">$</span>id,</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  <span class="at">mode         =</span> <span class="st">&quot;snapshot&quot;</span>,</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>  <span class="at">scaling      =</span> <span class="st">&quot;pnorm&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="at">direction_anchor_phys =</span> <span class="st">&quot;FvFm&quot;</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">direction_anchor_soil =</span> <span class="st">&quot;Eh&quot;</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>  <span class="at">direction_anchor_micro =</span> <span class="st">&quot;mtrA&quot;</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="at">domain_weights =</span> <span class="fu">c</span>(<span class="at">Physio=</span><span class="fl">0.35</span>, <span class="at">Soil=</span><span class="fl">0.40</span>, <span class="at">Micro=</span><span class="fl">0.25</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>)</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="do">## Align once and reuse this identifier-complete table downstream.</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a>rri_scored <span class="ot">&lt;-</span> <span class="fu">attach_hrri_ids</span>(rri_out<span class="sc">$</span>row_scores, sim<span class="sc">$</span>id)</span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="fu">attr</span>(rri_scored, <span class="st">&quot;id_alignment&quot;</span>)</span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; [1] &quot;observation keys&quot;</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="fu">summary</span>(rri_scored<span class="sc">$</span>RRI)</span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt;  0.2229  0.3861  0.5100  0.5124  0.6413  0.8111</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="fu">head</span>(rri_scored[, <span class="fu">c</span>(<span class="st">&quot;plot&quot;</span>, <span class="st">&quot;depth&quot;</span>, <span class="st">&quot;plant_id&quot;</span>, <span class="st">&quot;time&quot;</span>,</span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a>                    <span class="st">&quot;RRI&quot;</span>, <span class="st">&quot;Physio&quot;</span>, <span class="st">&quot;Soil&quot;</span>, <span class="st">&quot;Micro&quot;</span>)])</span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt;   plot depth plant_id time       RRI    Physio      Soil     Micro</span></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt; 1   P1    D1   Plant1    1 0.5325589 0.4003217 0.8663227 0.1836689</span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; 2   P2    D1   Plant1    1 0.6679582 0.4420314 0.7785811 0.8072591</span></span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#&gt; 3   P1    D2   Plant1    1 0.4450769 0.4103019 0.2531689 0.8008149</span></span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a><span class="co">#&gt; 4   P2    D2   Plant1    1 0.4132135 0.5230932 0.1604719 0.6637687</span></span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co">#&gt; 5   P1    D1   Plant2    1 0.6320338 0.4016891 0.8255425 0.6449023</span></span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="co">#&gt; 6   P2    D1   Plant2    1 0.5843764 0.4715212 0.8202560 0.3649661</span></span></code></pre></div>
+<div class="method">
+<p>Alignment uses complete observation keys, or a shared unique
+<code>row_id</code> when available. If neither is returned the pipeline
+must preserve input row order — matching row counts alone do
+<strong>not</strong> establish alignment. Shared identifier columns are
+checked for conflicts rather than silently overwritten.</p>
+</div>
+<div id="correlation-with-latent-truth" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Correlation with
+latent truth</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="do">## rri_scored is aligned to sim$id, and hence to its latent_truth vector.</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>truth <span class="ot">&lt;-</span> sim<span class="sc">$</span>latent_truth</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.numeric</span>(truth) <span class="sc">||</span> <span class="fu">length</span>(truth) <span class="sc">!=</span> <span class="fu">nrow</span>(rri_scored)) {</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">&quot;latent_truth must be a numeric vector with one value per sim$id row.&quot;</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>}</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>ok <span class="ot">&lt;-</span> <span class="fu">is.finite</span>(rri_scored<span class="sc">$</span>RRI) <span class="sc">&amp;</span> <span class="fu">is.finite</span>(truth)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">sum</span>(ok) <span class="sc">&gt;=</span> <span class="dv">3</span><span class="dt">L</span> <span class="sc">&amp;&amp;</span> stats<span class="sc">::</span><span class="fu">sd</span>(rri_scored<span class="sc">$</span>RRI[ok]) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>    stats<span class="sc">::</span><span class="fu">sd</span>(truth[ok]) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  r_val <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">cor</span>(rri_scored<span class="sc">$</span>RRI[ok], truth[ok])</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>  r_val <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">&quot;Correlation unavailable: too few finite pairs or a constant vector.</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a>}</span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;r(RRI, latent truth):&quot;</span>, <span class="fu">round</span>(r_val, <span class="dv">3</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt; r(RRI, latent truth): 0.452</span></span></code></pre></div>
+<p>This is a within-simulation association, not independent predictive
+validation or evidence that the individual latent parameters have been
+identified.</p>
+</div>
+</div>
+<div id="recovery-signatures" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Recovery
+Signatures</h1>
+<p><code>rri_recovery_metrics()</code> summarizes the RRI trajectory
+around a specified disturbance window. The output fields depend on the
+installed package version; the complete returned table is displayed
+below without assuming legacy names. A score minimum or persistent
+departure alone does not establish biochemical pathway truncation or
+alternative routing. Those interpretations require independent process
+evidence.</p>
+<p>The function requires <strong>one row per time point per
+group</strong>. Because the pipeline returns one row per plant, we must
+first average RRI across plants within each plot × depth × time cell
+before calling recovery metrics.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="do">## Step 1 — use the aligned score table created in the pipeline chunk.</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="do">## Step 2 — aggregate to one row per plot × depth × time (mean over plants).</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="do">## The data-frame method avoids formula-level complete-case filtering.</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="do">## An all-missing group remains NA; it is not replaced by zero.</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>rri_agg <span class="ot">&lt;-</span> stats<span class="sc">::</span><span class="fu">aggregate</span>(</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="at">x =</span> rri_scored[<span class="st">&quot;RRI&quot;</span>],</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>  <span class="at">by =</span> rri_scored[<span class="fu">c</span>(<span class="st">&quot;plot&quot;</span>, <span class="st">&quot;depth&quot;</span>, <span class="st">&quot;time&quot;</span>)],</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>  <span class="at">FUN =</span> finite_mean</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>)</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>rri_agg <span class="ot">&lt;-</span> rri_agg[<span class="fu">order</span>(rri_agg<span class="sc">$</span>plot, rri_agg<span class="sc">$</span>depth, rri_agg<span class="sc">$</span>time), ,</span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>                   drop <span class="ot">=</span> <span class="cn">FALSE</span>]</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="fu">rownames</span>(rri_agg) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="sc">!</span><span class="fu">anyDuplicated</span>(rri_agg[<span class="fu">c</span>(<span class="st">&quot;plot&quot;</span>, <span class="st">&quot;depth&quot;</span>, <span class="st">&quot;time&quot;</span>)]))</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="do">## Step 3 — extract recovery signatures.</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="do">## Pass rri_agg directly (group columns are already inside it; no id= needed).</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="fu">rri_recovery_metrics</span>(</span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a>  <span class="at">res           =</span> rri_agg,</span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a>  <span class="at">time_col      =</span> <span class="st">&quot;time&quot;</span>,</span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a>  <span class="at">group_cols    =</span> <span class="fu">c</span>(<span class="st">&quot;plot&quot;</span>,<span class="st">&quot;depth&quot;</span>),</span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a>  <span class="at">perturb_start =</span> <span class="dv">8</span>,</span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a>  <span class="at">perturb_end   =</span> <span class="dv">18</span>,</span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a>  <span class="at">rri_col       =</span> <span class="st">&quot;RRI&quot;</span>,</span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a>  <span class="at">forcing_col   =</span> <span class="cn">NULL</span>   <span class="co"># no measured forcing supplied</span></span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a>)</span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a></span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.data.frame</span>(metrics) <span class="sc">||</span> <span class="fu">nrow</span>(metrics) <span class="sc">==</span> <span class="dv">0</span><span class="dt">L</span>) {</span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">&quot;rri_recovery_metrics() returned no nonempty recovery data frame.&quot;</span>)</span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a>}</span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a><span class="fu">names</span>(metrics)</span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;plot&quot;                    &quot;depth&quot;                  </span></span>
+<span id="cb11-32"><a href="#cb11-32" tabindex="-1"></a><span class="co">#&gt;  [3] &quot;baseline_rri&quot;            &quot;min_rri&quot;                </span></span>
+<span id="cb11-33"><a href="#cb11-33" tabindex="-1"></a><span class="co">#&gt;  [5] &quot;depth_min&quot;               &quot;depth_min_frac&quot;         </span></span>
+<span id="cb11-34"><a href="#cb11-34" tabindex="-1"></a><span class="co">#&gt;  [7] &quot;tau_lag&quot;                 &quot;k_recovery&quot;             </span></span>
+<span id="cb11-35"><a href="#cb11-35" tabindex="-1"></a><span class="co">#&gt;  [9] &quot;t_half&quot;                  &quot;overshoot&quot;              </span></span>
+<span id="cb11-36"><a href="#cb11-36" tabindex="-1"></a><span class="co">#&gt; [11] &quot;overshoot_frac&quot;          &quot;H_hysteresis&quot;           </span></span>
+<span id="cb11-37"><a href="#cb11-37" tabindex="-1"></a><span class="co">#&gt; [13] &quot;H_axis&quot;                  &quot;temporal_asymmetry&quot;     </span></span>
+<span id="cb11-38"><a href="#cb11-38" tabindex="-1"></a><span class="co">#&gt; [15] &quot;incomplete_return&quot;       &quot;incomplete_return_frac&quot; </span></span>
+<span id="cb11-39"><a href="#cb11-39" tabindex="-1"></a><span class="co">#&gt; [17] &quot;displaced_plateau_flag&quot;  &quot;displaced_plateau_level&quot;</span></span>
+<span id="cb11-40"><a href="#cb11-40" tabindex="-1"></a><span class="co">#&gt; [19] &quot;alt_routing_flag&quot;        &quot;alt_routing_level&quot;      </span></span>
+<span id="cb11-41"><a href="#cb11-41" tabindex="-1"></a><span class="co">#&gt; [21] &quot;n_pre&quot;                   &quot;n_perturb&quot;              </span></span>
+<span id="cb11-42"><a href="#cb11-42" tabindex="-1"></a><span class="co">#&gt; [23] &quot;n_recovery&quot;              &quot;n_missing&quot;              </span></span>
+<span id="cb11-43"><a href="#cb11-43" tabindex="-1"></a><span class="co">#&gt; [25] &quot;n_fit&quot;                   &quot;fit_status&quot;             </span></span>
+<span id="cb11-44"><a href="#cb11-44" tabindex="-1"></a><span class="co">#&gt; [27] &quot;fit_r_squared&quot;           &quot;fit_start_time&quot;         </span></span>
+<span id="cb11-45"><a href="#cb11-45" tabindex="-1"></a><span class="co">#&gt; [29] &quot;final_observation_time&quot;  &quot;hysteresis_status&quot;      </span></span>
+<span id="cb11-46"><a href="#cb11-46" tabindex="-1"></a><span class="co">#&gt; [31] &quot;k&quot;                       &quot;H&quot;                      </span></span>
+<span id="cb11-47"><a href="#cb11-47" tabindex="-1"></a><span class="co">#&gt; [33] &quot;I&quot;                       &quot;H_abs&quot;                  </span></span>
+<span id="cb11-48"><a href="#cb11-48" tabindex="-1"></a><span class="co">#&gt; [35] &quot;H_norm&quot;                  &quot;I_norm&quot;</span></span>
+<span id="cb11-49"><a href="#cb11-49" tabindex="-1"></a>metrics</span>
+<span id="cb11-50"><a href="#cb11-50" tabindex="-1"></a><span class="co">#&gt;   plot depth baseline_rri   min_rri  depth_min depth_min_frac tau_lag</span></span>
+<span id="cb11-51"><a href="#cb11-51" tabindex="-1"></a><span class="co">#&gt; 1   P1    D1    0.5587637 0.5045502 0.05421348     0.09702398       2</span></span>
+<span id="cb11-52"><a href="#cb11-52" tabindex="-1"></a><span class="co">#&gt; 2   P1    D2    0.3290230 0.2886692 0.04035387     0.12264754       2</span></span>
+<span id="cb11-53"><a href="#cb11-53" tabindex="-1"></a><span class="co">#&gt; 3   P2    D1    0.5893014 0.6032840 0.00000000     0.00000000      NA</span></span>
+<span id="cb11-54"><a href="#cb11-54" tabindex="-1"></a><span class="co">#&gt; 4   P2    D2    0.3430854 0.2762618 0.06682359     0.19477249       2</span></span>
+<span id="cb11-55"><a href="#cb11-55" tabindex="-1"></a><span class="co">#&gt;   k_recovery t_half overshoot overshoot_frac H_hysteresis      H_axis</span></span>
+<span id="cb11-56"><a href="#cb11-56" tabindex="-1"></a><span class="co">#&gt; 1         NA     NA 0.1742331      0.3118190           NA unavailable</span></span>
+<span id="cb11-57"><a href="#cb11-57" tabindex="-1"></a><span class="co">#&gt; 2         NA     NA 0.1379898      0.4193924           NA unavailable</span></span>
+<span id="cb11-58"><a href="#cb11-58" tabindex="-1"></a><span class="co">#&gt; 3         NA     NA 0.1621001      0.2750716           NA unavailable</span></span>
+<span id="cb11-59"><a href="#cb11-59" tabindex="-1"></a><span class="co">#&gt; 4         NA     NA 0.1794376      0.5230114           NA unavailable</span></span>
+<span id="cb11-60"><a href="#cb11-60" tabindex="-1"></a><span class="co">#&gt;   temporal_asymmetry incomplete_return incomplete_return_frac</span></span>
+<span id="cb11-61"><a href="#cb11-61" tabindex="-1"></a><span class="co">#&gt; 1                  1         0.1579226              0.2826286</span></span>
+<span id="cb11-62"><a href="#cb11-62" tabindex="-1"></a><span class="co">#&gt; 2                  1         0.0954700              0.2901621</span></span>
+<span id="cb11-63"><a href="#cb11-63" tabindex="-1"></a><span class="co">#&gt; 3                 NA         0.1470789              0.2495817</span></span>
+<span id="cb11-64"><a href="#cb11-64" tabindex="-1"></a><span class="co">#&gt; 4                  1         0.1206503              0.3516627</span></span>
+<span id="cb11-65"><a href="#cb11-65" tabindex="-1"></a><span class="co">#&gt;   displaced_plateau_flag displaced_plateau_level alt_routing_flag</span></span>
+<span id="cb11-66"><a href="#cb11-66" tabindex="-1"></a><span class="co">#&gt; 1                   TRUE               0.7166863               NA</span></span>
+<span id="cb11-67"><a href="#cb11-67" tabindex="-1"></a><span class="co">#&gt; 2                  FALSE                      NA               NA</span></span>
+<span id="cb11-68"><a href="#cb11-68" tabindex="-1"></a><span class="co">#&gt; 3                   TRUE               0.7363803               NA</span></span>
+<span id="cb11-69"><a href="#cb11-69" tabindex="-1"></a><span class="co">#&gt; 4                   TRUE               0.4637357               NA</span></span>
+<span id="cb11-70"><a href="#cb11-70" tabindex="-1"></a><span class="co">#&gt;   alt_routing_level n_pre n_perturb n_recovery n_missing n_fit</span></span>
+<span id="cb11-71"><a href="#cb11-71" tabindex="-1"></a><span class="co">#&gt; 1                NA     7        11         12         0     0</span></span>
+<span id="cb11-72"><a href="#cb11-72" tabindex="-1"></a><span class="co">#&gt; 2                NA     7        11         12         0     0</span></span>
+<span id="cb11-73"><a href="#cb11-73" tabindex="-1"></a><span class="co">#&gt; 3                NA     7        11         12         0     0</span></span>
+<span id="cb11-74"><a href="#cb11-74" tabindex="-1"></a><span class="co">#&gt; 4                NA     7        11         12         0     0</span></span>
+<span id="cb11-75"><a href="#cb11-75" tabindex="-1"></a><span class="co">#&gt;                       fit_status fit_r_squared fit_start_time</span></span>
+<span id="cb11-76"><a href="#cb11-76" tabindex="-1"></a><span class="co">#&gt; 1 insufficient_positive_deficits            NA             18</span></span>
+<span id="cb11-77"><a href="#cb11-77" tabindex="-1"></a><span class="co">#&gt; 2 insufficient_positive_deficits            NA             18</span></span>
+<span id="cb11-78"><a href="#cb11-78" tabindex="-1"></a><span class="co">#&gt; 3          no_resolvable_decline            NA             NA</span></span>
+<span id="cb11-79"><a href="#cb11-79" tabindex="-1"></a><span class="co">#&gt; 4 insufficient_positive_deficits            NA             18</span></span>
+<span id="cb11-80"><a href="#cb11-80" tabindex="-1"></a><span class="co">#&gt;   final_observation_time hysteresis_status  k  H         I H_abs H_norm</span></span>
+<span id="cb11-81"><a href="#cb11-81" tabindex="-1"></a><span class="co">#&gt; 1                     30     not_evaluated NA NA 0.1579226    NA     NA</span></span>
+<span id="cb11-82"><a href="#cb11-82" tabindex="-1"></a><span class="co">#&gt; 2                     30     not_evaluated NA NA 0.0954700    NA     NA</span></span>
+<span id="cb11-83"><a href="#cb11-83" tabindex="-1"></a><span class="co">#&gt; 3                     30     not_evaluated NA NA 0.1470789    NA     NA</span></span>
+<span id="cb11-84"><a href="#cb11-84" tabindex="-1"></a><span class="co">#&gt; 4                     30     not_evaluated NA NA 0.1206503    NA     NA</span></span>
+<span id="cb11-85"><a href="#cb11-85" tabindex="-1"></a><span class="co">#&gt;      I_norm</span></span>
+<span id="cb11-86"><a href="#cb11-86" tabindex="-1"></a><span class="co">#&gt; 1 0.2826286</span></span>
+<span id="cb11-87"><a href="#cb11-87" tabindex="-1"></a><span class="co">#&gt; 2 0.2901621</span></span>
+<span id="cb11-88"><a href="#cb11-88" tabindex="-1"></a><span class="co">#&gt; 3 0.2495817</span></span>
+<span id="cb11-89"><a href="#cb11-89" tabindex="-1"></a><span class="co">#&gt; 4 0.3516627</span></span></code></pre></div>
+<p>With <code>forcing_col = NULL</code>, a returned hysteresis-related
+field must be interpreted according to the installed function’s
+documented definition; it does not demonstrate a measured
+forcing–response loop. The limits 8 and 18 are example analysis
+boundaries, in the units of <code>time</code>; verify them against the
+simulator’s event schedule before interpreting recovery rates.</p>
+</div>
+<div id="disturbance-history-sensitivity" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Disturbance-History
+Sensitivity</h1>
+<p>Repeated-cycle simulations can test consequences of this simulator’s
+stated rules. They do not establish a universal mineralogical ratchet.
+In this version, crystallisation is continuous rather than restricted to
+reoxidation events, and end-state EAC is not constrained to decline
+monotonically with cycle count.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>history <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, <span class="fu">lapply</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="cf">function</span>(nc) {</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  z <span class="ot">&lt;-</span> <span class="fu">simulate_redox_holobiont</span>(<span class="at">n_plot=</span><span class="dv">1</span>, <span class="at">n_depth=</span><span class="dv">1</span>, <span class="at">n_plant=</span><span class="dv">2</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>    <span class="at">n_time=</span><span class="dv">30</span>, <span class="at">p_micro=</span><span class="dv">5</span>, <span class="at">seed=</span><span class="dv">99</span>, <span class="at">n_cycles=</span>nc,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>    <span class="at">disturbance_strength=</span><span class="fl">0.70</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  keep <span class="ot">&lt;-</span> z<span class="sc">$</span>id<span class="sc">$</span>plant_id<span class="sc">==</span><span class="st">&quot;Plant1&quot;</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="fu">data.frame</span>(<span class="at">n_cycles=</span>nc,</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>    <span class="at">EAC_end=</span><span class="fu">tail</span>(z<span class="sc">$</span>soil_data<span class="sc">$</span>EAC[keep],<span class="dv">1</span>),</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>    <span class="at">memory_end=</span><span class="fu">tail</span>(z<span class="sc">$</span>latent_state<span class="sc">$</span>memory[keep],<span class="dv">1</span>))</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>}))</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>history</span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="co">#&gt;   n_cycles  EAC_end memory_end</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="co">#&gt; 1        1 301.2744          0</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a><span class="co">#&gt; 2        2 296.6573          0</span></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; 3        3 292.8844          0</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; 4        4 290.9509          0</span></span></code></pre></div>
+<p>Interpret the direction and magnitude as a model sensitivity result.
+An empirical claim about hydrological memory requires independent
+observations.</p>
+</div>
+<div id="session-information" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Session
+Information</h1>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; R version 4.5.1 (2025-06-13)</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; Platform: aarch64-apple-darwin20</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; Running under: macOS Tahoe 26.5.1</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; Matrix products: default</span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib </span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; locale:</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; time zone: Europe/Berlin</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; tzcode source: internal</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; attached base packages:</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; other attached packages:</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; [1] HRRI_0.99.6</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="co">#&gt;  [1] vctrs_0.7.3        cli_3.6.6          knitr_1.51         rlang_1.3.0       </span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="co">#&gt;  [5] xfun_0.58          otel_0.2.0         purrr_1.2.2        generics_0.1.4    </span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="co">#&gt;  [9] S7_0.2.2           jsonlite_2.0.0     glue_1.8.1         htmltools_0.5.9   </span></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="co">#&gt; [13] sass_0.4.10        scales_1.4.0       rmarkdown_2.31     grid_4.5.1        </span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="co">#&gt; [17] tibble_3.3.1       evaluate_1.0.5     jquerylib_0.1.4    fastmap_1.2.0     </span></span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a><span class="co">#&gt; [21] yaml_2.3.12        lifecycle_1.0.5    compiler_4.5.1     igraph_2.3.3      </span></span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a><span class="co">#&gt; [25] dplyr_1.2.1        RColorBrewer_1.1-3 pkgconfig_2.0.3    tidyr_1.3.2       </span></span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a><span class="co">#&gt; [29] rstudioapi_0.18.0  farver_2.1.2       digest_0.6.39      R6_2.6.1          </span></span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a><span class="co">#&gt; [33] tidyselect_1.2.1   pillar_1.11.1      magrittr_2.0.5     bslib_0.11.0      </span></span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a><span class="co">#&gt; [37] tools_4.5.1        gtable_0.3.6       ggplot2_4.0.3      cachem_1.1.0</span></span></code></pre></div>
+</div>
+<div id="reference" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Reference</h1>
+<p>Ghotbi, M., Ghotbi, M., Stukenbrock, E. H. (2026). Ghotbi, M.,
+Ghotbi, M., Stukenbrock, E. H. (2026). <em>HRRI: a direction-aware R
+framework for quantifying soil–plant–microbiome redox resilience across
+hydroclimatic disturbance events</em> Manuscript submitted. Manuscript
+submitted.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

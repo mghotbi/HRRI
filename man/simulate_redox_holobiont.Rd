@@ -2,188 +2,167 @@
 % Please edit documentation in R/simulate_redox_holobiont.R
 \name{simulate_redox_holobiont}
 \alias{simulate_redox_holobiont}
-\title{Simulate a holobiont redox dataset with spatio-temporal structure}
+\title{Simulate illustrative soil-plant-microbe redox trajectories}
 \usage{
 simulate_redox_holobiont(
   n_plot = 4,
   n_depth = 2,
-  n_plant = 5,
-  n_time = 15,
+  n_plant = 6,
+  n_time = 30,
   p_micro = 60,
-  p_gene = 36,
   seed = 123,
-  include_graph = FALSE,
-  depth_labels = NULL,
-  gene_mode = c("both", "abundance", "metat", "none"),
-  disturbance_strength = 0.4,
+  scenario = c("flood_drain", "drought_rewet"),
+  n_cycles = 2L,
+  disturbance_strength = 0.65,
   disturbance_center = NULL,
-  disturbance_width = 0.1,
+  disturbance_width = 0.08,
   seasonal_amp = 0.08,
   seasonal_phase = 0,
-  stochastic_reassembly = TRUE,
-  decoupling = 0.3,
-  zero_inflation = 0.4,
-  MNAR_strength = 0.4,
-  Eh_dropout_threshold = 0.25,
+  history_strength = 0.55,
+  rescue = c("none", "capacity", "connectivity", "kinetics"),
+  event_tau_h = 24,
+  sequencing_depth = 2e+05,
+  metat_depth = 5e+05,
+  decoupling = 0.25,
+  zero_inflation = 0.2,
+  MNAR_strength = 0.3,
+  Eh_dropout_threshold = 100,
   micro_mean = 8,
   micro_slope = 3,
   micro_lambda_min = 1e-08,
   micro_lambda_max = 1e+06,
-  metat_noise = 0.25
+  stochastic_reassembly = TRUE,
+  include_graph = FALSE,
+  depth_labels = NULL
 )
 }
 \arguments{
-\item{n_plot}{Integer >= 1. Number of plots.}
+\item{n_plot}{Positive integer. Number of plots (spatial replicates).}
 
-\item{n_depth}{Integer >= 1. Number of soil depth strata.}
+\item{n_depth}{Positive integer. Number of depth strata per plot.}
 
-\item{n_plant}{Integer >= 1. Number of plants per plot-depth combination.}
+\item{n_plant}{Positive integer. Number of plants per plot-depth unit.
+Must be \eqn{\geq 1}. Plants contribute to ROL and ROS signals.}
 
-\item{n_time}{Integer >= 2. Number of time points per plant.}
+\item{n_time}{Positive integer \eqn{\geq 4}. Number of daily time steps.}
 
-\item{p_micro}{Integer >= 1. Number of microbial abundance features.}
+\item{p_micro}{Positive integer. Number of ASV-like microbial taxonomic
+features generated alongside functional gene data.}
 
-\item{p_gene}{Integer >= 1. Number of microbial functional gene features.}
+\item{seed}{Integer or \code{NULL}. Random seed passed to
+\code{\link[base]{set.seed}} before simulation; \code{NULL} means
+no seeding (non-reproducible). All manuscript figures use explicit seeds.}
 
-\item{seed}{Optional integer seed. Use \code{NULL} for stochastic runs.}
+\item{scenario}{Character; one of \code{"flood_drain"} (default) or
+\code{"drought_rewet"}. Determines the shape of the hydrological
+forcing function and the sign of the dominant redox transition.}
 
-\item{include_graph}{Logical. If \code{TRUE} and \pkg{igraph} is available,
-returns a simulated microbial network.}
+\item{n_cycles}{Positive integer. Number of forcing pulses.}
 
-\item{depth_labels}{Optional character vector of length \code{n_depth}. If
-\code{NULL}, depths are labelled \code{"D1"}, \code{"D2"}, ...}
+\item{disturbance_strength}{Numeric in \eqn{[0, 1]}. Event severity.
+Controls peak WFPS, anaerobic volume fraction, and the amplitude of
+soil redox transitions.}
 
-\item{gene_mode}{Character. One of \code{"both"}, \code{"abundance"},
-\code{"metat"}, or \code{"none"}. Controls whether synthetic functional
-gene coverage, MetaT expression, both, or neither are returned.}
+\item{disturbance_center}{Numeric or \code{NULL}. Time step of the first
+disturbance event centre. Defaults to evenly spaced centres from 0.22 to 0.78 of n_time.}
 
-\item{disturbance_strength}{Numeric in \code{[0, 1]}. Magnitude of the
-disturbance pulse.}
+\item{disturbance_width}{Numeric in \eqn{(0, 1)}. Width of each Gaussian
+forcing pulse as a fraction of \code{n_time}.}
 
-\item{disturbance_center}{Optional numeric. If \code{NULL}, the disturbance
-is centred at the median time point.}
+\item{seasonal_amp}{Numeric \eqn{\geq 0}. Amplitude of additive seasonal
+forcing overlaid on the hydrological disturbance signal.}
 
-\item{disturbance_width}{Numeric > 0. Pulse width as a fraction of the season
-length.}
+\item{seasonal_phase}{Numeric. Phase offset (radians) of the seasonal forcing.}
 
-\item{seasonal_amp}{Numeric >= 0. Amplitude of seasonal forcing.}
+\item{history_strength}{Numeric in \eqn{[0, 1]}. Scales the synthetic
+memory state at initialization and during disturbance. That state affects
+Fe crystallisation, accessibility and generated microbial descriptors; it
+is not a measured fraction of community carry-over.}
 
-\item{seasonal_phase}{Numeric. Phase shift for seasonal forcing in radians.}
+\item{rescue}{Character; one of \code{"none"} (default), \code{"capacity"},
+\code{"connectivity"}, or \code{"kinetics"}. Simulates a targeted
+scenario modification (capacity at initialization; alpha/k throughout):
+\describe{
+\item{\code{"capacity"}}{Fe(III) inventory replenishment.}
+\item{\code{"connectivity"}}{Increases alpha_accept and alpha_donate in selected Fe/Mn/N/S/C rate expressions and calculated accessible capacity. Effects on any recovery outcome must be evaluated, not assumed beneficial.}
+\item{\code{"kinetics"}}{Increases both calculated accessible-capacity rates. k_accept additionally gates crystalline-Fe reduction; k_donate has no direct process-rate gate. This intervention is not a general exchange-kinetics model.}
+}}
 
-\item{stochastic_reassembly}{Logical. If \code{TRUE}, microbial counts include
-a stochastic reassembly component.}
+\item{event_tau_h}{Positive numeric. Disturbance timescale \eqn{\tau} (h)
+used internally by the accessible-capacity calculation; passed to
+\code{\link{rri_accessible_capacity}}.}
 
-\item{decoupling}{Numeric in \code{[0, 1]}. Cross-domain decoupling. Higher
-values weaken deterministic coupling between latent redox state and
-observed domains.}
+\item{sequencing_depth}{Positive numeric. Mean library size for taxonomic
+count data (\code{micro_data} block), modelled as a negative-binomial
+process.}
 
-\item{zero_inflation}{Numeric in \code{[0, 1]}. Probability that a microbial
-abundance entry is set to zero.}
+\item{metat_depth}{Positive numeric. Mean library size for metatranscript
+counts (\code{micro_metat_counts}), modelled separately from taxonomic
+counts with a higher biological variance.}
 
-\item{MNAR_strength}{Numeric in \code{[0, 1]}. Strength of missing-not-at-random
-Eh dropout under strongly reduced states.}
+\item{decoupling}{Numeric in \eqn{[0, 1]}. Cross-domain stochastic
+decoupling parameter for selected noise terms; other stochastic terms remain.}
 
-\item{Eh_dropout_threshold}{Numeric in \code{[0, 1]}. Latent redox threshold
-below which Eh dropout can occur.}
+\item{zero_inflation}{Numeric in \eqn{[0, 1]}. Structural-zero probability
+for taxonomic count features (simulates taxa absent from some samples).}
 
-\item{micro_mean}{Numeric > 0. Baseline mean intensity for microbial counts.}
+\item{MNAR_strength}{Numeric in \eqn{[0, 1]}. Maximum missing-not-at-random
+(MNAR) probability for Eh values under strongly reducing conditions.}
 
-\item{micro_slope}{Numeric >= 0. Coupling strength between reduced redox
-state and microbial abundance.}
+\item{Eh_dropout_threshold}{Numeric. Eh (mV) below which the MNAR dropout
+probability begins to rise; is an artificial missingness design, not a platinum-electrode detection limit.}
 
-\item{micro_lambda_min}{Numeric > 0. Lower bound for microbial Poisson
-intensity.}
+\item{micro_mean, micro_slope, micro_lambda_min, micro_lambda_max}{Backward-compatible parameters controlling mean and slope of the
+log-linear model for taxonomic count intensity. See legacy documentation.}
 
-\item{micro_lambda_max}{Numeric > 0. Upper bound for microbial Poisson
-intensity.}
+\item{stochastic_reassembly}{Logical. If \code{TRUE} (default), adds
+additional stochastic variation; this is not an explicit succession model.}
 
-\item{metat_noise}{Numeric >= 0. Noise level added to simulated
-metatranscriptomic expression.}
+\item{include_graph}{Logical. If \code{TRUE} and \pkg{igraph} is installed,
+returns an \code{igraph} random graph object independent of the generated community in
+\code{$graph}.}
+
+\item{depth_labels}{Character vector of length \code{n_depth} or
+\code{NULL}. Custom labels for depth strata. Defaults to
+\code{"D1"}, \code{"D2"}, \ldots}
 }
 \value{
-A named list with:
-\itemize{
-\item \code{id}: Experimental design data frame.
-\item \code{ROS_flux}: Plant physiological and rhizosphere boundary-flux
-variables.
-\item \code{Eh_stability}: Soil redox, hydrological, carbon, and
-electron-buffering variables.
-\item \code{micro_data}: Microbial abundance feature matrix.
-\item \code{micro_traits}: Microbial redox functional trait proxies.
-\item \code{gene_abundance}: Optional synthetic functional gene
-coverage/abundance matrix.
-\item \code{gene_expression}: Optional synthetic MetaT expression matrix.
-\item \code{gene_log2fc}: Optional synthetic MetaT log2 fold-change matrix
-relative to the pre-disturbance baseline.
-\item \code{latent_truth}: Underlying latent redox state in \code{[0, 1]}.
-\item \code{graph}: Optional \code{igraph} object.
-}
+List of identifiers, data blocks, latent states, flux descriptors,
+balance checks, metadata and legacy views. The metadata records hidden columns,
+seed and RNG configuration. With seed supplied, the caller RNG is restored.
 }
 \description{
-Generates a synthetic plant-soil-microbiome dataset with latent redox
-dynamics, hydrological disturbance, plant physiological responses, radial
-oxygen loss, root exudation, soil redox chemistry, dissolved organic carbon,
-water content, redox-buffering proxies, microbial abundance, microbial
-redox functional traits, gene coverage, and optional MetaT gene
-expression or upregulation features.
+Synthetic daily trajectories with explicit Fe/Mn redistribution,
+plant indicators, gene abundance and transcript/count observation models.
+Only Fe and Mn inventories have closed-balance checks. C, N, S and oxygen
+budgets are not fully balanced. Model parameters are illustrative, not fitted.
+Gene abundance indicates potential; transcript counts are observations, not flux.
 }
 \details{
-The simulator is designed for demonstrations, benchmarking, package examples,
-and method development. It represents a simplified soil-plant-microbiome
-continuum in which hydrological forcing modifies latent redox state, soil
-water content, electron-donor supply, electron-acceptor availability, plant
-stress, radial oxygen loss, rhizodeposition, microbial abundance, redox
-process potential, and functional gene response.
-
-The microbial functional layer includes synthetic proxies for aerobic
-respiration, nitrate reduction, Fe/Mn/humic extracellular electron transfer,
-sulfate reduction, methanogenesis, redox mediator production, ROS
-detoxification, AMF connectivity, protistan grazing, viral lysis, microbial
-memory, and redox flexibility.
-
-The generated data are synthetic and are not intended to represent any real
-ecosystem. Parameter values are chosen to generate biologically interpretable
-covariance structure rather than calibrated field realism.
-#' Users are not required to measure every variable generated by the simulator.
-The simulator returns a rich synthetic benchmark dataset, but external
-datasets may contain fewer variables. Downstream RedoxRRI functions require
-only row-aligned data frames for the domains used in the analysis. For
-example, \code{rri_pipeline_st()} can be run with a small set of plant,
-soil, and microbial variables, and \code{rri_recovery_metrics()} can be run
-directly on any precomputed RRI trajectory stored in \code{res$row_scores}.
+alpha and k are prescribed internal state variables, not inferred parameters:
+they are computed from forcing, pore structure and memory at the start of
+each time step. Alpha multiplies selected Fe/Mn/N/S/C expressions as an
+accessibility factor, whereas k_accept directly gates only the model's
+crystalline-Fe reduction expression. A low alpha suppresses selected rates;
+restoring alpha changes selected rates, but does not guarantee functional recovery.
+k additionally gates the crystalline-Fe exchange rate. The latent_truth
+vector is a constructed index sharing ingredients with soil_data;
+omit those ingredients from observable-only benchmarks. history_pair denotes
+a shared random effect, not experimentally matched twins. Low n_time can leave
+no adequate baseline or recovery; inspect forcing and analyse each event separately.
+Mineral crystallisation is continuous in this implementation, not an
+event-only reoxidation ratchet. k does not explicitly decrease with crystallinity.
+ROL, ROS and several microbial features are synthetic descriptors, not calibrated
+physical fluxes. Do not infer quantitative field rates from their labels alone.
+Q_accept now counts one electron per crystalline Fe(III); the previous 0.22
+factor mixed accessibility into inventory. DOC reducing equivalents remain
+an illustrative coefficient dependent on assumed carbon oxidation state.
 }
 \examples{
-sim <- simulate_redox_holobiont(
-  n_plot = 2,
-  n_depth = 2,
-  n_plant = 2,
-  n_time = 8,
-  p_micro = 20,
-  p_gene = 36,
-  gene_mode = "both",
-  seed = 1
-)
-
-names(sim$ROS_flux)
-names(sim$Eh_stability)
-names(sim$micro_traits)
-names(sim$gene_abundance)
-names(sim$gene_log2fc)
-
-res <- rri_pipeline_st(
-  ROS_flux = sim$ROS_flux,
-  Eh_stability = sim$Eh_stability,
-  micro_data = cbind(
-    sim$micro_data,
-    sim$micro_traits,
-    sim$gene_abundance,
-    sim$gene_log2fc
-  ),
-  id = sim$id,
-  reducer = "per_domain",
-  scaling = "pnorm"
-)
-
-head(res$row_scores)
-
+\dontrun{
+  sim <- simulate_redox_holobiont(n_plot = 2, n_depth = 2, n_plant = 2,
+                                   n_time = 20, seed = 42)
+  nrow(sim$id)  # 2 x 2 x 2 x 20 = 160 rows
+  names(sim)    # top-level list elements
+}
 }

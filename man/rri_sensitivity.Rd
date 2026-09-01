@@ -2,54 +2,27 @@
 % Please edit documentation in R/rri_sensitivity.R
 \name{rri_sensitivity}
 \alias{rri_sensitivity}
-\title{Sensitivity Analysis for RedoxRRI}
+\title{Sensitivity to domain aggregation weights}
 \usage{
 rri_sensitivity(res, weight_grid = seq(0.2, 0.6, by = 0.1))
 }
 \arguments{
-\item{res}{An object returned by \code{rri_pipeline_st()}.}
+\item{res}{RRI result.}
 
-\item{weight_grid}{Numeric vector of Physio weights in (0,1).}
+\item{weight_grid}{Plant weights in (0,1), or a data frame/matrix with
+named Physio, Soil, Micro columns specifying complete alternative weights.}
 }
 \value{
-A data frame containing tested weights and Spearman rank
-correlations relative to the baseline RRI.
+Alternative normalized weights, finite-pair count and Spearman correlation.
+This conditions on the already computed features, reductions and missingness.
 }
 \description{
-Evaluates robustness of RRI rankings under alternative domain
-aggregation weights using already computed domain scores.
-}
-\details{
-This function perturbs only the aggregation step and does not
-recompute latent domain scores. It therefore evaluates stability
-of domain integration rather than reducer sensitivity.
+Sensitivity to domain aggregation weights
 }
 \examples{
-# ---- Simulate a small holobiont dataset ----
-sim <- simulate_redox_holobiont(
-  n_plot = 2,
-  n_depth = 4,
-  n_plant = 2,
-  n_time = 8,
-  p_micro = 20,
-  seed = 1
-)
-
-# ---- Compute RedoxRRI ----
-res <- rri_pipeline_st(
-  ROS_flux = sim$ROS_flux,
-  Eh_stability = sim$Eh_stability,
-  micro_data = sim$micro_data,
-  id = sim$id,
-  reducer = "per_domain",
-  scaling = "pnorm"
-)
-
-# ---- Evaluate aggregation sensitivity ----
-sens <- rri_sensitivity(
-  res,
-  weight_grid = seq(0.3, 0.5, by = 0.1)
-)
-
-
+\dontrun{
+  sim <- simulate_redox_holobiont(seed = 1)
+  res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
+  rri_sensitivity(res)
+}
 }

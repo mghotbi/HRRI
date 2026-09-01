@@ -116,7 +116,6 @@ if (requireNamespace("ggplot2", quietly = TRUE) &&
 \code{\link[=simulate_redox_holobiont]{simulate_redox_holobiont()}},
 \code{\link[=rri_pipeline_st]{rri_pipeline_st()}},
 \code{\link[=rri_recovery_metrics]{rri_recovery_metrics()}},
-\code{\link[=rri_metric_table]{rri_metric_table()}},
 \code{\link[=plot_RRI_ternary]{plot_RRI_ternary()}},
 \code{\link[=plot_rri_recovery_landscape]{plot_rri_recovery_landscape()}}
 }

@@ -114,7 +114,6 @@
 #' [simulate_redox_holobiont()],
 #' [rri_pipeline_st()],
 #' [rri_recovery_metrics()],
-#' [rri_metric_table()],
 #' [plot_RRI_ternary()],
 #' [plot_rri_recovery_landscape()]
 NULL

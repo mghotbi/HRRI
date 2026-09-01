@@ -15,3 +15,10 @@ A ggplot2 theme object
 \description{
 A simple ggplot theme used for RedoxRRI visualizations.
 }
+\examples{
+\dontrun{
+  library(ggplot2)
+  ggplot(data.frame(x = 1:3, y = 1:3), aes(x, y)) +
+    geom_point() + theme_ems()
+}
+}

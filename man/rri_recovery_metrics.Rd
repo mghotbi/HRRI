@@ -2,304 +2,66 @@
 % Please edit documentation in R/rri_recovery_metrics.R
 \name{rri_recovery_metrics}
 \alias{rri_recovery_metrics}
-\title{Quantify perturbation-recovery metrics from an RRI trajectory}
+\title{Descriptive recovery metrics for a single disturbance}
 \usage{
 rri_recovery_metrics(
   res,
-  id,
-  time_col,
+  id = NULL,
+  time_col = "time",
   group_cols = NULL,
-  state_col = "RRI",
   perturb_start,
   perturb_end,
-  detect_threshold = 0.05,
-  equilibrium_window = 3,
+  rri_col = "RRI",
   forcing_col = NULL,
-  overshoot_threshold = 0.25,
-  incomplete_threshold = 0.25,
-  hysteresis_threshold = 0.25,
-  fast_k_threshold = 0.25,
-  recovery_r2_threshold = 0.2
+  min_pts = 3L,
+  lag_threshold = 0.05,
+  plateau_window = 3L,
+  plateau_tol = 0.1
 )
 }
 \arguments{
-\item{res}{An object returned by \code{rri_pipeline_st()}. Must contain
-\code{res$row_scores}.}
+\item{res}{RRI object or data frame.}
 
-\item{id}{Data frame containing time, grouping, and optional forcing
-variables. Must have the same number of rows as \code{res$row_scores}.}
+\item{id}{Optional aligned identifiers; common columns must agree.}
 
-\item{time_col}{Character scalar. Name of the time column in \code{id}.}
+\item{time_col}{Numeric time column; time must be unique within each group.}
 
-\item{group_cols}{Optional character vector of grouping columns in \code{id}.
-Metrics are computed independently for each group. If \code{NULL}, all rows
-are treated as one trajectory.}
+\item{group_cols}{Columns identifying one longitudinal experimental unit.}
 
-\item{state_col}{Character scalar. Column in \code{res$row_scores} used as
-the system state. Defaults to \code{"RRI"}.}
+\item{perturb_start, perturb_end}{Finite start and end of one disturbance.}
 
-\item{perturb_start}{Numeric scalar. Perturbation onset time, \eqn{t_0}.}
+\item{rri_col}{Numeric score column.}
 
-\item{perturb_end}{Numeric scalar. Perturbation termination time, \eqn{t_1}.}
+\item{forcing_col}{Optional measured external forcing column, not a response proxy.}
 
-\item{detect_threshold}{Numeric scalar. Absolute deviation from baseline
-required to define detectable response onset.}
+\item{min_pts}{Minimum finite baseline and recovery observations.}
 
-\item{equilibrium_window}{Integer scalar. Number of final recovery
-observations used to estimate post-recovery equilibrium,
-\eqn{x_{\mathrm{eq}}}.}
+\item{lag_threshold}{Fraction of observed decline defining recovery onset.}
 
-\item{forcing_col}{Optional character scalar. Name of forcing variable in
-\code{id}. If supplied, hysteresis is estimated at matched forcing values.}
+\item{plateau_window}{Number of final observations for plateau assessment.}
 
-\item{overshoot_threshold}{Numeric scalar. Relative threshold for classifying
-overshoot.}
-
-\item{incomplete_threshold}{Numeric scalar. Relative threshold for classifying
-incomplete recovery.}
-
-\item{hysteresis_threshold}{Numeric scalar. Relative threshold for classifying
-hysteresis.}
-
-\item{fast_k_threshold}{Numeric scalar. Minimum \eqn{k} used to classify fast
-recovery.}
-
-\item{recovery_r2_threshold}{Numeric scalar in \eqn{[0, 1]}. Minimum
-\eqn{R^2} used to flag the exponential recovery-rate fit as reliable.}
+\item{plateau_tol}{Fractional terminal displacement defining a plateau flag.}
 }
 \value{
-A data frame with one row per trajectory. Columns include:
-
-\describe{
-\item{x0}{Estimated pre-perturbation baseline state.}
-\item{xmin_perturb}{Minimum state during perturbation.}
-\item{xmax_perturb}{Maximum state during perturbation.}
-\item{x_extreme}{Perturbation state farthest from baseline.}
-\item{perturb_direction}{Perturbation direction: \code{"increase"},
-\code{"decrease"}, or \code{"neutral"}.}
-\item{xmin_recovery}{Minimum state during recovery.}
-\item{xmax_recovery}{Maximum state during recovery.}
-\item{xeq}{Estimated post-recovery equilibrium.}
-\item{A}{Direction-aware perturbation amplitude.}
-\item{A_norm}{Amplitude normalized by \code{abs(x0)}.}
-\item{tau_lag}{Detectable response lag.}
-\item{O}{Direction-aware overshoot.}
-\item{O_norm}{Overshoot normalized by \code{abs(x0)}.}
-\item{I}{Incomplete recovery.}
-\item{I_norm}{Incomplete recovery normalized by \code{abs(x0)}.}
-\item{k}{Estimated exponential recovery rate constant.}
-\item{k_r2}{Coefficient of determination for the log-linear recovery fit.}
-\item{k_n}{Number of recovery observations used to estimate \code{k}.}
-\item{k_flag}{Diagnostic flag for recovery-rate estimation.}
-\item{tau_r}{Characteristic recovery time, \eqn{1/k}.}
-\item{t_half}{Half-recovery time, \eqn{\log(2)/k}.}
-\item{H}{Hysteresis estimate.}
-\item{trajectory_class}{Classified recovery trajectory.}
-}
+One row per group, including diagnostic fit status and observation counts.
+k is a log-linear fit of positive baseline deficits after the observed minimum.
+It is a conditional trajectory descriptor, not a mechanistic exchange rate.
+Legacy alt_routing fields are retained as NA; use displaced_plateau_flag.
 }
 \description{
-Computes direction-aware perturbation-recovery metrics from a Redox
-Resilience Index (RRI) trajectory. The RRI is treated as the observed system
-state, \eqn{x(t)}, and the function estimates amplitude, lag, overshoot,
-incomplete recovery, exponential recovery rate, recovery-fit diagnostics,
-recovery timescale, half-recovery time, optional hysteresis, and categorical
-trajectory class.
-}
-\details{
-The function interprets an RRI trajectory as a perturbation-response state:
-
-\deqn{x(t)}
-
-where \eqn{x(t)} is the observed redox-resilience state of the holobiont at
-time \eqn{t}. In RedoxRRI applications, \eqn{x(t)} usually corresponds to the
-per-sample \code{RRI} score, but any continuous state column in
-\code{res$row_scores} can be supplied through \code{state_col}.
-
-The trajectory is partitioned into three temporal domains:
-
-\enumerate{
-\item baseline: \eqn{t < t_0};
-\item perturbation: \eqn{t_0 \le t \le t_1};
-\item recovery: \eqn{t > t_1}.
-}
-
-Baseline state is estimated as:
-
-\deqn{
-x_0 =
-\frac{1}{n_0}
-\sum_{t_i < t_0} x(t_i)
-}
-
-Perturbation amplitude is direction-aware and defined as the largest absolute
-displacement from baseline during perturbation:
-
-\deqn{
-A =
-\max_{t_0 \le t_i \le t_1}
-|x(t_i) - x_0|
-}
-
-The perturbation extremum is:
-
-\deqn{
-x_{\mathrm{extreme}} = x(t^*),
-\quad
-t^* =
-\arg\max_{t_0 \le t_i \le t_1}
-|x(t_i) - x_0|
-}
-
-The perturbation direction is:
-
-\deqn{
-d =
-\mathrm{sign}(x_{\mathrm{extreme}} - x_0)
-}
-
-Detectable response lag is:
-
-\deqn{
-\tau_{\mathrm{lag}} =
-t_{\mathrm{detect}} - t_0
-}
-
-where \eqn{t_{\mathrm{detect}}} is the first time satisfying:
-
-\deqn{
-|x(t) - x_0| > \epsilon
-}
-
-and \eqn{\epsilon} is specified by \code{detect_threshold}.
-
-Overshoot is direction-aware. If the perturbation decreases the state,
-overshoot is recovery above baseline. If the perturbation increases the
-state, overshoot is recovery below baseline:
-
-\deqn{
-O =
-\left\{
-\begin{array}{ll}
-\max(0, x_{\max,\mathrm{rec}} - x_0), & d < 0 \\
-\max(0, x_0 - x_{\min,\mathrm{rec}}), & d > 0 \\
-0, & d = 0
-\end{array}
-\right.
-}
-
-Post-recovery equilibrium is estimated from the final recovery observations:
-
-\deqn{
-x_{\mathrm{eq}} =
-\frac{1}{m}
-\sum_{j=1}^{m} x_j
-}
-
-where \eqn{m} is determined by \code{equilibrium_window}.
-
-Incomplete recovery is:
-
-\deqn{
-I =
-|x_{\mathrm{eq}} - x_0|
-}
-
-Recovery kinetics are estimated from the log-linearized exponential
-relaxation model:
-
-\deqn{
-x(t) =
-x_{\mathrm{eq}} +
-[x(t_1) - x_{\mathrm{eq}}]
-\exp[-k(t - t_1)]
-}
-
-equivalently:
-
-\deqn{
-\log |x(t) - x_{\mathrm{eq}}|
-=
-a - k(t - t_1)
-}
-
-The characteristic recovery timescale is:
-
-\deqn{
-\tau_r = \frac{1}{k}
-}
-
-and the half-recovery time is:
-
-\deqn{
-t_{1/2} = \frac{\log(2)}{k}
-}
-
-If \code{forcing_col} is supplied, hysteresis is approximated as:
-
-\deqn{
-H \approx
-\frac{1}{n}
-\sum_i
-|x_{\mathrm{rec}}(F_i) - x_{\mathrm{pert}}(F_i)|
-}
-
-where recovery and perturbation states are compared at matched forcing values.
-
-Normalized metrics are returned as:
-
-\deqn{
-A_n = A / |x_0|,
-\quad
-O_n = O / |x_0|,
-\quad
-I_n = I / |x_0|
-}
-
-Trajectories are classified using ordered decision rules. Incomplete recovery
-has priority over hysteresis, hysteresis over overshoot, and overshoot over
-simple fast or slow recovery. Default thresholds are operational and should
-be calibrated for specific experimental systems when sufficient empirical
-replication is available.
+Summarises decline and return of a higher-is-better score.
+A score decline does not identify pathway truncation; a displaced plateau
+does not establish alternative electron routing. Hysteresis is only reported
+for a sufficiently closed, reversing forcing-response path. Temporal deficit
+asymmetry is a separate diagnostic. Analyse repeated events separately.
 }
 \examples{
-sim <- simulate_redox_holobiont(
-  n_plot = 2,
-  n_depth = 1,
-  n_plant = 2,
-  n_time = 12,
-  p_micro = 20,
-  seed = 1
-)
-
-res <- rri_pipeline_st(
-  ROS_flux = sim$ROS_flux,
-  Eh_stability = sim$Eh_stability,
-  micro_data = sim$micro_data,
-  id = sim$id,
-  reducer = "per_domain",
-  scaling = "pnorm"
-)
-
-rec <- rri_recovery_metrics(
-  res = res,
-  id = sim$id,
-  time_col = "time",
-  group_cols = c("plot", "depth", "plant_id"),
-  perturb_start = 5,
-  perturb_end = 7
-)
-
-rec
-rri_metric_table()
-
+\dontrun{
+  sim <- simulate_redox_holobiont(seed = 1)
+  res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux,
+                      id = sim$id)
+  rri_recovery_metrics(res, time_col = "time",
+    group_cols = c("plot", "depth", "plant_id"),
+    perturb_start = 20, perturb_end = 30)
 }
-\references{
-Holling CS (1973). Resilience and stability of ecological systems. Annual
-Review of Ecology and Systematics, 4, 1--23.
-
-Scheffer M, Carpenter S, Foley JA, Folke C, Walker B (2001). Catastrophic
-shifts in ecosystems. Nature, 413, 591--596.
-
-Gunderson LH (2000). Ecological resilience in theory and application. Annual
-Review of Ecology and Systematics, 31, 425--439.
 }
