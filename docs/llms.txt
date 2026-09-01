@@ -65,8 +65,9 @@ rri_recovery_metrics(
 
 Accessible capacity over an event window of duration *τ*:
 
-\$\$C\_{\rm acc}(\tau) \\=\\ \sum_i Q_i \\ \alpha_i \left(1 - e^{-k_i
-\tau}\right)\$\$
+``` math
+C_{\mathrm{acc}}(\tau) \;=\; \sum_i Q_i \, \alpha_i \left(1 - e^{-k_i \tau}\right)
+```
 
 ## Function reference
 
@@ -156,10 +157,10 @@ disturbance-history experiment.
 citation("HRRI")
 ```
 
-Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. (2026). HRRI: a
-direction-aware R framework for quantifying soil–plant–microbiome redox
-resilience across hydroclimatic disturbance events. *Methods in Ecology
-and Evolution*. Manuscript submitted.
+Ghotbi, M., Ghotbi, M., Stukenbrock, E. H., Mühling, K. H., &
+Spielvogel, S. (2026). *Rhizosphere redox recovery after hydrological
+disturbance: mechanisms across the soil–plant–microbiome continuum.*
+Manuscript submitted.
 
 ## License
 
@@ -267,12 +268,21 @@ Publication-oriented diagnostic plots.
   : Ternary Plot of Relative Domain Scores
 - [`plot_rri_recovery_map()`](https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_map.md)
   : Plot RRI Recovery Map
+- [`plot_rri_recovery_landscape()`](https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_landscape.md)
+  : Plot a recovery landscape from RRI perturbation-recovery metrics
 - [`plot_rri_properties()`](https://mghotbi.github.io/HRRI/reference/plot_rri_properties.md)
   : Radar Chart of Available HRRI Diagnostics
 - [`plot_rri_validation()`](https://mghotbi.github.io/HRRI/reference/plot_rri_validation.md)
   : Scatter of HRRI score against a simulator-defined target
 - [`theme_ems()`](https://mghotbi.github.io/HRRI/reference/theme_ems.md)
   : EMS plotting theme
+
+## Data
+
+Example dataset shipped with the package.
+
+- [`redoxrri_example`](https://mghotbi.github.io/HRRI/reference/redoxrri_example.md)
+  : Example workflow for RedoxRRI
 
 # Articles
 

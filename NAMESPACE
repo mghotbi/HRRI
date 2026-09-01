@@ -11,6 +11,7 @@ export(hrri_infer_architecture)
 export(plot_RRI_ternary)
 export(plot_hrri_benchmark)
 export(plot_rri_properties)
+export(plot_rri_recovery_landscape)
 export(plot_rri_recovery_map)
 export(plot_rri_simulation_demo)
 export(plot_rri_state_space)
@@ -50,14 +51,19 @@ importFrom(ggplot2,
   geom_line,
   geom_point,
   geom_text,
+  geom_tile,
   ggplot,
   labs,
+  margin,
+  scale_color_manual,
   scale_colour_manual,
   scale_colour_viridis_c,
+  scale_fill_gradientn,
   scale_fill_viridis_c,
   scale_fill_viridis_d,
   theme,
-  theme_classic
+  theme_classic,
+  theme_minimal
 )
 importFrom(graphics,
   abline,
@@ -103,6 +109,8 @@ importFrom(stats,
   var,
   vcov
 )
+importFrom(tidyr,pivot_longer)
+importFrom(tidyselect,all_of)
 importFrom(utils,
   combn,
   globalVariables,

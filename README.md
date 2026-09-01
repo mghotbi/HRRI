@@ -68,7 +68,7 @@ rri_recovery_metrics(
 
 Accessible capacity over an event window of duration *τ*:
 
-$$C_{\rm acc}(\tau) \;=\; \sum_i Q_i \, \alpha_i \left(1 - e^{-k_i \tau}\right)$$
+$$C_{\mathrm{acc}}(\tau) \;=\; \sum_i Q_i \, \alpha_i \left(1 - e^{-k_i \tau}\right)$$
 
 ## Function reference
 
@@ -133,11 +133,9 @@ experiment.
 citation("HRRI")
 ```
 
-Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. (2026).
-HRRI: a direction-aware R framework for quantifying soil–plant–microbiome redox resilience 
-across hydroclimatic disturbance events. *Methods in Ecology and Evolution*.
-Manuscript submitted.
- 
+Ghotbi, M., Ghotbi, M., Stukenbrock, E. H., Mühling, K. H., & Spielvogel, S.
+(2026). *Rhizosphere redox recovery after hydrological disturbance: mechanisms
+across the soil–plant–microbiome continuum.* Manuscript submitted.
 
 ## License
 

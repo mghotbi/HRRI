@@ -1,6 +1,7 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://mghotbi.github.io/HRRI/404.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/LICENSE-text.html</loc></url>
+<url><loc>https://mghotbi.github.io/HRRI/LICENSE.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/articles/HRRI_workflow.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/articles/index.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/authors.html</loc></url>
@@ -13,11 +14,13 @@
 <url><loc>https://mghotbi.github.io/HRRI/reference/plot_RRI_ternary.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/plot_hrri_benchmark.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/plot_rri_properties.html</loc></url>
+<url><loc>https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_landscape.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_map.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/plot_rri_simulation_demo.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/plot_rri_state_space.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/plot_rri_timeseries.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/plot_rri_validation.html</loc></url>
+<url><loc>https://mghotbi.github.io/HRRI/reference/redoxrri_example.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/rri_accessible_capacity.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/rri_capacity_index.html</loc></url>
 <url><loc>https://mghotbi.github.io/HRRI/reference/rri_compensation_index.html</loc></url>

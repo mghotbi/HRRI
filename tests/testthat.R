@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(RedoxRRI)
+library(HRRI)
 
-test_check("RedoxRRI")
+test_check("HRRI")

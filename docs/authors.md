@@ -11,15 +11,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/mghotbi/HRRI/blob/HEAD/DESCRIPTION)
+[`inst/CITATION`](https://github.com/mghotbi/HRRI/blob/HEAD/inst/CITATION)
 
-Ghotbi M (2026). *HRRI: Diagnostics for Soil-Plant-Microbial Redox
-Recovery*. R package version 0.99.1, <https://github.com/mghotbi/HRRI>.
+Ghotbi M, Ghotbi M (2026). *RedoxRRI: Holobiont Redox Resilience Index
+for Integrative Stress Biology*. R package version 0.99.0,
+<https://github.com/mghotbi/RedoxRRI>.
 
     @Manual{,
-      title = {HRRI: Diagnostics for Soil-Plant-Microbial Redox Recovery},
-      author = {Mitra Ghotbi},
+      title = {RedoxRRI: Holobiont Redox Resilience Index for Integrative Stress Biology},
+      author = {Mitra Ghotbi and Marjan Ghotbi},
       year = {2026},
-      note = {R package version 0.99.1},
-      url = {https://github.com/mghotbi/HRRI},
+      note = {R package version 0.99.0},
+      url = {https://github.com/mghotbi/RedoxRRI},
     }

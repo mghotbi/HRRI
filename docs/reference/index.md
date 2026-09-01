@@ -99,9 +99,18 @@ Publication-oriented diagnostic plots.
   : Ternary Plot of Relative Domain Scores
 - [`plot_rri_recovery_map()`](https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_map.md)
   : Plot RRI Recovery Map
+- [`plot_rri_recovery_landscape()`](https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_landscape.md)
+  : Plot a recovery landscape from RRI perturbation-recovery metrics
 - [`plot_rri_properties()`](https://mghotbi.github.io/HRRI/reference/plot_rri_properties.md)
   : Radar Chart of Available HRRI Diagnostics
 - [`plot_rri_validation()`](https://mghotbi.github.io/HRRI/reference/plot_rri_validation.md)
   : Scatter of HRRI score against a simulator-defined target
 - [`theme_ems()`](https://mghotbi.github.io/HRRI/reference/theme_ems.md)
   : EMS plotting theme
+
+## Data
+
+Example dataset shipped with the package.
+
+- [`redoxrri_example`](https://mghotbi.github.io/HRRI/reference/redoxrri_example.md)
+  : Example workflow for RedoxRRI

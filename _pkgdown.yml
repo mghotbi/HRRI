@@ -100,9 +100,16 @@ reference:
   - plot_rri_state_space
   - plot_RRI_ternary
   - plot_rri_recovery_map
+  - plot_rri_recovery_landscape
   - plot_rri_properties
   - plot_rri_validation
   - theme_ems
+
+
+- title: Data
+  desc: Example dataset shipped with the package.
+  contents:
+  - redoxrri_example
 
 articles:
 - title: Workflow
