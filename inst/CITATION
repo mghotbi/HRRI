@@ -1,5 +1,6 @@
 citHeader("To cite the HRRI package in publications use:")
 
+## Package citation
 bibentry(
   bibtype = "Manual",
   title = "HRRI: Holobiont Redox Resilience Index for Integrative Stress Biology",
@@ -19,12 +20,15 @@ bibentry(
   url = "https://github.com/mghotbi/HRRI"
 )
 
+## Methodology manuscript
 bibentry(
   bibtype = "Unpublished",
   title = "HRRI: A Direction-Aware R Framework for Quantifying Soil–Plant–Microbiome Redox Resilience Across Hydroclimatic Disturbance Events",
   author = c(
     person("Mitra", "Ghotbi"),
     person("Marjan", "Ghotbi"),
+    person("Marco", "Guerreiro"),
+    person("Jovan", "Komluski"),
     person("Eva H.", "Holtgrewe-Stukenbrock")
   ),
   year = "2026",

@@ -25,14 +25,14 @@ Integrative Stress Biology*. R package version 0.99.1,
       url = {https://github.com/mghotbi/HRRI},
     }
 
-Ghotbi M, Ghotbi M, Holtgrewe-Stukenbrock E (2026). “HRRI: A
-Direction-Aware R Framework for Quantifying Soil–Plant–Microbiome Redox
-Resilience Across Hydroclimatic Disturbance Events.” Manuscript
-submitted.
+Ghotbi M, Ghotbi M, Guerreiro M, Komluski J, Holtgrewe-Stukenbrock E
+(2026). “HRRI: A Direction-Aware R Framework for Quantifying
+Soil–Plant–Microbiome Redox Resilience Across Hydroclimatic Disturbance
+Events.” Manuscript submitted.
 
     @Unpublished{,
       title = {HRRI: A Direction-Aware R Framework for Quantifying Soil–Plant–Microbiome Redox Resilience Across Hydroclimatic Disturbance Events},
-      author = {Mitra Ghotbi and Marjan Ghotbi and Eva H. Holtgrewe-Stukenbrock},
+      author = {Mitra Ghotbi and Marjan Ghotbi and Marco Guerreiro and Jovan Komluski and Eva H. Holtgrewe-Stukenbrock},
       year = {2026},
       note = {Manuscript submitted},
     }
