@@ -133,7 +133,7 @@ experiment.
 citation("HRRI")
 ```
 
-Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. H. (2026).
+Mitra Ghotbi¹˒², Marjan Ghotbi³, Marco Guerreiro1, Jovan komluski1, Eva Holtgrewe-Stukenbrock¹˒4 (2026).
 HRRI: A direction-aware R framework for quantifying soil–plant–microbiome
 redox resilience across hydroclimatic disturbance events.
 Manuscript submitted.
