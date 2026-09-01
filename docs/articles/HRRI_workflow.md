@@ -516,8 +516,8 @@ sessionInfo()
 #>  [9] scales_1.4.0       textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0     
 #> [13] ggplot2_4.0.3      R6_2.6.1           generics_0.1.4     igraph_2.3.3      
 #> [17] knitr_1.51         htmlwidgets_1.6.4  tibble_3.3.1       desc_1.4.3        
-#> [21] bslib_0.11.0       pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.3.0       
-#> [25] cachem_1.1.0       xfun_0.58          fs_2.1.0           sass_0.4.10       
+#> [21] bslib_0.12.0       pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.3.0       
+#> [25] cachem_1.1.0       xfun_0.60          fs_2.1.0           sass_0.4.10       
 #> [29] S7_0.2.2           otel_0.2.0         cli_3.6.6          pkgdown_2.2.1     
 #> [33] magrittr_2.0.5     digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0 
 #> [37] lifecycle_1.0.5    vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1        
@@ -527,7 +527,7 @@ sessionInfo()
 
 ## References
 
-Ghotbi, M., Kolody, B. C., Ghotbi, M., & Holtgrewe-Stukenbrock, E.
-(2026). HRRI: a direction-aware R framework for quantifying
-soil–plant–microbiome redox resilience across hydroclimatic disturbance
-events *Methods in Ecology and Evolution*. Manuscript submitted.
+Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. (2026). HRRI: a
+direction-aware R framework for quantifying soil–plant–microbiome redox
+resilience across hydroclimatic disturbance events *Methods in Ecology
+and Evolution*. Manuscript submitted.
