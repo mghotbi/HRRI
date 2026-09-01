@@ -1,0 +1,37 @@
+/* HRRI pkgdown accents — matches the vignette theme */
+
+:root {
+  --hrri-fe:    #8c4a2f;
+  --hrri-mn:    #6b5b8a;
+  --hrri-redox: #2f6b6b;
+  --hrri-rule:  #dde3e1;
+  --hrri-soft:  #f7f9f8;
+}
+
+/* code: inline function names in redox teal, strings in iron rust */
+code span.fu { color: var(--hrri-redox); font-weight: 600; }
+code span.st { color: var(--hrri-fe); }
+code span.co { color: #7d8886; font-style: italic; }
+code span.dv, code span.fl { color: var(--hrri-mn); }
+
+/* source blocks get a redox rule on the left */
+div.sourceCode {
+  border-left: 3px solid var(--hrri-redox);
+  border-radius: 4px;
+  background: var(--hrri-soft);
+}
+
+/* reference index section headings */
+.section-desc { color: #4a5451; font-size: 0.94rem; }
+
+/* tables */
+.table > thead {
+  border-bottom: 2px solid #1c2321;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+}
+.table td, .table th { border-color: var(--hrri-rule); }
+
+/* home page lead paragraph */
+.page-header + p, .lead { color: #4a5451; font-size: 1.05rem; }
