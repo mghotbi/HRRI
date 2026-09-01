@@ -527,7 +527,7 @@ sessionInfo()
 
 ## References
 
-Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. (2026). HRRI: a
+Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. H. (2026). HRRI: A
 direction-aware R framework for quantifying soil–plant–microbiome redox
-resilience across hydroclimatic disturbance events *Methods in Ecology
-and Evolution*. Manuscript submitted.
+resilience across hydroclimatic disturbance events. Manuscript
+submitted.

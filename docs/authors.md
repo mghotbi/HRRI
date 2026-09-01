@@ -13,14 +13,26 @@
 Source:
 [`inst/CITATION`](https://github.com/mghotbi/HRRI/blob/HEAD/inst/CITATION)
 
-Ghotbi M, Ghotbi M (2026). *RedoxRRI: Holobiont Redox Resilience Index
-for Integrative Stress Biology*. R package version 0.99.0,
-<https://github.com/mghotbi/RedoxRRI>.
+Ghotbi M, Ghotbi M (2026). *HRRI: Holobiont Redox Resilience Index for
+Integrative Stress Biology*. R package version 0.99.1,
+<https://github.com/mghotbi/HRRI>.
 
     @Manual{,
-      title = {RedoxRRI: Holobiont Redox Resilience Index for Integrative Stress Biology},
+      title = {HRRI: Holobiont Redox Resilience Index for Integrative Stress Biology},
       author = {Mitra Ghotbi and Marjan Ghotbi},
       year = {2026},
-      note = {R package version 0.99.0},
-      url = {https://github.com/mghotbi/RedoxRRI},
+      note = {R package version 0.99.1},
+      url = {https://github.com/mghotbi/HRRI},
+    }
+
+Ghotbi M, Ghotbi M, Holtgrewe-Stukenbrock E (2026). “HRRI: A
+Direction-Aware R Framework for Quantifying Soil–Plant–Microbiome Redox
+Resilience Across Hydroclimatic Disturbance Events.” Manuscript
+submitted.
+
+    @Unpublished{,
+      title = {HRRI: A Direction-Aware R Framework for Quantifying Soil–Plant–Microbiome Redox Resilience Across Hydroclimatic Disturbance Events},
+      author = {Mitra Ghotbi and Marjan Ghotbi and Eva H. Holtgrewe-Stukenbrock},
+      year = {2026},
+      note = {Manuscript submitted},
     }
