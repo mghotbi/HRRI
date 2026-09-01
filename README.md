@@ -133,9 +133,10 @@ experiment.
 citation("HRRI")
 ```
 
-Ghotbi, M., Ghotbi, M., Stukenbrock, E. H., Mühling, K. H., & Spielvogel, S.
-(2026). *Rhizosphere redox recovery after hydrological disturbance: mechanisms
-across the soil–plant–microbiome continuum.* Manuscript submitted.
+Ghotbi, M., Ghotbi, M., Stukenbrock, E. H.
+(2026). *HRRI: a direction-aware R framework for quantifying 
+soil–plant–microbiome redox resilience across hydroclimatic 
+disturbance events* Manuscript submitted.
 
 ## License
 
