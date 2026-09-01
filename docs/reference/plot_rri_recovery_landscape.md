@@ -12,7 +12,7 @@ incomplete recovery, and recovery times comparable.
 plot_rri_recovery_landscape(
   rec,
   group_cols = c("plot", "depth", "plant_id"),
-  metrics = c("A_norm", "O_norm", "I_norm", "k", "tau_r", "t_half"),
+  metrics = c("depth_min_frac", "overshoot_frac", "I_norm", "k", "tau_lag", "t_half"),
   order_by = "I_norm",
   base_size = 12
 )
@@ -57,16 +57,14 @@ sim <- simulate_redox_holobiont(
   seed = 109
 )
 
-res <- rri_pipeline_st(
+res <- suppressWarnings(rri_pipeline_st(
   ROS_flux = sim$ROS_flux,
   Eh_stability = sim$Eh_stability,
   micro_data = sim$micro_data,
   id = sim$id,
   reducer = "per_domain",
   scaling = "pnorm"
-)
-#> Warning: Unanchored latent axes have arbitrary signs; RRI is exploratory, not directionally validated resilience.
-#> Warning: Excluding simulator-derived hidden columns from scoring: Cacc_EAC, Cacc_EDC, Cacc_total, Cacc_fraction, net_oxidative_balance, alpha_accept, alpha_donate, k_accept_h, k_donate_h
+))
 
 rec <- rri_recovery_metrics(
   res = res,
@@ -135,5 +133,10 @@ head(rec)
 #> 5     NA 0.3441486
 #> 6     NA 0.3043586
 plot_rri_recovery_landscape(rec)
-#> Error: Missing metric columns: A_norm, O_norm, tau_r
+#> `trajectory_class` not supplied; derived from displaced_plateau_flag and incomplete_return_frac.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+#> Warning: No shared levels found between `names(values)` of the manual scale and the
+#> data's colour values.
+
 ```

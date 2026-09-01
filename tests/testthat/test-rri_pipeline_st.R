@@ -22,7 +22,7 @@ test_that("rri_pipeline_st returns a valid RRI object (snapshot)", {
     time  = 1:4
   )
 
-  res <- rri_pipeline_st(
+  res <- suppressWarnings(rri_pipeline_st(
     ROS_flux = ROS_flux,
     Eh_stability = Eh_stability,
     micro_data = micro_data,
@@ -33,10 +33,13 @@ test_that("rri_pipeline_st returns a valid RRI object (snapshot)", {
     direction_anchor_phys = "FvFm",
     direction_soil = "auto",
     direction_anchor_soil = "Eh"
-  )
+  ))
 
   expect_s3_class(res, "RRI")
-  expect_named(res, c("row_scores", "row_scores_comp", "dyn_scores", "meta"))
+  ## effective_weights was added when partial-domain support landed; assert the
+  ## required elements are present rather than pinning the full name vector.
+  expect_true(all(c("row_scores", "row_scores_comp", "dyn_scores", "meta") %in%
+                    names(res)))
 
   expect_s3_class(res$row_scores, "data.frame")
   expect_equal(nrow(res$row_scores), nrow(ROS_flux))
@@ -56,11 +59,11 @@ test_that("rri_pipeline_st enforces compositional scaling", {
   Eh_stability <- data.frame(c = 3:5, d = 6:8)
   micro_data <- data.frame(e = 1:3)
 
-  res <- rri_pipeline_st(
+  res <- suppressWarnings(rri_pipeline_st(
     ROS_flux = ROS_flux,
     Eh_stability = Eh_stability,
     micro_data = micro_data
-  )
+  ))
 
   comp <- res$row_scores_comp[, c("Physio", "Soil", "Micro")]
   rs <- rowSums(comp)
@@ -69,15 +72,16 @@ test_that("rri_pipeline_st enforces compositional scaling", {
 })
 
 
-test_that("rri_pipeline_st errors when microbial input is missing", {
+test_that("rri_pipeline_st scores partial panels and marks Micro unavailable", {
+  ## Missing domains are supported by design: they stay NA and the remaining
+  ## positive weights are renormalised per row. This is no longer an error.
   ROS_flux <- data.frame(a = 1:3)
   Eh_stability <- data.frame(b = 2:4)
 
-  expect_error(
-    rri_pipeline_st(
-      ROS_flux = ROS_flux,
-      Eh_stability = Eh_stability
-    ),
-    "Provide microbial input"
+  res <- suppressWarnings(
+    rri_pipeline_st(ROS_flux = ROS_flux, Eh_stability = Eh_stability)
   )
+  expect_s3_class(res, "RRI")
+  expect_true(all(is.na(res$row_scores$Micro)))
+  expect_true(all(is.finite(res$row_scores$RRI)))
 })

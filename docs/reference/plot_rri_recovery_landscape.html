@@ -55,7 +55,7 @@ amplitudes, overshoot, incomplete recovery, and recovery times comparable.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plot_rri_recovery_landscape</span><span class="op">(</span></span>
 <span>  <span class="va">rec</span>,</span>
 <span>  group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span><span class="op">)</span>,</span>
-<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A_norm"</span>, <span class="st">"O_norm"</span>, <span class="st">"I_norm"</span>, <span class="st">"k"</span>, <span class="st">"tau_r"</span>, <span class="st">"t_half"</span><span class="op">)</span>,</span>
+<span>  metrics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"depth_min_frac"</span>, <span class="st">"overshoot_frac"</span>, <span class="st">"I_norm"</span>, <span class="st">"k"</span>, <span class="st">"tau_lag"</span>, <span class="st">"t_half"</span><span class="op">)</span>,</span>
 <span>  order_by <span class="op">=</span> <span class="st">"I_norm"</span>,</span>
 <span>  base_size <span class="op">=</span> <span class="fl">12</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -101,16 +101,14 @@ amplitudes, overshoot, incomplete recovery, and recovery times comparable.</p>
 <span class="r-in"><span>  seed <span class="op">=</span> <span class="fl">109</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="rri_pipeline_st.html">rri_pipeline_st</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="rri_pipeline_st.html">rri_pipeline_st</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  ROS_flux <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">ROS_flux</span>,</span></span>
 <span class="r-in"><span>  Eh_stability <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">Eh_stability</span>,</span></span>
 <span class="r-in"><span>  micro_data <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">micro_data</span>,</span></span>
 <span class="r-in"><span>  id <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span>,</span></span>
 <span class="r-in"><span>  reducer <span class="op">=</span> <span class="st">"per_domain"</span>,</span></span>
 <span class="r-in"><span>  scaling <span class="op">=</span> <span class="st">"pnorm"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Unanchored latent axes have arbitrary signs; RRI is exploratory, not directionally validated resilience.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Excluding simulator-derived hidden columns from scoring: Cacc_EAC, Cacc_EDC, Cacc_total, Cacc_fraction, net_oxidative_balance, alpha_accept, alpha_donate, k_accept_h, k_donate_h</span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="rri_recovery_metrics.html">rri_recovery_metrics</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  res <span class="op">=</span> <span class="va">res</span>,</span></span>
@@ -179,7 +177,12 @@ amplitudes, overshoot, incomplete recovery, and recovery times comparable.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5     NA 0.3441486</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6     NA 0.3043586</span>
 <span class="r-in"><span><span class="fu">plot_rri_recovery_landscape</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Missing metric columns: A_norm, O_norm, tau_r</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `trajectory_class` not supplied; derived from displaced_plateau_flag and incomplete_return_frac.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>No shared levels found between `names(values)` of the manual scale and the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> data's <span style="color: #00BB00;">colour</span> values.</span>
+<span class="r-plt img"><img src="plot_rri_recovery_landscape-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

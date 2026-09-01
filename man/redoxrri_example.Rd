@@ -17,7 +17,6 @@ This example shows how to:
 \item Inspect compositional Physio-Soil-Micro RRI allocation.
 \item Quantify perturbation-recovery metrics.
 \item Generate ternary and recovery-metric visualizations.
-\item Inspect the formal recovery-metric dictionary.
 }
 
 The simulated dataset contains plant physiological variables, rhizosphere
@@ -40,8 +39,6 @@ sim <- simulate_redox_holobiont(
   n_plant = 2,
   n_time = 12,
   p_micro = 20,
-  p_gene = 36,
-  gene_mode = "both",
   seed = 1
 )
 
@@ -57,19 +54,18 @@ head(sim$micro_traits)
 micro_features <- cbind(
   sim$micro_data,
   sim$micro_traits,
-  sim$gene_abundance,
-  sim$gene_log2fc
+  log1p(sim$micro_gene_abundance)
 )
 
 # Compute RedoxRRI scores
-res <- rri_pipeline_st(
+res <- suppressWarnings(rri_pipeline_st(
   ROS_flux = sim$ROS_flux,
   Eh_stability = sim$Eh_stability,
   micro_data = micro_features,
   id = sim$id,
   reducer = "per_domain",
   scaling = "pnorm"
-)
+))
 
 # Sample-level RRI scores
 head(res$row_scores)
@@ -100,14 +96,24 @@ rec <- rri_recovery_metrics(
 
 head(rec)
 
-# Recovery metric dictionary
-rri_metric_table()
+# Recovery visualizations.
+# plot_rri_recovery_map() takes the scored pipeline output plus identifiers;
+# plot_rri_recovery_landscape() takes the metrics table.
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  plot_rri_recovery_map(
+    res = res,
+    id = sim$id,
+    rec = rec,
+    time_col = "time",
+    group_cols = c("plot", "depth", "plant_id"),
+    perturb_start = 5,
+    perturb_end = 7
+  )
+}
 
-# Recovery visualizations
 if (requireNamespace("ggplot2", quietly = TRUE) &&
     requireNamespace("tidyr", quietly = TRUE) &&
     requireNamespace("tidyselect", quietly = TRUE)) {
-  plot_rri_recovery_map(rec)
   plot_rri_recovery_landscape(rec)
 }
 

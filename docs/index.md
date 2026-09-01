@@ -1,4 +1,4 @@
-# HRRI ![](reference/figures/logo.png)
+# HRRI
 
 > Diagnostics for soil–plant–microbial redox recovery across
 > hydroclimatic disturbance events.

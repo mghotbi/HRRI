@@ -29,7 +29,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.3.0)
 Imports: ggplot2 (>= 3.4.0), graphics, grid, igraph (>= 1.5.0), rlang
-        (>= 1.1.0), stats, utils
+        (>= 1.1.0), stats, utils, tidyr, tidyselect
 Suggests: ggtern (>= 3.4.0), knitr, patchwork (>= 1.2.0), psych,
         rmarkdown, testthat (>= 3.0.0), viridis
 VignetteBuilder: knitr
@@ -39,7 +39,7 @@ Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
 NeedsCompilation: no
-Packaged: 2026-09-01 12:32:50 UTC; mitraghotbi
+Packaged: 2026-09-01 18:10:45 UTC; mitraghotbi
 Author: Mitra Ghotbi [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-9185-9993>),
   Marjan Ghotbi [ctb] (ORCID: <https://orcid.org/0000-0003-4655-6445>)

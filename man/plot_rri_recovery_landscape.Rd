@@ -7,7 +7,7 @@
 plot_rri_recovery_landscape(
   rec,
   group_cols = c("plot", "depth", "plant_id"),
-  metrics = c("A_norm", "O_norm", "I_norm", "k", "tau_r", "t_half"),
+  metrics = c("depth_min_frac", "overshoot_frac", "I_norm", "k", "tau_lag", "t_half"),
   order_by = "I_norm",
   base_size = 12
 )
@@ -42,14 +42,14 @@ sim <- simulate_redox_holobiont(
   seed = 109
 )
 
-res <- rri_pipeline_st(
+res <- suppressWarnings(rri_pipeline_st(
   ROS_flux = sim$ROS_flux,
   Eh_stability = sim$Eh_stability,
   micro_data = sim$micro_data,
   id = sim$id,
   reducer = "per_domain",
   scaling = "pnorm"
-)
+))
 
 rec <- rri_recovery_metrics(
   res = res,

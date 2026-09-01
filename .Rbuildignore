@@ -1,6 +1,12 @@
 ^RRI\.Rproj$
 ^\.Rproj\.user$
+^\.github$
 ^LICENSE\.md$
 ^README\.Rmd$
 ^doc$
 ^Meta$
+^docs$
+^pkgdown$
+^analysis$
+^_pkgdown\.yml$
+^_pkgdown\.yml\.save$

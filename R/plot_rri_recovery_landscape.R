@@ -20,6 +20,7 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyselect all_of
 #' @importFrom rlang .data
+#' @importFrom stats ave
 #'
 #' @examples
 #' sim <- simulate_redox_holobiont(
@@ -31,14 +32,14 @@
 #'   seed = 109
 #' )
 #'
-#' res <- rri_pipeline_st(
+#' res <- suppressWarnings(rri_pipeline_st(
 #'   ROS_flux = sim$ROS_flux,
 #'   Eh_stability = sim$Eh_stability,
 #'   micro_data = sim$micro_data,
 #'   id = sim$id,
 #'   reducer = "per_domain",
 #'   scaling = "pnorm"
-#' )
+#' ))
 #'
 #' rec <- rri_recovery_metrics(
 #'   res = res,
@@ -56,7 +57,8 @@
 plot_rri_recovery_landscape <- function(
     rec,
     group_cols = c("plot", "depth", "plant_id"),
-    metrics = c("A_norm", "O_norm", "I_norm", "k", "tau_r", "t_half"),
+    metrics = c("depth_min_frac", "overshoot_frac", "I_norm", "k",
+                "tau_lag", "t_half"),
     order_by = "I_norm",
     base_size = 12
 ) {
@@ -83,8 +85,20 @@ plot_rri_recovery_landscape <- function(
     )
   }
 
+  ## rri_recovery_metrics() assigns no trajectory class: doing so needs
+  ## thresholds the package deliberately leaves to the user. Derive a
+  ## descriptive label when none is supplied. These describe the score
+  ## trajectory only and identify no mechanism.
   if (!"trajectory_class" %in% names(rec)) {
-    stop("`rec` must contain `trajectory_class`.", call. = FALSE)
+    flag <- if ("displaced_plateau_flag" %in% names(rec))
+      rec$displaced_plateau_flag %in% TRUE else rep(FALSE, nrow(rec))
+    inc <- if ("incomplete_return_frac" %in% names(rec))
+      rec$incomplete_return_frac else rep(NA_real_, nrow(rec))
+    rec$trajectory_class <- ifelse(
+      flag, "displaced plateau",
+      ifelse(is.finite(inc) & inc < -0.10, "incomplete return", "returned"))
+    message("`trajectory_class` not supplied; derived from ",
+            "displaced_plateau_flag and incomplete_return_frac.")
   }
 
   group_cols <- intersect(group_cols, names(rec))
@@ -122,7 +136,7 @@ plot_rri_recovery_landscape <- function(
     values_to = "value"
   )
 
-  long_df$value_scaled <- ave(
+  long_df$value_scaled <- stats::ave(
     long_df$value,
     long_df$metric,
     FUN = function(x) {
@@ -141,12 +155,13 @@ plot_rri_recovery_landscape <- function(
   )
 
   metric_labels <- c(
-    A_norm = "Resistance\nloss",
-    O_norm = "Overshoot",
-    I_norm = "Incomplete\nrecovery",
-    k = "Recovery\nrate",
-    tau_r = "Recovery\ntime",
-    t_half = "Half-\nrecovery"
+    depth_min_frac = "Resistance\nloss",
+    overshoot_frac = "Overshoot",
+    I_norm         = "Incomplete\nrecovery",
+    k              = "Recovery\nrate",
+    tau_lag        = "Response\nlag",
+    t_half         = "Half-\nrecovery",
+    A_norm = "Resistance\nloss", O_norm = "Overshoot", tau_r = "Recovery\ntime"
   )
 
   long_df$metric_label <- metric_labels[long_df$metric]

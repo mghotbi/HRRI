@@ -89,6 +89,7 @@ importFrom(igraph,
 importFrom(rlang,.data)
 importFrom(stats,
   aggregate,
+  ave,
   coef,
   complete.cases,
   cor,
