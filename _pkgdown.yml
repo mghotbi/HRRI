@@ -1,45 +1,122 @@
-url: https://mghotbi.github.io/RRI/
+url: https://mghotbi.github.io/HRRI/
 
 template:
   bootstrap: 5
-  bootswatch: flatly
+  bslib:
+    base_font:    {google: "Source Sans 3"}
+    heading_font: {google: "Source Serif 4"}
+    code_font:    {google: "JetBrains Mono"}
+    primary:   "#2f6b6b"   # deep teal — redox
+    fg:        "#1c2321"
+    bg:        "#ffffff"
+    border-radius: "0.4rem"
+    btn-border-radius: "0.3rem"
+  opengraph:
+    twitter:
+      creator: "@mitraghotbi"
+      card: summary_large_image
 
 home:
-  title: "RRI"
+  title: HRRI · Soil–Plant–Microbial Redox Recovery Diagnostics
   description: >
-    Holobiont Redox Resilience Index
+    Transparent, assumption-explicit diagnostics for longitudinal soil, plant
+    and microbial observations spanning redox disturbance and recovery.
+  sidebar:
+    structure: [links, license, citation, authors, dev]
 
 navbar:
   structure:
-    left: [intro, reference, articles, news]
-    right: [github]
+    left:  [intro, reference, articles]
+    right: [search, github]
+  components:
+    intro:
+      text: Get started
+      href: articles/HRRI_workflow.html
+    reference:
+      text: Reference
+      href: reference/index.html
 
 reference:
-  - title: Core workflow
-    contents:
-      - simulate_redox_holobiont
-      - rri_pipeline_st
-      - redoxrri_example
 
-  - title: Recovery metrics
-    contents:
-      - rri_recovery_metrics
-      - rri_metric_table
-      - plot_rri_recovery_landscape
+- title: Simulation
+  desc: >
+    Generate illustrative multi-domain trajectories with closed Fe and Mn
+    inventories under flood–drain or drought–rewet forcing.
+  contents:
+  - simulate_redox_holobiont
+  - rri_simulation_demo
+  - plot_rri_simulation_demo
 
-  - title: Visualization
-    contents:
-      - plot_RRI_ternary
-      - theme_ems
+- title: Capacity and stoichiometry
+  desc: >
+    Event-window accessible capacity and electron-balance calculations from
+    explicitly supplied inventories and kinetic parameters.
+  contents:
+  - rri_accessible_capacity
+  - rri_default_reservoirs
+  - rri_o2_demand
+  - rri_capacity_index
 
-  - title: Diagnostics and sensitivity
-    contents:
-      - rri_latent_correlation
-      - rri_compensation_index
-      - rri_sensitivity
+- title: Domain scoring
+  desc: >
+    Integrate plant, soil and microbial observations into composite scores,
+    with identifier alignment and coverage diagnostics.
+  contents:
+  - rri_pipeline
+  - rri_pipeline_st
+  - rri_reference_scores
+  - attach_hrri_ids
+  - rri_micro_functional_score
+  - rri_root_physio
+
+- title: Recovery signatures
+  desc: >
+    Describe decline and return of a higher-is-better score across a single
+    disturbance event.
+  contents:
+  - rri_recovery_metrics
+  - rri_memory_index
+  - rri_kinetics_score
+  - rri_connectivity_score
+  - rri_compensation_index
+  - rri_property_scores
+  - rri_sensitivity
+
+- title: Benchmarking and inference
+  desc: >
+    Internal consistency checks against prescribed synthetic targets. These are
+    not empirical validation.
+  contents:
+  - benchmark_hrri
+  - plot_hrri_benchmark
+  - hrri_infer_architecture
+  - validate_architecture
+  - rri_latent_correlation
+
+- title: Visualisation
+  desc: Publication-oriented diagnostic plots.
+  contents:
+  - plot_rri_timeseries
+  - plot_rri_state_space
+  - plot_RRI_ternary
+  - plot_rri_recovery_map
+  - plot_rri_properties
+  - plot_rri_validation
+  - theme_ems
 
 articles:
-  - title: Vignettes
-    navbar: ~
-    contents:
-      - RRI
+- title: Workflow
+  navbar: ~
+  contents:
+  - HRRI_workflow
+
+authors:
+  Mitra Ghotbi:
+    href: https://orcid.org/0000-0001-9185-9993
+  Marjan Ghotbi:
+    href: https://orcid.org/0000-0003-4655-6445
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with

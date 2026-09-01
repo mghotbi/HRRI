@@ -458,8 +458,9 @@ empirical claim about hydrological memory requires independent observations.
 sessionInfo()
 ```
 
-# Reference
+# References
 
-Ghotbi, M., Ghotbi, M., Stukenbrock, E. H.
-(2026). Ghotbi, M., Ghotbi, M., Stukenbrock, E. H. (2026). *HRRI: a direction-aware R framework for quantifying 
-soil–plant–microbiome redox resilience across hydroclimatic disturbance events* Manuscript submitted. Manuscript submitted.
+Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. (2026).
+HRRI: a direction-aware R framework for quantifying soil–plant–microbiome redox resilience across hydroclimatic disturbance events. *Methods in Ecology and Evolution*.
+Manuscript submitted.
+ 

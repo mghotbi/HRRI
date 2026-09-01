@@ -1,60 +1,52 @@
 Package: HRRI
 Type: Package
-Title: Holobiont Redox Resilience Index for Integrative Stress Biology
-Version: 0.99.6
-Authors@R: c(person("Mitra", "Ghotbi", email = "mitra.ghotbi@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-9185-9993")), person("Marjan", "Ghotbi", email = "ghotbi.marjan@gmail.com", role = "ctb", comment = c(ORCID = "0000-0003-4655-6445")))
-Description: Provides tools to compute the Redox Resilience Index (RRI), a
-    composite metric designed to quantify holobiont-level resilience in
-    soil-plant-microbiome systems. The framework integrates plant physiological
-    traits, soil redox indicators, and microbial community features into a
-    unified analytical pipeline. Multivariate indicators from each domain are
-    reduced to normalized latent variables using dimension-reduction techniques
-    such as principal component analysis, factor analysis, nonlinear embeddings,
-    or network-based approaches. These domain-specific scores are then combined
-    into an interpretable composite index representing system-level redox
-    stability and recovery capacity. The package supports snapshot, temporal,
-    rolling-window, and perturbation-recovery experimental designs and includes
-    simulated datasets for illustration, benchmarking, and testing.
-License: GPL-3
+Title: Diagnostics for Soil-Plant-Microbial Redox Recovery
+Version: 0.99.1
+Date: 2026-09-01
+Authors@R: c(
+    person("Mitra", "Ghotbi",
+           email = "mitra.ghotbi@gmail.com",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-9185-9993")),
+    person("Marjan", "Ghotbi",
+           email = "ghotbi.marjan@gmail.com",
+           role = "ctb",
+           comment = c(ORCID = "0000-0003-4655-6445")))
+Description: Provides diagnostic functions for integrating longitudinal soil,
+    plant and microbial observations during redox disturbance and recovery.
+    Functions calculate stoichiometric potential oxygen demand, accessible
+    electron capacity from explicitly supplied inventories and kinetic
+    parameters, recovery signatures, fixed-reference domain scores, and
+    exploratory multiblock scores with observation-coverage diagnostics.
+    An illustrative simulator produces closed Fe and Mn inventories alongside
+    synthetic observations; its carbon, nitrogen, sulfur and oxygen budgets
+    are not closed and its parameters are not calibrated to field rates.
+    Simulation benchmarks assess agreement with a prescribed synthetic target
+    and do not constitute empirical validation or parameter identification.
+License: MIT + file LICENSE
 Encoding: UTF-8
+LazyData: false
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.3.0)
 Imports:
-    ggplot2,
-    igraph,
-    rlang,
-    stats
+    ggplot2 (>= 3.4.0),
+    graphics,
+    grid,
+    igraph (>= 1.5.0),
+    rlang (>= 1.1.0),
+    stats,
+    utils
 Suggests:
-    BiocStyle,
-    dplyr,
-    FactoMineR,
-    ggtern,
+    ggtern (>= 3.4.0),
     knitr,
-    NMF,
-    patchwork,
-    pkgdown,
+    patchwork (>= 1.2.0),
     psych,
-    purrr,
     rmarkdown,
     testthat (>= 3.0.0),
-    tibble,
-    tidyr,
-    uwot,
-    viridis,
-    WGCNA,
-    withr
+    viridis
 VignetteBuilder: knitr
-biocViews:
-    SystemsBiology,
-    Microbiome,
-    NetworkInference,
-    DimensionReduction,
-    Visualization,
-    Network,
-    PrincipalComponent,
-    Spatial
-URL: https://github.com/mghotbi/RRI, https://mghotbi.github.io/RRI/
-BugReports: https://github.com/mghotbi/RRI/issues
+URL: https://github.com/mghotbi/HRRI, https://mghotbi.github.io/HRRI/
+BugReports: https://github.com/mghotbi/HRRI/issues
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0

@@ -1,0 +1,72 @@
+# Oxidative-oriented soil feature composite
+
+Standardizes selected measured features and averages them with declared
+weights. EAC is positive and EDC is inverted after scaling. This is an
+oxidative-oriented descriptor, not accessible capacity, a redox
+potential, or a universal ranking of resilience. High EDC means greater
+reducing capacity.
+
+## Usage
+
+``` r
+rri_capacity_index(
+  soil_df,
+  eac_col = "EAC",
+  edc_col = "EDC",
+  reactive_fe_col = NULL,
+  poorly_cryst_fe_col = NULL,
+  humic_col = NULL,
+  w_eac = 0.35,
+  w_edc = 0.25,
+  w_fe = 0.25,
+  w_humic = 0.15,
+  scaling = c("pnorm", "minmax", "reference"),
+  ref_ranges = NULL
+)
+```
+
+## Arguments
+
+- soil_df:
+
+  Numeric soil measurements.
+
+- eac_col, edc_col:
+
+  Columns of electron-accepting/donating capacity.
+
+- reactive_fe_col, poorly_cryst_fe_col:
+
+  Optional Fe-pool proxy columns.
+
+- humic_col:
+
+  Optional organic redox proxy column.
+
+- w_eac, w_edc, w_fe, w_humic:
+
+  Non-negative weights.
+
+- scaling:
+
+  pnorm, minmax, or reference; pnorm is not a calibrated probability.
+
+- ref_ranges:
+
+  Named increasing finite ranges in original measurement units;
+  mandatory for every selected column when scaling=reference.
+
+## Value
+
+capacity_score, EAC/(EAC+EDC) ratio, contributors and observed coverage.
+Coverage concerns selected available columns; overlapping pools must not
+be mistaken for independent evidence. Common assays and reference ranges
+are necessary but insufficient for cross-study comparability.
+
+## Examples
+
+``` r
+df <- data.frame(EAC = c(10, 20, 30), EDC = c(5, 8, 12))
+rri_capacity_index(df)$capacity_score
+#> [1] 0.4378530 0.5157538 0.5525451
+```

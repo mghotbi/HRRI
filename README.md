@@ -1,244 +1,145 @@
-# HRRI
+# HRRI <img src="man/figures/logo.png" align="right" height="132" alt="" />
 
-**HRRI** quantifies holobiont redox resilience by integrating plant physiology,
-soil redox chemistry, and microbial resilience into a unified, interpretable
-Redox Resilience Index.
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/mghotbi/HRRI/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mghotbi/HRRI/actions/workflows/R-CMD-check.yaml)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![R >= 4.3](https://img.shields.io/badge/R-%3E%3D%204.3-276DC3.svg)](https://cran.r-project.org/)
+<!-- badges: end -->
 
-## Overview
+> Diagnostics for soil–plant–microbial redox recovery across hydroclimatic
+> disturbance events.
 
-HRRI is an R package for computing, visualizing, and interpreting a
-**Holobiont Redox Resilience Index (HRRI)**. The framework treats resilience as
-an emergent property of coordinated redox buffering across three interacting
-domains:
+**HRRI** provides transparent, assumption-explicit diagnostics for longitudinal
+soil, plant and microbial observations spanning redox disturbance and recovery.
+It computes stoichiometric oxygen demand, event-window accessible electron
+capacity, six recovery signatures, fixed-reference domain scores, and
+exploratory multiblock composites — each with coverage diagnostics and
+documented limits on what may be inferred.
 
-- **Physio**: plant physiological buffering and stress response.
-- **Soil**: soil redox chemistry and electron-acceptor stability.
-- **Micro**: microbial abundance, function, traits, or network resilience.
-
-The package supports spatial structure, temporal dynamics, directionally
-identified latent scores, ternary visualization, sensitivity analysis, and
-perturbation-recovery metrics.
-
-
-
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/c64a2965-0413-41dc-952d-a7d0ce4017a4"
-       alt="Conceptual overview of the HRRI framework"
-       width="900">
-</p>
-
-## Key features
-
-- Integrates plant, soil, and microbial redox-resilience indicators.
-- Computes per-sample HRRI scores scaled to `[0, 1]`.
-- Produces ternary-ready Physio-Soil-Micro compositional scores.
-- Supports PCA, factor analysis, NMF, UMAP, WGCNA, and MFA-style workflows.
-- Uses direction anchoring so higher scores consistently indicate stronger resilience.
-- Supports microbial abundance, functional genes, MetaT expression, upregulation summaries, traits, and optional networks.
-- Computes perturbation-recovery metrics including amplitude, lag, overshoot, incomplete recovery, recovery rate, hysteresis, and trajectory class.
-- Provides diagnostic and sensitivity utilities for validation and robustness checks.
-
-  
-## Brief theory: redox resilience as buffering, connectivity, memory, and recovery
-
-Redox resilience reflects the capacity of a soil-plant-microbiome system to
-absorb, transmit, and recover from perturbations that alter electron flow.
-In this framework, resilience is not treated as a single trait, but as an
-emergent property of several interacting redox processes:
-
-- **Capacity**: the size of electron-accepting and electron-donating pools,
-  such as Fe/Mn oxides, organic matter, clays, humic substances, and other
-  redox-active phases. High capacity allows the system to buffer electron
-  imbalance before crossing critical redox thresholds.
-
-- **Connectivity**: the physical and biochemical linkage among electron
-  donors, electron acceptors, roots, microbes, minerals, and water-filled pore
-  networks. Connectivity controls whether electrons, oxygen, substrates, and
-  microbial processes remain spatially coupled or become locally isolated.
-
-- **Kinetics**: the rate at which redox reactions proceed relative to
-  hydrological or environmental forcing. Fast forcing combined with slow
-  microbial, mineral, or diffusion-mediated responses can generate lag,
-  transient disequilibrium, and redox pulses.
-
-- **Memory**: the persistence of altered mineral, organic, microbial, or plant
-  states after the original perturbation ends. Memory can arise from residual
-  reduced minerals, redox-active organic matter, shifted microbial communities,
-  enzyme pools, or plant acclimation.
-
-
-- **Recovery**: the observable trajectory after perturbation, including return to the
-  original state, hysteresis, lag, overshoot, pathway truncation, incomplete return and alternative stable routing. 
-
-RRI summarizes these interacting processes by integrating plant physiological
-buffering, soil redox stability, and microbial resilience into a single
-directionally aligned index. Perturbation-recovery functions then quantify how
-the RRI trajectory changes through time, including amplitude, lag, overshoot,
-incomplete recovery, recovery rate, hysteresis, and trajectory class.
-
+---
 
 ## Installation
 
 ```r
-install.packages("remotes")
-
-remotes::install_github("mghotbi/HRRI")
+# install.packages("remotes")
+remotes::install_github("mghotbi/HRRI", build_vignettes = TRUE)
 ```
 
-**To install with vignettes:**
-
-```r
-install.packages("remotes")
-install.packages("BiocManager")
-
-BiocManager::install(c("BiocStyle", "rmarkdown", "knitr"))
-
-remotes::install_github(
-  "mghotbi/HRRI",
-  build_vignettes = TRUE,
-  dependencies = TRUE)
-
-```
-
-**Basic example**
+## Quick start
 
 ```r
 library(HRRI)
 
-sim <- simulate_redox_holobiont(seed = 1)
+## 1 — Generate illustrative trajectories (flood–drain, one cycle)
+sim <- simulate_redox_holobiont(
+  n_plot = 2, n_depth = 2, n_plant = 3, n_time = 30,
+  scenario = "flood_drain", n_cycles = 1, seed = 42
+)
 
-res <- rri_pipeline_st(
-  ROS_flux = sim$ROS_flux,
-  Eh_stability = sim$Eh_stability,
-  micro_data = sim$micro_data,
-  id = sim$id,
-  reducer = "per_domain",
-  scaling = "pnorm",
-  direction_phys = "auto",
-  direction_anchor_phys = "FvFm",
-  direction_soil = "auto",
-  direction_anchor_soil = "Eh",
-  direction_micro = "higher_is_better")
+## 2 — Score the three observed domains
+res <- rri_pipeline(
+  plant = sim$ROS_flux,
+  soil  = sim$Eh_stability,
+  micro = log1p(sim$micro_gene_abundance),
+  id    = sim$id,
+  direction_anchor_phys  = "FvFm",   # anchor otherwise-arbitrary PCA signs
+  direction_anchor_soil  = "Eh",
+  direction_anchor_micro = "mtrA"
+)
 
-head(res$row_scores)
-head(res$row_scores_comp)
+## 3 — Extract recovery signatures (one row per trajectory)
+scored <- attach_hrri_ids(res$row_scores, sim$id)
+agg    <- aggregate(RRI ~ plot + depth + time, data = scored, FUN = mean)
 
+rri_recovery_metrics(
+  agg, time_col = "time", group_cols = c("plot", "depth"),
+  perturb_start = 8, perturb_end = 18
+)
 ```
 
+## The four hidden-state controls
 
-**Adding microbial functional information
-**
-Users are not limited to microbial abundance data. Functional microbial
-information can be added to the microbial domain when available.
+| Property | Symbol | Interpretation |
+|:---|:---:|:---|
+| Capacity     | *Q* | Electron-accepting / donating inventory (mmol e⁻ kg⁻¹) |
+| Connectivity | *α* | Fraction of *Q* connected to operative transfer pathways |
+| Kinetics     | *k* | Exchange rate (h⁻¹); encodes mineralogical crystallinity |
+| Memory       | *M* | Legacy of prior disturbance, carried in Fe-phase composition |
+
+Accessible capacity over an event window of duration *τ*:
+
+$$C_{\rm acc}(\tau) \;=\; \sum_i Q_i \, \alpha_i \left(1 - e^{-k_i \tau}\right)$$
+
+## Function reference
+
+**Simulation**
+
+- `simulate_redox_holobiont()` — mass-conserved Fe/Mn trajectories with plant and microbial observation models
+- `rri_simulation_demo()` — reproducible end-to-end demonstration
+
+**Capacity and stoichiometry**
+
+- `rri_accessible_capacity()` — event-window *C*<sub>acc</sub> for declared reservoirs
+- `rri_o2_demand()` — complete-oxidation O₂ demand from reduced-pool inventories
+- `rri_capacity_index()` — oxidative-oriented soil feature composite
+
+**Scoring**
+
+- `rri_pipeline()` — convenience wrapper over available observed domains
+- `rri_pipeline_st()` — full-control multiblock interface
+- `rri_reference_scores()` — fixed-reference, externally anchored scoring
+- `attach_hrri_ids()` — join design identifiers with explicit alignment checks
+
+**Recovery and diagnostics**
+
+- `rri_recovery_metrics()` — lag, overshoot, hysteresis, depth, incomplete return, displaced plateau
+- `rri_memory_index()`, `rri_kinetics_score()`, `rri_connectivity_score()`, `rri_compensation_index()`
+- `rri_property_scores()` — property summary with provenance
+- `rri_sensitivity()` — sensitivity to domain aggregation weights
+
+**Visualisation**
+
+- `plot_rri_timeseries()`, `plot_rri_state_space()`, `plot_RRI_ternary()`,
+  `plot_rri_recovery_map()`, `plot_rri_properties()`, `plot_rri_validation()`
+
+## Scope and limits
+
+HRRI is deliberately conservative about inference. Please note:
+
+- Latent axis directions are **not** biologically identifiable without justified
+  anchors — supply `direction_anchor_*` arguments.
+- A score decline does not identify pathway truncation; a displaced plateau does
+  not establish alternative electron routing.
+- Gene abundance indicates potential, not process rate.
+- Simulator benchmarks measure agreement with a prescribed synthetic target.
+  They are internal consistency checks, not empirical validation.
+- `pnorm` scaling is a monotone transform, not a calibrated probability.
+
+Each function's help page states what its output does and does not support.
+
+## Vignette
 
 ```r
-micro_features <- sim$micro_data
-
-if (!is.null(sim$micro_traits)) {
-  micro_features <- cbind(micro_features, sim$micro_traits)
-}
-
-if (!is.null(sim$gene_abundance)) {
-  micro_features <- cbind(micro_features, sim$gene_abundance)
-}
-
-if (!is.null(sim$gene_log2fc)) {
-  micro_features <- cbind(micro_features, sim$gene_log2fc)
-}
-
-res_full <- rri_pipeline_st(
-  ROS_flux = sim$ROS_flux,
-  Eh_stability = sim$Eh_stability,
-  micro_data = micro_features,
-  id = sim$id,
-  reducer = "per_domain",
-  scaling = "pnorm",
-  direction_phys = "auto",
-  direction_anchor_phys = "FvFm",
-  direction_soil = "auto",
-  direction_anchor_soil = "Eh",
-  direction_micro = "higher_is_better")
-
+vignette("HRRI_workflow", package = "HRRI")
 ```
 
-The minimal and expanded workflows are both valid. The expanded workflow simply
-uses a richer definition of microbial resilience.
+Walks through simulation, accessible-capacity estimation, domain scoring,
+recovery signatures, and the mineralogical-ratchet disturbance-history
+experiment.
 
-Ternary visualization
-
-```r
-plot_RRI_ternary(res$row_scores_comp)
-
-```
-
-<img src="https://github.com/user-attachments/assets/abf56f94-582a-49d3-a28d-83087a01dd61" alt="Ternary visualization of Physio, Soil, and Micro contributions to RRI" width="900">
-
-Perturbation-recovery metrics
-
-RRI trajectories can be summarized using direction-aware perturbation-recovery
-metrics.
-
-```r
-rec <- rri_recovery_metrics(
-  res = res,
-  id = sim$id,
-  time_col = "time",
-  group_cols = c("plot", "depth", "plant_id"),
-  perturb_start = 5,
-  perturb_end = 7)
-
-head(rec)
-
-rri_metric_table()
-
-```
-
-Recovery metrics include perturbation amplitude, lag time, overshoot,
-incomplete recovery, recovery rate, recovery fit diagnostics, recovery
-timescale, half-recovery time, hysteresis, and trajectory class.
-
-
-**Output structure**
-
-The primary output from rri_pipeline_st() contains:
-
-row_scores: absolute Physio, Soil, Micro, and RRI scores.
-row_scores_comp: compositional Physio-Soil-Micro allocation scores.
-meta: model settings and system-level RRI metadata.
-
-The compositional output is directly compatible with plot_RRI_ternary().
-
-**Additional utilities**
-
-RRI includes helper functions for diagnostics, sensitivity analysis, recovery
-metrics, and visualization:
-
-
-```r
-rri_latent_correlation(res, sim$latent_truth)
-rri_compensation_index(res)
-rri_sensitivity(res)
-
-plot_RRI_ternary(res$row_scores_comp)
-plot_rri_recovery_map(rec)
-plot_rri_recovery_landscape(rec)
-
-
-```
-
-**Citation**
+## Citation
 
 ```r
 citation("HRRI")
 ```
 
-Ghotbi, M. et al. RRI: A framework for holobiont-level redox resilience (manuscript in preparation).
+Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. (2026).
+HRRI: a direction-aware R framework for quantifying soil–plant–microbiome redox resilience 
+across hydroclimatic disturbance events. *Methods in Ecology and Evolution*.
+Manuscript submitted.
+ 
 
-**License**   GPL-3 © 2025 Mitra Ghotbi
+## License
 
-**Maintainer**: Mitra Ghotbi
-Email: mitra.ghotbi@gmail.com
-ORCID: 0000-0001-9185-9993
-
-
-
+MIT © Mitra Ghotbi. See [LICENSE](LICENSE).
