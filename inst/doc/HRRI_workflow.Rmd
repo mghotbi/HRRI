@@ -140,10 +140,10 @@ systems buffer and recover from hydroclimatic redox disturbances (Ghotbi *et al.
 
 | Property | Symbol | Interpretation |
 |---|---|---|
-| Capacity | $Q$ | Electron-accepting and electron-donating inventory available within the system (mmol e⁻ kg⁻¹) |
+| Capacity | $Q$ | Total electron-accepting/donating inventory (mmol e⁻ kg⁻¹) |
 | Connectivity | $\alpha$ | Fraction of $Q$ electrochemically accessible to porewater |
-| Kinetics | $k$ | Characteristic rate of electron exchange under physicochemical and biological constraints (h⁻¹) |
-| Memory | $M$ | Legacy of prior disturbances retained through persistent biogeochemical, microbial and physiological states that influence future system responses |
+| Kinetics | $k$ | Exchange rate (h⁻¹); encodes mineralogical crystallinity |
+| Memory | $M$ | Legacy of prior disturbances; encoded in Fe-phase composition |
 
 These combine through the accessible-capacity formula:
 
@@ -460,4 +460,7 @@ sessionInfo()
 
 # References
 
-Ghotbi, M., Ghotbi, M., Guerreiro, M., Komluski, J., & Holtgrewe-Stukenbrock, E. H. (2026). HRRI: A direction-aware R framework for quantifying soil–plant–microbiome redox resilience across hydroclimatic disturbance events. Manuscript submitted.
+Ghotbi, M., Ghotbi, M., & Holtgrewe-Stukenbrock, E. H. (2026).
+HRRI: A direction-aware R framework for quantifying soil–plant–microbiome
+redox resilience across hydroclimatic disturbance events.
+Manuscript submitted.

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,19 @@
       <small>Source: <a href="https://github.com/mghotbi/HRRI/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.99.2" id="hrri-0992">HRRI 0.99.2<a class="anchor" aria-label="anchor" href="#hrri-0992"></a></h2>
+<div class="section level3">
+<h3 id="scientific-change-0-99-2">Scientific change<a class="anchor" aria-label="anchor" href="#scientific-change-0-99-2"></a></h3>
+<ul><li>Memory (<code>M</code>) is now a holobiont state rather than a mineralogical one. It accumulates from hydrological event load, the Fe-crystallinity ratchet, persistent plant acclimation (aerenchyma displacement), and microbial community displacement. Component weights sum to the previous total (0.060), so overall accumulation rate is unchanged while its causes are distributed across the three domains.</li>
+<li>Added <code>micro_legacy</code> as a simulator state: it accrues under sustained reduction and relaxes more slowly under oxic recovery, giving the microbial component an asymmetric (hysteretic) legacy.</li>
+<li>
+<code>latent_state</code> now returns <code>micro_legacy</code> and <code>plant_legacy</code> so the memory decomposition is auditable.</li>
+<li>Memory decay remains keyed to Fe crystallinity, which is the least reversible component and sets the floor on memory loss.</li>
+<li>
+<strong>This changes <code>latent_truth</code>.</strong> All figures, benchmarks and any stored simulation outputs must be regenerated.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.99.1" id="hrri-0991">HRRI 0.99.1<a class="anchor" aria-label="anchor" href="#hrri-0991"></a></h2>
 <div class="section level3">

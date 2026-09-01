@@ -91,6 +91,19 @@
 #' @return List of identifiers, data blocks, latent states, flux descriptors,
 #' balance checks, metadata and legacy views. The metadata records hidden columns,
 #' seed and RNG configuration. With seed supplied, the caller RNG is restored.
+#' @details Memory (\code{M}) is a holobiont state, not a mineralogical one.
+#' It accumulates from four sources with weights summing to 0.060 per step,
+#' scaled by \code{history_strength}: hydrological event load (0.020), the
+#' Fe-crystallinity ratchet (0.016), persistent plant acclimation measured as
+#' aerenchyma displacement above the naive baseline (0.012), and microbial
+#' community displacement (0.012). The microbial component is itself a state
+#' (\code{micro_legacy}) that accrues under sustained reduction and relaxes
+#' more slowly under oxic recovery, so community composition carries an
+#' asymmetric legacy. Memory decay remains keyed to Fe crystallinity because
+#' mineral ordering is the least reversible component and sets the floor on
+#' memory loss. The component series are returned in \code{latent_state} as
+#' \code{micro_legacy} and \code{plant_legacy} so the decomposition is
+#' auditable. These are illustrative weights, not calibrated rates.
 #' @importFrom stats rnorm runif rlnorm rnbinom
 #' @examples
 #' \dontrun{
@@ -313,7 +326,7 @@ simulate_redox_holobiont <- function(
     "FeIII_poor_crystalline", "FeIII_crystalline", "FeII",
     "FeS", "MnIV", "MnIII", "MnII", "NO3", "NH4", "SO4",
     "sulfide", "CH4", "DOC", "humic_EAC", "humic_EDC", "memory",
-    "root_biomass", "aerenchyma"
+    "root_biomass", "aerenchyma", "micro_legacy"
   )
   state <- matrix(NA_real_,
     nrow = n, ncol = length(state_names),
@@ -391,7 +404,8 @@ simulate_redox_holobiont <- function(
       humic_EDC = max(3, 14 + 3 * pair_eff),
       memory = if (preconditioned) 0.30 * history_strength else 0.03,
       root_biomass = max(0.12, 0.42 + 0.06 * pair_eff + 0.04 * unit_eff),
-      aerenchyma = if (preconditioned) 0.24 else 0.12
+      aerenchyma = if (preconditioned) 0.24 else 0.12,
+      micro_legacy = if (preconditioned) 0.22 * history_strength else 0.02
     )
     if (rescue == "capacity") {
       s["FeIII_poor_crystalline"] <- s["FeIII_poor_crystalline"] * 1.20
@@ -543,11 +557,35 @@ simulate_redox_holobiont <- function(
       s["humic_EDC"] <- max(0.1, s["humic_EDC"] + 0.05 * red_signal -
         0.04 * ox_signal)
 
+      # ---- Microbial community legacy -------------------------------------
+      # Sustained reduction selects for anaerobic specialists; oxic recovery
+      # relaxes composition more slowly than reduction displaces it, so the
+      # community carries an asymmetric (hysteretic) legacy of the event.
+      micro_gain  <- 0.030 * red_signal * event[rr]
+      micro_relax <- 0.012 * ox_signal * (1 - event[rr])
+      s["micro_legacy"] <- clamp(s["micro_legacy"] + micro_gain - micro_relax)
+
+      # ---- Plant acclimation legacy ---------------------------------------
+      # Aerenchyma formed under flooding is anatomically persistent. Legacy is
+      # the displacement of current porosity above the naive (unstressed) base.
+      plant_legacy <- clamp((s["aerenchyma"] - 0.12) / 0.50)
+
+      # ---- Holobiont memory update ----------------------------------------
+      # M accumulates from four sources spanning the holobiont: hydrological
+      # event load, the mineralogical (Fe-crystallinity) ratchet, persistent
+      # plant acclimation, and microbial community displacement. Component
+      # weights sum to 0.060, preserving the total accumulation rate of the
+      # earlier Fe-only formulation while distributing it across domains.
+      # Decay remains keyed to Fe crystallinity: mineral ordering is the least
+      # reversible component and therefore sets the floor on memory loss.
       disturbance_load <- clamp(abs(red_signal - 0.35) * event[rr] +
         0.45 * stress)
-      memory_gain <- history_strength * (0.035 * disturbance_load +
-        0.025 * fe_cryst /
-          pmax(fe_total_initial, 1e-6))
+      memory_gain <- history_strength * (
+        0.020 * disturbance_load +
+        0.016 * fe_cryst / pmax(fe_total_initial, 1e-6) +
+        0.012 * plant_legacy +
+        0.012 * s["micro_legacy"]
+      )
       memory_decay <- 0.018 * (1 - event[rr]) * (1 - s["FeIII_crystalline"] /
         fe_total_initial)
       s["memory"] <- clamp(s["memory"] + memory_gain - max(0, memory_decay))
@@ -800,6 +838,8 @@ simulate_redox_holobiont <- function(
     k_accept_h = process[, "k_accept"],
     k_donate_h = process[, "k_donate"],
     memory = state[, "memory"],
+    micro_legacy = state[, "micro_legacy"],
+    plant_legacy = clamp((state[, "aerenchyma"] - 0.12) / 0.50),
     redox_position = redox_position,
     Cacc_EAC = process[, "Cacc_EAC"],
     Cacc_EDC = process[, "Cacc_EDC"],
@@ -889,7 +929,7 @@ simulate_redox_holobiont <- function(
       seed = seed,
       RNGkind = RNGkind(),
       time_unit = "one day per transition",
-      model_status = "Illustrative transitions; only Fe and Mn balances checked; alpha enters selected rates and k_accept gates crystalline-Fe reduction",
+      model_status = "Illustrative transitions; only Fe and Mn balances checked; memory is multi-domain (soil Fe ratchet + plant acclimation + microbial displacement); alpha enters selected rates and k_accept gates crystalline-Fe reduction",
       intervention_scope = "Capacity changes initial Fe(III). Connectivity changes accessibility terms in selected Fe/Mn/N/S/C rates. Kinetics changes calculated accessible capacity; k_accept also gates crystalline-Fe reduction. Evaluate outcomes rather than assuming rescue.",
       validation_scope = "latent_truth v3.1 is a prescribed synthetic target: z(t) = 0.26*Bdir + 0.24*(Cacc/sumQ) + 0.18*sqrt(alpha_accept*alpha_donate) + 0.16*sqrt(k_accept_norm*k_donate_norm) + 0.16*Mbalance. No plant observable enters the target. Agreement is an internal diagnostic, not empirical or predictive validation.",
       hidden_input_columns = c("Cacc_EAC", "Cacc_EDC", "Cacc_total", "Cacc_fraction",

@@ -157,6 +157,20 @@ physical fluxes. Do not infer quantitative field rates from their labels alone.
 Q_accept now counts one electron per crystalline Fe(III); the previous 0.22
 factor mixed accessibility into inventory. DOC reducing equivalents remain
 an illustrative coefficient dependent on assumed carbon oxidation state.
+
+Memory (\code{M}) is a holobiont state, not a mineralogical one.
+It accumulates from four sources with weights summing to 0.060 per step,
+scaled by \code{history_strength}: hydrological event load (0.020), the
+Fe-crystallinity ratchet (0.016), persistent plant acclimation measured as
+aerenchyma displacement above the naive baseline (0.012), and microbial
+community displacement (0.012). The microbial component is itself a state
+(\code{micro_legacy}) that accrues under sustained reduction and relaxes
+more slowly under oxic recovery, so community composition carries an
+asymmetric legacy. Memory decay remains keyed to Fe crystallinity because
+mineral ordering is the least reversible component and sets the floor on
+memory loss. The component series are returned in \code{latent_state} as
+\code{micro_legacy} and \code{plant_legacy} so the decomposition is
+auditable. These are illustrative weights, not calibrated rates.
 }
 \examples{
 \dontrun{

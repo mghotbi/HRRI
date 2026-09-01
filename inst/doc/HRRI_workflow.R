@@ -1,26 +1,4 @@
----
-title: "HRRI: Holobiont Redox Resilience Index — End-to-End Workflow"
-author:
-  - name: Mitra Ghotbi
-    email: mitra.ghotbi@gmail.com
-date: "`r Sys.Date()`"
-package: HRRI
-output:
-  rmarkdown::html_vignette:
-    toc: true
-    toc_depth: 3
-    number_sections: true
-    css: css/hrri.css
-    fig_width: 7
-    fig_height: 4.2
-    dev: png
-vignette: >
-  %\VignetteIndexEntry{HRRI: Holobiont Redox Resilience Index — End-to-End Workflow}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
----
-
-```{r setup, include=FALSE}
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(
   collapse   = TRUE,
   comment    = "#>",
@@ -130,47 +108,8 @@ finite_mean <- function(x) {
   x <- x[is.finite(x)]
   if (length(x)) mean(x) else NA_real_
 }
-```
 
-# Introduction
-
-The **HRRI** package implements exploratory, multi-domain diagnostics for describing how soil–plant–microbiome
-systems buffer and recover from hydroclimatic redox disturbances (Ghotbi *et al.*,
-2026). The theoretical framing distinguishes four properties. They are not all identifiable from a single observation curve:
-
-| Property | Symbol | Interpretation |
-|---|---|---|
-| Capacity | $Q$ | Electron-accepting and electron-donating inventory available within the system (mmol e⁻ kg⁻¹) |
-| Connectivity | $\alpha$ | Fraction of $Q$ electrochemically accessible to porewater |
-| Kinetics | $k$ | Characteristic rate of electron exchange under physicochemical and biological constraints (h⁻¹) |
-| Memory | $M$ | Legacy of prior disturbances retained through persistent biogeochemical, microbial and physiological states that influence future system responses |
-
-These combine through the accessible-capacity formula:
-
-$$C_{\rm acc} = \sum_i Q_i \cdot \alpha_i \cdot \left(1 - e^{-k_i \tau}\right)$$
-
-and aggregate into the Holobiont Redox Resilience Index:
-
-$$\mathrm{RRI}_{it} = w_P \cdot P_{it} + w_S \cdot S_{it} + w_M \cdot M_{it}$$
-
-where $P$ (Physiology), $S$ (Soil), and $M$ (Microbial) are domain scores.
-
-This vignette walks through the full workflow from in-silico data generation
-to RRI computation, accessible-capacity estimation, and recovery-signature
-metrics — all driven by `simulate_redox_holobiont()`.
-
-# In-silico Data Generation
-
-`simulate_redox_holobiont()` is the package's master simulator. It generates
-synthetic longitudinal observations across all three holobiont domains.
-<div class="caution">
-Only Fe and Mn inventories carry closed-balance checks. Carbon, nitrogen,
-sulfur and oxygen budgets are **not** closed, and all rate parameters are
-illustrative rather than field-calibrated. Simulated output supports software
-demonstration and falsifiable model checks, not empirical ecological inference.
-</div>
-
-```{r simulate}
+## ----simulate-----------------------------------------------------------------
 library(HRRI)
 packageVersion("HRRI")
 
@@ -217,52 +156,29 @@ sim <- simulate_redox_holobiont(
 ## Top-level structure
 names(sim)
 nrow(sim$id)                   # one row per plot × depth × plant × time
-```
 
-## Design identifiers
-
-```{r design}
+## ----design-------------------------------------------------------------------
 head(sim$id[, c("plot","depth","plant_id","time","cycle","phase","WFPS")])
-```
 
-## Soil geochemical outputs
-
-```{r soil}
+## ----soil---------------------------------------------------------------------
 head(sim$soil_data[, c("EAC","EDC","Cacc_EAC","Cacc_total","Cacc_fraction",
                         "FeIII_poor_crystalline_mmol_kg",
                         "FeII_mmol_kg","Eh","pH")])
-```
 
-## Fe mass-balance verification
-
-```{r conservation}
+## ----conservation-------------------------------------------------------------
 ## Maximum absolute error should be < 0.01 mmol kg-1
 sim$conservation_checks
-```
 
-## Plant physiology
-
-```{r plant}
+## ----plant--------------------------------------------------------------------
 head(sim$plant_data[, c("SPAD","FvFm","ROL","ROS_load","aerenchyma")])
-```
 
-## Microbial functional genes
-
-```{r genes}
+## ----genes--------------------------------------------------------------------
 ## 18 genes spanning Fe-cycling, denitrification, nitrification,
 ## methanogenesis, and sulfur cycling
 colnames(sim$micro_gene_abundance)
 summary(sim$micro_gene_abundance[, "mcrA"])   # methanogenesis gene
-```
 
-# Accessible-Capacity Estimation
-
-`rri_accessible_capacity()` computes $C_{\rm acc}$ for arbitrary mineralogical
-reservoirs with explicitly supplied accessibility and exchange-rate parameters.
-The values below are illustrative model inputs, not estimates or validated
-literature defaults.
-
-```{r cacc}
+## ----cacc---------------------------------------------------------------------
 ## Subset one plot-depth unit for illustration
 idx <- sim$id$plot == "P1" & sim$id$depth == "D1" & sim$id$plant_id == "Plant1"
 sdf <- sim$soil_data[idx, ]
@@ -306,26 +222,16 @@ if ("ck_limited" %in% names(cap) && length(cap$ck_limited)) {
 } else {
   cat("CK-limited classification is not returned by this HRRI version.\n")
 }
-```
 
-## Effect of event timescale τ
-
-```{r tau_sweep}
+## ----tau_sweep----------------------------------------------------------------
 tau_vals <- c(1, 6, 24, 72, 168, 720)   # 1 h to 30 d
 cacc_tau <- sapply(tau_vals, function(tt) {
   r <- rri_accessible_capacity(sdf, res_spec, tau = tt, normalise = FALSE)
   mean(r$cacc_raw, na.rm = TRUE)
 })
 data.frame(tau_h = tau_vals, Cacc_mean = round(cacc_tau, 2))
-```
 
-# RRI Pipeline
-
-`rri_pipeline()` integrates available observed domains into an exploratory
-composite. The simulator's hidden architecture columns are excluded. We use
-explicit measured anchors to orient otherwise arbitrary PCA axes.
-
-```{r rri_pipeline}
+## ----rri_pipeline-------------------------------------------------------------
 rri_out <- rri_pipeline(
   plant        = sim$ROS_flux,
   soil         = sim$Eh_stability,
@@ -345,18 +251,8 @@ attr(rri_scored, "id_alignment")
 summary(rri_scored$RRI)
 head(rri_scored[, c("plot", "depth", "plant_id", "time",
                     "RRI", "Physio", "Soil", "Micro")])
-```
 
-<div class="method">
-Alignment uses complete observation keys, or a shared unique `row_id` when
-available. If neither is returned the pipeline must preserve input row order —
-matching row counts alone do **not** establish alignment. Shared identifier
-columns are checked for conflicts rather than silently overwritten.
-</div>
-
-## Correlation with latent truth
-
-```{r validation}
+## ----validation---------------------------------------------------------------
 ## rri_scored is aligned to sim$id, and hence to its latent_truth vector.
 truth <- sim$latent_truth
 if (!is.numeric(truth) || length(truth) != nrow(rri_scored)) {
@@ -371,25 +267,8 @@ if (sum(ok) >= 3L && stats::sd(rri_scored$RRI[ok]) > 0 &&
   cat("Correlation unavailable: too few finite pairs or a constant vector.\n")
 }
 cat("r(RRI, latent truth):", round(r_val, 3), "\n")
-```
 
-This is a within-simulation association, not independent predictive validation
-or evidence that the individual latent parameters have been identified.
-
-# Recovery Signatures
-
-`rri_recovery_metrics()` summarizes the RRI trajectory around a specified
-disturbance window. The output fields depend on the installed package version;
-the complete returned table is displayed below without assuming legacy names.
-A score minimum or persistent departure alone does not establish biochemical
-pathway truncation or alternative routing. Those interpretations require
-independent process evidence.
-
-The function requires **one row per time point per group**. Because the
-pipeline returns one row per plant, we must first average RRI across plants
-within each plot × depth × time cell before calling recovery metrics.
-
-```{r recovery}
+## ----recovery-----------------------------------------------------------------
 ## Step 1 — use the aligned score table created in the pipeline chunk.
 ## Step 2 — aggregate to one row per plot × depth × time (mean over plants).
 ## The data-frame method avoids formula-level complete-case filtering.
@@ -421,22 +300,8 @@ if (!is.data.frame(metrics) || nrow(metrics) == 0L) {
 }
 names(metrics)
 metrics
-```
 
-With `forcing_col = NULL`, a returned hysteresis-related field must be
-interpreted according to the installed function's documented definition; it
-does not demonstrate a measured forcing–response loop. The limits 8 and 18
-are example analysis boundaries, in the units of `time`; verify them against
-the simulator's event schedule before interpreting recovery rates.
-
-# Disturbance-History Sensitivity
-
-Repeated-cycle simulations can test consequences of this simulator's stated
-rules. They do not establish a universal mineralogical ratchet. In this version,
-crystallisation is continuous rather than restricted to reoxidation events, and
-end-state EAC is not constrained to decline monotonically with cycle count.
-
-```{r history_sensitivity}
+## ----history_sensitivity------------------------------------------------------
 history <- do.call(rbind, lapply(1:4, function(nc) {
   z <- simulate_redox_holobiont(n_plot=1, n_depth=1, n_plant=2,
     n_time=30, p_micro=5, seed=99, n_cycles=nc,
@@ -447,17 +312,7 @@ history <- do.call(rbind, lapply(1:4, function(nc) {
     memory_end=tail(z$latent_state$memory[keep],1))
 }))
 history
-```
 
-Interpret the direction and magnitude as a model sensitivity result. An
-empirical claim about hydrological memory requires independent observations.
-
-# Session Information
-
-```{r sessionInfo}
+## ----sessionInfo--------------------------------------------------------------
 sessionInfo()
-```
 
-# References
-
-Ghotbi, M., Ghotbi, M., Guerreiro, M., Komluski, J., & Holtgrewe-Stukenbrock, E. H. (2026). HRRI: A direction-aware R framework for quantifying soil–plant–microbiome redox resilience across hydroclimatic disturbance events. Manuscript submitted.

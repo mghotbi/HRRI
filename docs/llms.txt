@@ -58,10 +58,10 @@ rri_recovery_metrics(
 
 | Property | Symbol | Interpretation |
 |:---|:--:|:---|
-| Capacity | *Q* | Electron-accepting / donating inventory (mmol e⁻ kg⁻¹) |
-| Connectivity | *α* | Fraction of *Q* connected to operative transfer pathways |
-| Kinetics | *k* | Exchange rate (h⁻¹); encodes mineralogical crystallinity |
-| Memory | *M* | Legacy of prior disturbance, carried in Fe-phase composition |
+| Capacity | *Q* | Electron-accepting and electron-donating inventory available within the system (mmol e⁻ kg⁻¹) |
+| Connectivity | *α* | Fraction of capacity functionally connected to active electron-transfer pathways |
+| Kinetics | *k* | Characteristic rate of electron exchange under physicochemical and biological constraints (h⁻¹) |
+| Memory | *M* | Legacy of prior disturbances retained through persistent biogeochemical, microbial and physiological states that influence future system responses |
 
 Accessible capacity over an event window of duration *τ*:
 

@@ -10,10 +10,10 @@ identifiable from a single observation curve:
 
 | Property | Symbol | Interpretation |
 |----|----|----|
-| Capacity | $`Q`$ | Total electron-accepting/donating inventory (mmol e⁻ kg⁻¹) |
+| Capacity | $`Q`$ | Electron-accepting and electron-donating inventory available within the system (mmol e⁻ kg⁻¹) |
 | Connectivity | $`\alpha`$ | Fraction of $`Q`$ electrochemically accessible to porewater |
-| Kinetics | $`k`$ | Exchange rate (h⁻¹); encodes mineralogical crystallinity |
-| Memory | $`M`$ | Legacy of prior disturbances; encoded in Fe-phase composition |
+| Kinetics | $`k`$ | Characteristic rate of electron exchange under physicochemical and biological constraints (h⁻¹) |
+| Memory | $`M`$ | Legacy of prior disturbances retained through persistent biogeochemical, microbial and physiological states that influence future system responses |
 
 These combine through the accessible-capacity formula:
 
@@ -50,7 +50,7 @@ empirical ecological inference.
 
 library(HRRI)
 packageVersion("HRRI")
-#> [1] '0.99.1'
+#> [1] '0.99.2'
 
 ## Compatibility shim -----------------------------------------------------
 ## rri_pipeline() is the convenience wrapper around rri_pipeline_st().
@@ -132,13 +132,13 @@ head(sim$soil_data[, c("EAC","EDC","Cacc_EAC","Cacc_total","Cacc_fraction",
 #> 4 356.4329 146.4849 135.8578   188.5886     0.3749889
 #> 5 279.5978 104.1723 113.5038   146.9287     0.3828560
 #> 6 286.3268 115.3987 116.9400   152.2080     0.3788855
-#>   FeIII_poor_crystalline_mmol_kg FeII_mmol_kg        Eh       pH
-#> 1                       67.13652     17.26132 46.285671 6.657346
-#> 2                       70.93895     17.91741 79.808173 6.544344
-#> 3                       93.28308     24.82342 -4.972318 6.653453
-#> 4                       99.62313     26.34155 19.816007 6.475302
-#> 5                       67.21437     17.18353 56.597319 6.725813
-#> 6                       70.95279     17.89324        NA 6.800352
+#>   FeIII_poor_crystalline_mmol_kg FeII_mmol_kg       Eh       pH
+#> 1                       67.13652     17.26132 46.28567 6.657346
+#> 2                       70.93895     17.91741 79.80817 6.544344
+#> 3                       93.28308     24.82342       NA 6.653453
+#> 4                       99.62313     26.34155 19.81601 6.475302
+#> 5                       67.21437     17.18353 56.59732 6.725813
+#> 6                       70.95279     17.89324 93.27404 6.800352
 ```
 
 ### Fe mass-balance verification
@@ -150,7 +150,7 @@ sim$conservation_checks
 #>                                    check        value
 #> 1 maximum_absolute_Fe_mass_balance_error 1.136868e-13
 #> 2 maximum_absolute_Mn_mass_balance_error 1.421085e-14
-#> 3                 minimum_simulated_pool 1.875881e-04
+#> 3                 minimum_simulated_pool 0.000000e+00
 #> 4                 nonnegative_pool_check 1.000000e+00
 ```
 
@@ -160,12 +160,12 @@ sim$conservation_checks
 
 head(sim$plant_data[, c("SPAD","FvFm","ROL","ROS_load","aerenchyma")])
 #>       SPAD      FvFm       ROL  ROS_load aerenchyma
-#> 1 41.64823 0.8149366 0.3165926 0.1962837  0.1169200
-#> 2 41.74653 0.8053264 0.3388381 0.1817459  0.1169200
-#> 3 43.48615 0.7906729 0.3122744 0.2424776  0.1313152
-#> 4 43.51788 0.8002860 0.3490689 0.1989678  0.1169200
-#> 5 43.79311 0.8167222 0.3719281 0.1988047  0.2164600
-#> 6 42.65734 0.7955340 0.4006285 0.1607862  0.2164600
+#> 1 41.64819 0.8149359 0.3165926 0.1962876  0.1169200
+#> 2 41.74657 0.8053272 0.3388381 0.1817415  0.1169200
+#> 3 43.48661 0.7906804 0.3122744 0.2424358  0.1313152
+#> 4 43.51764 0.8002821 0.3490689 0.1989893  0.1169200
+#> 5 43.78669 0.8166172 0.3719281 0.1993879  0.2164600
+#> 6 42.65099 0.7954301 0.4006285 0.1613636  0.2164600
 ```
 
 ### Microbial functional genes
@@ -180,7 +180,7 @@ colnames(sim$micro_gene_abundance)
 #> [13] "amoA_AOB" "nxrB"     "dsrA"     "dsrB"     "mcrA"     "pmoA"
 summary(sim$micro_gene_abundance[, "mcrA"])   # methanogenesis gene
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>   56717  140868  185855  195049  233312  578788
+#>   56717  142005  186655  196218  235030  582998
 ```
 
 ## Accessible-Capacity Estimation
@@ -227,9 +227,9 @@ cap <- rri_accessible_capacity(sdf, res_spec, tau = 24,
 ## Per-component summary (returned because return_components = TRUE)
 cap$components
 #>           reservoir type  alpha k_per_tau_unit saturation_fraction mean_Q
-#> 1    reactive_FeIII  EAC 0.5061         0.0672              0.7931 62.820
+#> 1    reactive_FeIII  EAC 0.5062         0.0672              0.7931 62.820
 #> 2 crystalline_FeIII  EAC 0.2000         0.0080              0.1747 54.059
-#> 3         FeII_pool  EDC 0.4807         0.0453              0.6602 20.946
+#> 3         FeII_pool  EDC 0.4807         0.0453              0.6602 20.947
 #>   mean_contribution
 #> 1            25.339
 #> 2             1.889
@@ -237,9 +237,9 @@ cap$components
 
 ## Mean accessible vs. total inventory
 cat("Mean Cacc_raw:", mean(cap$cacc_raw, na.rm=TRUE), "mmol e- kg-1\n")
-#> Mean Cacc_raw: 33.85065 mmol e- kg-1
+#> Mean Cacc_raw: 33.85137 mmol e- kg-1
 cat("Mean fraction :", mean(cap$cacc_fraction, na.rm=TRUE), "\n")
-#> Mean fraction : 0.2455965
+#> Mean fraction : 0.2456018
 if ("ck_limited" %in% names(cap) && length(cap$ck_limited)) {
   cat("CK-limited rows:", sum(cap$ck_limited, na.rm=TRUE),
       "/", sum(!is.na(cap$ck_limited)), "classified rows\n")
@@ -296,16 +296,16 @@ attr(rri_scored, "id_alignment")
 #> [1] "observation keys"
 summary(rri_scored$RRI)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>  0.2229  0.3861  0.5100  0.5124  0.6413  0.8111
+#>  0.2247  0.3866  0.5125  0.5126  0.6417  0.8091
 head(rri_scored[, c("plot", "depth", "plant_id", "time",
                     "RRI", "Physio", "Soil", "Micro")])
 #>   plot depth plant_id time       RRI    Physio      Soil     Micro
-#> 1   P1    D1   Plant1    1 0.5325589 0.4003217 0.8663227 0.1836689
-#> 2   P2    D1   Plant1    1 0.6679582 0.4420314 0.7785811 0.8072591
-#> 3   P1    D2   Plant1    1 0.4450769 0.4103019 0.2531689 0.8008149
-#> 4   P2    D2   Plant1    1 0.4132135 0.5230932 0.1604719 0.6637687
-#> 5   P1    D1   Plant2    1 0.6320338 0.4016891 0.8255425 0.6449023
-#> 6   P2    D1   Plant2    1 0.5843764 0.4715212 0.8202560 0.3649661
+#> 1   P1    D1   Plant1    1 0.5331287 0.4047907 0.8681722 0.1767324
+#> 2   P2    D1   Plant1    1 0.6660409 0.4460895 0.7806314 0.7906280
+#> 3   P1    D2   Plant1    1 0.4499651 0.4141672 0.2643849 0.7970104
+#> 4   P2    D2   Plant1    1 0.4119487 0.5263208 0.1609431 0.6534366
+#> 5   P1    D1   Plant2    1 0.6296590 0.4048218 0.8278830 0.6272726
+#> 6   P2    D1   Plant2    1 0.5933279 0.4741678 0.8424479 0.3615599
 ```
 
 Alignment uses complete observation keys, or a shared unique `row_id`
@@ -332,7 +332,7 @@ if (sum(ok) >= 3L && stats::sd(rri_scored$RRI[ok]) > 0 &&
   cat("Correlation unavailable: too few finite pairs or a constant vector.\n")
 }
 cat("r(RRI, latent truth):", round(r_val, 3), "\n")
-#> r(RRI, latent truth): 0.452
+#> r(RRI, latent truth): 0.467
 ```
 
 This is a within-simulation association, not independent predictive
@@ -406,25 +406,25 @@ names(metrics)
 #> [35] "H_norm"                  "I_norm"
 metrics
 #>   plot depth baseline_rri   min_rri  depth_min depth_min_frac tau_lag
-#> 1   P1    D1    0.5587637 0.5045502 0.05421348     0.09702398       2
-#> 2   P1    D2    0.3290230 0.2886692 0.04035387     0.12264754       2
-#> 3   P2    D1    0.5893014 0.6032840 0.00000000     0.00000000      NA
-#> 4   P2    D2    0.3430854 0.2762618 0.06682359     0.19477249       2
+#> 1   P1    D1    0.5591538 0.5034299 0.05572390     0.09965755       2
+#> 2   P1    D2    0.3294619 0.2887310 0.04073096     0.12362875       2
+#> 3   P2    D1    0.5909879 0.6074584 0.00000000     0.00000000      NA
+#> 4   P2    D2    0.3432471 0.2759822 0.06726483     0.19596623       2
 #>   k_recovery t_half overshoot overshoot_frac H_hysteresis      H_axis
-#> 1         NA     NA 0.1742331      0.3118190           NA unavailable
-#> 2         NA     NA 0.1379898      0.4193924           NA unavailable
-#> 3         NA     NA 0.1621001      0.2750716           NA unavailable
-#> 4         NA     NA 0.1794376      0.5230114           NA unavailable
+#> 1         NA     NA 0.1737384      0.3107167           NA unavailable
+#> 2         NA     NA 0.1384419      0.4202061           NA unavailable
+#> 3         NA     NA 0.1582404      0.2677557           NA unavailable
+#> 4         NA     NA 0.1773574      0.5167048           NA unavailable
 #>   temporal_asymmetry incomplete_return incomplete_return_frac
-#> 1                  1         0.1579226              0.2826286
-#> 2                  1         0.0954700              0.2901621
-#> 3                 NA         0.1470789              0.2495817
-#> 4                  1         0.1206503              0.3516627
+#> 1                  1        0.15695467              0.2807003
+#> 2                  1        0.09541137              0.2895976
+#> 3                 NA        0.14459650              0.2446691
+#> 4                  1        0.12096242              0.3524063
 #>   displaced_plateau_flag displaced_plateau_level alt_routing_flag
-#> 1                   TRUE               0.7166863               NA
+#> 1                   TRUE               0.7161085               NA
 #> 2                  FALSE                      NA               NA
-#> 3                   TRUE               0.7363803               NA
-#> 4                   TRUE               0.4637357               NA
+#> 3                   TRUE               0.7355844               NA
+#> 4                   TRUE               0.4642095               NA
 #>   alt_routing_level n_pre n_perturb n_recovery n_missing n_fit
 #> 1                NA     7        11         12         0     0
 #> 2                NA     7        11         12         0     0
@@ -435,16 +435,16 @@ metrics
 #> 2 insufficient_positive_deficits            NA             18
 #> 3          no_resolvable_decline            NA             NA
 #> 4 insufficient_positive_deficits            NA             18
-#>   final_observation_time hysteresis_status  k  H         I H_abs H_norm
-#> 1                     30     not_evaluated NA NA 0.1579226    NA     NA
-#> 2                     30     not_evaluated NA NA 0.0954700    NA     NA
-#> 3                     30     not_evaluated NA NA 0.1470789    NA     NA
-#> 4                     30     not_evaluated NA NA 0.1206503    NA     NA
+#>   final_observation_time hysteresis_status  k  H          I H_abs H_norm
+#> 1                     30     not_evaluated NA NA 0.15695467    NA     NA
+#> 2                     30     not_evaluated NA NA 0.09541137    NA     NA
+#> 3                     30     not_evaluated NA NA 0.14459650    NA     NA
+#> 4                     30     not_evaluated NA NA 0.12096242    NA     NA
 #>      I_norm
-#> 1 0.2826286
-#> 2 0.2901621
-#> 3 0.2495817
-#> 4 0.3516627
+#> 1 0.2807003
+#> 2 0.2895976
+#> 3 0.2446691
+#> 4 0.3524063
 ```
 
 With `forcing_col = NULL`, a returned hysteresis-related field must be
@@ -475,10 +475,10 @@ history <- do.call(rbind, lapply(1:4, function(nc) {
 }))
 history
 #>   n_cycles  EAC_end memory_end
-#> 1        1 301.2744          0
-#> 2        2 296.6573          0
-#> 3        3 292.8844          0
-#> 4        4 290.9509          0
+#> 1        1 301.2737          0
+#> 2        2 296.6552          0
+#> 3        3 292.8831          0
+#> 4        4 290.9562          0
 ```
 
 Interpret the direction and magnitude as a model sensitivity result. An
@@ -508,7 +508,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] HRRI_0.99.1
+#> [1] HRRI_0.99.2
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    

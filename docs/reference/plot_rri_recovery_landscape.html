@@ -13,7 +13,7 @@ amplitudes, overshoot, incomplete recovery, and recovery times comparable."><met
 
     <a class="navbar-brand me-2" href="../index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,61 +123,61 @@ amplitudes, overshoot, incomplete recovery, and recovery times comparable.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   plot depth plant_id baseline_rri   min_rri depth_min depth_min_frac tau_lag</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   P1    D1   Plant1    0.3143189 0.1583739 0.1559451      0.4961364       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   P2    D1   Plant1    0.5070936 0.2082781 0.2988155      0.5892709       1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   P1    D2   Plant1    0.5105035 0.2354041 0.2750993      0.5388785      NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   P2    D2   Plant1    0.7260577 0.3609971 0.3650605      0.5027983       2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   P1    D3   Plant1    0.6753192 0.3943502 0.2809690      0.4160537       1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   P2    D3   Plant1    0.8497697 0.4842407 0.3655291      0.4301507       1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   k_recovery   t_half  overshoot overshoot_frac H_hysteresis      H_axis</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         NA       NA 0.00000000     0.00000000           NA unavailable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.03074131 22.54774 0.00000000     0.00000000           NA unavailable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         NA       NA 0.00000000     0.00000000           NA unavailable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         NA       NA 0.00000000     0.00000000           NA unavailable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         NA       NA 0.00000000     0.00000000           NA unavailable</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         NA       NA 0.03657464     0.04304065           NA unavailable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   P1    D1   Plant1    0.3329871 0.1500511 0.1829360      0.5493787       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   P2    D1   Plant1    0.4743155 0.2099911 0.2643244      0.5572754       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   P1    D2   Plant1    0.5017434 0.2262182 0.2755252      0.5491357      NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   P2    D2   Plant1    0.7444396 0.3919763 0.3524633      0.4734612       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   P1    D3   Plant1    0.6880756 0.4159029 0.2721727      0.3955563       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   P2    D3   Plant1    0.8925822 0.5483541 0.3442280      0.3856542       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    k_recovery   t_half overshoot overshoot_frac H_hysteresis      H_axis</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          NA       NA         0              0           NA unavailable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          NA       NA         0              0           NA unavailable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3          NA       NA         0              0           NA unavailable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.001344394 515.5836         0              0           NA unavailable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          NA       NA         0              0           NA unavailable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          NA       NA         0              0           NA unavailable</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   temporal_asymmetry incomplete_return incomplete_return_frac</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         -0.3378744        -0.1382381             -0.4398019</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         -0.3671227        -0.2916808             -0.5752012</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         -0.3441857        -0.2555410             -0.5005667</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         -0.2780719        -0.2854339             -0.3931284</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         -0.2472709        -0.2029588             -0.3005375</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         -0.1513147        -0.2205439             -0.2595337</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         -0.3710364        -0.1712451             -0.5142695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         -0.3246490        -0.2428257             -0.5119497</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         -0.3626813        -0.2493643             -0.4969956</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         -0.2927522        -0.2894272             -0.3887853</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         -0.2652575        -0.2368002             -0.3441486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         -0.2517189        -0.2716650             -0.3043586</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   displaced_plateau_flag displaced_plateau_level alt_routing_flag</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   TRUE               0.1760809               NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   TRUE               0.2154128               NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                   TRUE               0.1617420               NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                   TRUE               0.2314898               NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3                  FALSE                      NA               NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4                  FALSE                      NA               NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5                  FALSE                      NA               NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6                  FALSE                      NA               NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   alt_routing_level n_pre n_perturb n_recovery n_missing n_fit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                NA     4         3          5         0     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                NA     4         3          5         0     3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                NA     4         3          5         0     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                NA     4         3          5         0     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                NA     4         3          5         0     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                NA     4         3          5         0     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                NA     4         3          5         0     5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5                NA     4         3          5         0     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6                NA     4         3          5         0     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                       fit_status fit_r_squared fit_start_time</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 insufficient_positive_deficits            NA             11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 fitted_conditional_exponential     0.8905163             10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 insufficient_positive_deficits            NA             12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 insufficient_positive_deficits            NA             11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 insufficient_positive_deficits            NA             11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 insufficient_positive_deficits            NA             11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 fitted_conditional_exponential  6.069839e-05              7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5 insufficient_positive_deficits            NA             12</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6 insufficient_positive_deficits            NA             12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   final_observation_time hysteresis_status          k  H         I H_abs H_norm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                     12     not_evaluated         NA NA 0.1382381    NA     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                     12     not_evaluated 0.03074131 NA 0.2916808    NA     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                     12     not_evaluated         NA NA 0.2555410    NA     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                     12     not_evaluated         NA NA 0.2854339    NA     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                     12     not_evaluated         NA NA 0.2029588    NA     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                     12     not_evaluated         NA NA 0.2205439    NA     NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      I_norm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.4398019</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.5752012</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.5005667</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 0.3931284</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 0.3005375</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 0.2595337</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   final_observation_time hysteresis_status           k  H         I H_abs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                     12     not_evaluated          NA NA 0.1712451    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                     12     not_evaluated          NA NA 0.2428257    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                     12     not_evaluated          NA NA 0.2493643    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                     12     not_evaluated 0.001344394 NA 0.2894272    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                     12     not_evaluated          NA NA 0.2368002    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                     12     not_evaluated          NA NA 0.2716650    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   H_norm    I_norm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     NA 0.5142695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     NA 0.5119497</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     NA 0.4969956</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     NA 0.3887853</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     NA 0.3441486</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     NA 0.3043586</span>
 <span class="r-in"><span><span class="fu">plot_rri_recovery_landscape</span><span class="op">(</span><span class="va">rec</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Missing metric columns: A_norm, O_norm, tau_r</span>
 <span class="r-in"><span></span></span>

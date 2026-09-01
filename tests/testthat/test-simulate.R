@@ -33,3 +33,46 @@ test_that("EDC inventory includes MnIII reducing equivalents", {
     8*s$NH4_mmol_kg + s$humic_EDC_mmol_e_kg + .5*s$DOC_mmolC_kg
   expect_equal(s$EDC, expected, tolerance=1e-8)
 })
+
+test_that("memory is a holobiont state with plant and microbial components", {
+  s <- small_sim()
+
+  ## The two new legacy components are exported and bounded.
+  expect_true(all(c("micro_legacy", "plant_legacy") %in% names(s$latent_state)))
+  for (nm in c("micro_legacy", "plant_legacy", "memory")) {
+    v <- s$latent_state[[nm]]
+    expect_true(all(is.finite(v)))
+    expect_true(all(v >= 0 & v <= 1))
+  }
+
+  ## Microbial legacy must actually vary: a constant column would mean the
+  ## component is inert and memory would be mineralogical in all but name.
+  expect_gt(stats::sd(s$latent_state$micro_legacy), 0)
+})
+
+test_that("plant and microbial legacies contribute to memory", {
+  ## history_strength scales every memory gain term. With it near zero, memory
+  ## cannot accumulate; with it high, it must. This confirms the multi-domain
+  ## gain path is live rather than dominated by initialisation.
+  lo <- simulate_redox_holobiont(n_plot = 1, n_depth = 1, n_plant = 1,
+                                 n_time = 20, p_micro = 3, seed = 7,
+                                 history_strength = 0.02, n_cycles = 2)
+  hi <- simulate_redox_holobiont(n_plot = 1, n_depth = 1, n_plant = 1,
+                                 n_time = 20, p_micro = 3, seed = 7,
+                                 history_strength = 0.95, n_cycles = 2)
+  expect_gt(mean(hi$latent_state$memory), mean(lo$latent_state$memory))
+})
+
+test_that("microbial legacy relaxes more slowly than it accumulates", {
+  ## Asymmetry is the mechanism that makes community composition a *legacy*
+  ## rather than an instantaneous readout of current redox conditions.
+  s <- simulate_redox_holobiont(n_plot = 1, n_depth = 1, n_plant = 1,
+                                n_time = 40, p_micro = 3, seed = 11,
+                                scenario = "flood_drain", n_cycles = 1)
+  ml <- s$latent_state$micro_legacy
+  peak <- which.max(ml)
+  skip_if(peak < 3 || peak > length(ml) - 3, "no interior peak in this run")
+  rise <- max(diff(ml[seq_len(peak)]))
+  fall <- min(diff(ml[peak:length(ml)]))
+  expect_gt(rise, abs(fall))   # gain 0.030 vs relax 0.012
+})

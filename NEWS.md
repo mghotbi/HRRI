@@ -1,3 +1,23 @@
+# HRRI 0.99.2
+
+## Scientific change
+
+* Memory (`M`) is now a holobiont state rather than a mineralogical one. It
+  accumulates from hydrological event load, the Fe-crystallinity ratchet,
+  persistent plant acclimation (aerenchyma displacement), and microbial
+  community displacement. Component weights sum to the previous total (0.060),
+  so overall accumulation rate is unchanged while its causes are distributed
+  across the three domains.
+* Added `micro_legacy` as a simulator state: it accrues under sustained
+  reduction and relaxes more slowly under oxic recovery, giving the microbial
+  component an asymmetric (hysteretic) legacy.
+* `latent_state` now returns `micro_legacy` and `plant_legacy` so the memory
+  decomposition is auditable.
+* Memory decay remains keyed to Fe crystallinity, which is the least reversible
+  component and sets the floor on memory loss.
+* **This changes `latent_truth`.** All figures, benchmarks and any stored
+  simulation outputs must be regenerated.
+
 # HRRI 0.99.1
 
 ## Documentation and infrastructure

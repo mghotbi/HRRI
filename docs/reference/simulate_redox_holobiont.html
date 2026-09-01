@@ -15,7 +15,7 @@ Gene abundance indicates potential; transcript counts are observations, not flux
 
     <a class="navbar-brand me-2" href="../index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -264,6 +264,19 @@ physical fluxes. Do not infer quantitative field rates from their labels alone.
 Q_accept now counts one electron per crystalline Fe(III); the previous 0.22
 factor mixed accessibility into inventory. DOC reducing equivalents remain
 an illustrative coefficient dependent on assumed carbon oxidation state.</p>
+<p>Memory (<code>M</code>) is a holobiont state, not a mineralogical one.
+It accumulates from four sources with weights summing to 0.060 per step,
+scaled by <code>history_strength</code>: hydrological event load (0.020), the
+Fe-crystallinity ratchet (0.016), persistent plant acclimation measured as
+aerenchyma displacement above the naive baseline (0.012), and microbial
+community displacement (0.012). The microbial component is itself a state
+(<code>micro_legacy</code>) that accrues under sustained reduction and relaxes
+more slowly under oxic recovery, so community composition carries an
+asymmetric legacy. Memory decay remains keyed to Fe crystallinity because
+mineral ordering is the least reversible component and sets the floor on
+memory loss. The component series are returned in <code>latent_state</code> as
+<code>micro_legacy</code> and <code>plant_legacy</code> so the decomposition is
+auditable. These are illustrative weights, not calibrated rates.</p>
     </div>
 
     <div class="section level2">

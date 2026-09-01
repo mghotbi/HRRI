@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,7 +98,8 @@ curve:</p>
 <tr class="odd">
 <td>Capacity</td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math></td>
-<td>Total electron-accepting/donating inventory (mmol e⁻ kg⁻¹)</td>
+<td>Electron-accepting and electron-donating inventory available within
+the system (mmol e⁻ kg⁻¹)</td>
 </tr>
 <tr class="even">
 <td>Connectivity</td>
@@ -110,12 +111,15 @@ electrochemically accessible to porewater</td>
 <tr class="odd">
 <td>Kinetics</td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math></td>
-<td>Exchange rate (h⁻¹); encodes mineralogical crystallinity</td>
+<td>Characteristic rate of electron exchange under physicochemical and
+biological constraints (h⁻¹)</td>
 </tr>
 <tr class="even">
 <td>Memory</td>
 <td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math></td>
-<td>Legacy of prior disturbances; encoded in Fe-phase composition</td>
+<td>Legacy of prior disturbances retained through persistent
+biogeochemical, microbial and physiological states that influence future
+system responses</td>
 </tr>
 </tbody>
 </table>
@@ -152,7 +156,7 @@ checks, not empirical ecological inference.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mghotbi/HRRI" class="external-link">HRRI</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"HRRI"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '0.99.1'</span></span>
+<span><span class="co">#&gt; [1] '0.99.2'</span></span>
 <span></span>
 <span><span class="co">## Compatibility shim -----------------------------------------------------</span></span>
 <span><span class="co">## rri_pipeline() is the convenience wrapper around rri_pipeline_st().</span></span>
@@ -231,13 +235,13 @@ checks, not empirical ecological inference.</p>
 <span><span class="co">#&gt; 4 356.4329 146.4849 135.8578   188.5886     0.3749889</span></span>
 <span><span class="co">#&gt; 5 279.5978 104.1723 113.5038   146.9287     0.3828560</span></span>
 <span><span class="co">#&gt; 6 286.3268 115.3987 116.9400   152.2080     0.3788855</span></span>
-<span><span class="co">#&gt;   FeIII_poor_crystalline_mmol_kg FeII_mmol_kg        Eh       pH</span></span>
-<span><span class="co">#&gt; 1                       67.13652     17.26132 46.285671 6.657346</span></span>
-<span><span class="co">#&gt; 2                       70.93895     17.91741 79.808173 6.544344</span></span>
-<span><span class="co">#&gt; 3                       93.28308     24.82342 -4.972318 6.653453</span></span>
-<span><span class="co">#&gt; 4                       99.62313     26.34155 19.816007 6.475302</span></span>
-<span><span class="co">#&gt; 5                       67.21437     17.18353 56.597319 6.725813</span></span>
-<span><span class="co">#&gt; 6                       70.95279     17.89324        NA 6.800352</span></span></code></pre></div>
+<span><span class="co">#&gt;   FeIII_poor_crystalline_mmol_kg FeII_mmol_kg       Eh       pH</span></span>
+<span><span class="co">#&gt; 1                       67.13652     17.26132 46.28567 6.657346</span></span>
+<span><span class="co">#&gt; 2                       70.93895     17.91741 79.80817 6.544344</span></span>
+<span><span class="co">#&gt; 3                       93.28308     24.82342       NA 6.653453</span></span>
+<span><span class="co">#&gt; 4                       99.62313     26.34155 19.81601 6.475302</span></span>
+<span><span class="co">#&gt; 5                       67.21437     17.18353 56.59732 6.725813</span></span>
+<span><span class="co">#&gt; 6                       70.95279     17.89324 93.27404 6.800352</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="fe-mass-balance-verification">Fe mass-balance verification<a class="anchor" aria-label="anchor" href="#fe-mass-balance-verification"></a>
@@ -248,7 +252,7 @@ checks, not empirical ecological inference.</p>
 <span><span class="co">#&gt;                                    check        value</span></span>
 <span><span class="co">#&gt; 1 maximum_absolute_Fe_mass_balance_error 1.136868e-13</span></span>
 <span><span class="co">#&gt; 2 maximum_absolute_Mn_mass_balance_error 1.421085e-14</span></span>
-<span><span class="co">#&gt; 3                 minimum_simulated_pool 1.875881e-04</span></span>
+<span><span class="co">#&gt; 3                 minimum_simulated_pool 0.000000e+00</span></span>
 <span><span class="co">#&gt; 4                 nonnegative_pool_check 1.000000e+00</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -257,12 +261,12 @@ checks, not empirical ecological inference.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">plant_data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SPAD"</span>,<span class="st">"FvFm"</span>,<span class="st">"ROL"</span>,<span class="st">"ROS_load"</span>,<span class="st">"aerenchyma"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       SPAD      FvFm       ROL  ROS_load aerenchyma</span></span>
-<span><span class="co">#&gt; 1 41.64823 0.8149366 0.3165926 0.1962837  0.1169200</span></span>
-<span><span class="co">#&gt; 2 41.74653 0.8053264 0.3388381 0.1817459  0.1169200</span></span>
-<span><span class="co">#&gt; 3 43.48615 0.7906729 0.3122744 0.2424776  0.1313152</span></span>
-<span><span class="co">#&gt; 4 43.51788 0.8002860 0.3490689 0.1989678  0.1169200</span></span>
-<span><span class="co">#&gt; 5 43.79311 0.8167222 0.3719281 0.1988047  0.2164600</span></span>
-<span><span class="co">#&gt; 6 42.65734 0.7955340 0.4006285 0.1607862  0.2164600</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 41.64819 0.8149359 0.3165926 0.1962876  0.1169200</span></span>
+<span><span class="co">#&gt; 2 41.74657 0.8053272 0.3388381 0.1817415  0.1169200</span></span>
+<span><span class="co">#&gt; 3 43.48661 0.7906804 0.3122744 0.2424358  0.1313152</span></span>
+<span><span class="co">#&gt; 4 43.51764 0.8002821 0.3490689 0.1989893  0.1169200</span></span>
+<span><span class="co">#&gt; 5 43.78669 0.8166172 0.3719281 0.1993879  0.2164600</span></span>
+<span><span class="co">#&gt; 6 42.65099 0.7954301 0.4006285 0.1613636  0.2164600</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="microbial-functional-genes">Microbial functional genes<a class="anchor" aria-label="anchor" href="#microbial-functional-genes"></a>
@@ -276,7 +280,7 @@ checks, not empirical ecological inference.</p>
 <span><span class="co">#&gt; [13] "amoA_AOB" "nxrB"     "dsrA"     "dsrB"     "mcrA"     "pmoA"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">micro_gene_abundance</span><span class="op">[</span>, <span class="st">"mcrA"</span><span class="op">]</span><span class="op">)</span>   <span class="co"># methanogenesis gene</span></span>
 <span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">#&gt;   56717  140868  185855  195049  233312  578788</span></span></code></pre></div>
+<span><span class="co">#&gt;   56717  142005  186655  196218  235030  582998</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -321,9 +325,9 @@ estimates or validated literature defaults.</p>
 <span><span class="co">## Per-component summary (returned because return_components = TRUE)</span></span>
 <span><span class="va">cap</span><span class="op">$</span><span class="va">components</span></span>
 <span><span class="co">#&gt;           reservoir type  alpha k_per_tau_unit saturation_fraction mean_Q</span></span>
-<span><span class="co">#&gt; 1    reactive_FeIII  EAC 0.5061         0.0672              0.7931 62.820</span></span>
+<span><span class="co">#&gt; 1    reactive_FeIII  EAC 0.5062         0.0672              0.7931 62.820</span></span>
 <span><span class="co">#&gt; 2 crystalline_FeIII  EAC 0.2000         0.0080              0.1747 54.059</span></span>
-<span><span class="co">#&gt; 3         FeII_pool  EDC 0.4807         0.0453              0.6602 20.946</span></span>
+<span><span class="co">#&gt; 3         FeII_pool  EDC 0.4807         0.0453              0.6602 20.947</span></span>
 <span><span class="co">#&gt;   mean_contribution</span></span>
 <span><span class="co">#&gt; 1            25.339</span></span>
 <span><span class="co">#&gt; 2             1.889</span></span>
@@ -331,9 +335,9 @@ estimates or validated literature defaults.</p>
 <span></span>
 <span><span class="co">## Mean accessible vs. total inventory</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Mean Cacc_raw:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">cap</span><span class="op">$</span><span class="va">cacc_raw</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>, <span class="st">"mmol e- kg-1\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Mean Cacc_raw: 33.85065 mmol e- kg-1</span></span>
+<span><span class="co">#&gt; Mean Cacc_raw: 33.85137 mmol e- kg-1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Mean fraction :"</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">cap</span><span class="op">$</span><span class="va">cacc_fraction</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Mean fraction : 0.2455965</span></span>
+<span><span class="co">#&gt; Mean fraction : 0.2456018</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="st">"ck_limited"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cap</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">cap</span><span class="op">$</span><span class="va">ck_limited</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"CK-limited rows:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">cap</span><span class="op">$</span><span class="va">ck_limited</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>      <span class="st">"/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">cap</span><span class="op">$</span><span class="va">ck_limited</span><span class="op">)</span><span class="op">)</span>, <span class="st">"classified rows\n"</span><span class="op">)</span></span>
@@ -387,16 +391,16 @@ otherwise arbitrary PCA axes.</p>
 <span><span class="co">#&gt; [1] "observation keys"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">$</span><span class="va">RRI</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">#&gt;  0.2229  0.3861  0.5100  0.5124  0.6413  0.8111</span></span>
+<span><span class="co">#&gt;  0.2247  0.3866  0.5125  0.5126  0.6417  0.8091</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span>, <span class="st">"time"</span>,</span>
 <span>                    <span class="st">"RRI"</span>, <span class="st">"Physio"</span>, <span class="st">"Soil"</span>, <span class="st">"Micro"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   plot depth plant_id time       RRI    Physio      Soil     Micro</span></span>
-<span><span class="co">#&gt; 1   P1    D1   Plant1    1 0.5325589 0.4003217 0.8663227 0.1836689</span></span>
-<span><span class="co">#&gt; 2   P2    D1   Plant1    1 0.6679582 0.4420314 0.7785811 0.8072591</span></span>
-<span><span class="co">#&gt; 3   P1    D2   Plant1    1 0.4450769 0.4103019 0.2531689 0.8008149</span></span>
-<span><span class="co">#&gt; 4   P2    D2   Plant1    1 0.4132135 0.5230932 0.1604719 0.6637687</span></span>
-<span><span class="co">#&gt; 5   P1    D1   Plant2    1 0.6320338 0.4016891 0.8255425 0.6449023</span></span>
-<span><span class="co">#&gt; 6   P2    D1   Plant2    1 0.5843764 0.4715212 0.8202560 0.3649661</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   P1    D1   Plant1    1 0.5331287 0.4047907 0.8681722 0.1767324</span></span>
+<span><span class="co">#&gt; 2   P2    D1   Plant1    1 0.6660409 0.4460895 0.7806314 0.7906280</span></span>
+<span><span class="co">#&gt; 3   P1    D2   Plant1    1 0.4499651 0.4141672 0.2643849 0.7970104</span></span>
+<span><span class="co">#&gt; 4   P2    D2   Plant1    1 0.4119487 0.5263208 0.1609431 0.6534366</span></span>
+<span><span class="co">#&gt; 5   P1    D1   Plant2    1 0.6296590 0.4048218 0.8278830 0.6272726</span></span>
+<span><span class="co">#&gt; 6   P2    D1   Plant2    1 0.5933279 0.4741678 0.8424479 0.3615599</span></span></code></pre></div>
 <div class="method">
 <p>Alignment uses complete observation keys, or a shared unique
 <code>row_id</code> when available. If neither is returned the pipeline
@@ -422,7 +426,7 @@ checked for conflicts rather than silently overwritten.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Correlation unavailable: too few finite pairs or a constant vector.\n"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"r(RRI, latent truth):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">r_val</span>, <span class="fl">3</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; r(RRI, latent truth): 0.452</span></span></code></pre></div>
+<span><span class="co">#&gt; r(RRI, latent truth): 0.467</span></span></code></pre></div>
 <p>This is a within-simulation association, not independent predictive
 validation or evidence that the individual latent parameters have been
 identified.</p>
@@ -493,25 +497,25 @@ before calling recovery metrics.</p>
 <span><span class="co">#&gt; [35] "H_norm"                  "I_norm"</span></span>
 <span><span class="va">metrics</span></span>
 <span><span class="co">#&gt;   plot depth baseline_rri   min_rri  depth_min depth_min_frac tau_lag</span></span>
-<span><span class="co">#&gt; 1   P1    D1    0.5587637 0.5045502 0.05421348     0.09702398       2</span></span>
-<span><span class="co">#&gt; 2   P1    D2    0.3290230 0.2886692 0.04035387     0.12264754       2</span></span>
-<span><span class="co">#&gt; 3   P2    D1    0.5893014 0.6032840 0.00000000     0.00000000      NA</span></span>
-<span><span class="co">#&gt; 4   P2    D2    0.3430854 0.2762618 0.06682359     0.19477249       2</span></span>
+<span><span class="co">#&gt; 1   P1    D1    0.5591538 0.5034299 0.05572390     0.09965755       2</span></span>
+<span><span class="co">#&gt; 2   P1    D2    0.3294619 0.2887310 0.04073096     0.12362875       2</span></span>
+<span><span class="co">#&gt; 3   P2    D1    0.5909879 0.6074584 0.00000000     0.00000000      NA</span></span>
+<span><span class="co">#&gt; 4   P2    D2    0.3432471 0.2759822 0.06726483     0.19596623       2</span></span>
 <span><span class="co">#&gt;   k_recovery t_half overshoot overshoot_frac H_hysteresis      H_axis</span></span>
-<span><span class="co">#&gt; 1         NA     NA 0.1742331      0.3118190           NA unavailable</span></span>
-<span><span class="co">#&gt; 2         NA     NA 0.1379898      0.4193924           NA unavailable</span></span>
-<span><span class="co">#&gt; 3         NA     NA 0.1621001      0.2750716           NA unavailable</span></span>
-<span><span class="co">#&gt; 4         NA     NA 0.1794376      0.5230114           NA unavailable</span></span>
+<span><span class="co">#&gt; 1         NA     NA 0.1737384      0.3107167           NA unavailable</span></span>
+<span><span class="co">#&gt; 2         NA     NA 0.1384419      0.4202061           NA unavailable</span></span>
+<span><span class="co">#&gt; 3         NA     NA 0.1582404      0.2677557           NA unavailable</span></span>
+<span><span class="co">#&gt; 4         NA     NA 0.1773574      0.5167048           NA unavailable</span></span>
 <span><span class="co">#&gt;   temporal_asymmetry incomplete_return incomplete_return_frac</span></span>
-<span><span class="co">#&gt; 1                  1         0.1579226              0.2826286</span></span>
-<span><span class="co">#&gt; 2                  1         0.0954700              0.2901621</span></span>
-<span><span class="co">#&gt; 3                 NA         0.1470789              0.2495817</span></span>
-<span><span class="co">#&gt; 4                  1         0.1206503              0.3516627</span></span>
+<span><span class="co">#&gt; 1                  1        0.15695467              0.2807003</span></span>
+<span><span class="co">#&gt; 2                  1        0.09541137              0.2895976</span></span>
+<span><span class="co">#&gt; 3                 NA        0.14459650              0.2446691</span></span>
+<span><span class="co">#&gt; 4                  1        0.12096242              0.3524063</span></span>
 <span><span class="co">#&gt;   displaced_plateau_flag displaced_plateau_level alt_routing_flag</span></span>
-<span><span class="co">#&gt; 1                   TRUE               0.7166863               NA</span></span>
+<span><span class="co">#&gt; 1                   TRUE               0.7161085               NA</span></span>
 <span><span class="co">#&gt; 2                  FALSE                      NA               NA</span></span>
-<span><span class="co">#&gt; 3                   TRUE               0.7363803               NA</span></span>
-<span><span class="co">#&gt; 4                   TRUE               0.4637357               NA</span></span>
+<span><span class="co">#&gt; 3                   TRUE               0.7355844               NA</span></span>
+<span><span class="co">#&gt; 4                   TRUE               0.4642095               NA</span></span>
 <span><span class="co">#&gt;   alt_routing_level n_pre n_perturb n_recovery n_missing n_fit</span></span>
 <span><span class="co">#&gt; 1                NA     7        11         12         0     0</span></span>
 <span><span class="co">#&gt; 2                NA     7        11         12         0     0</span></span>
@@ -522,16 +526,16 @@ before calling recovery metrics.</p>
 <span><span class="co">#&gt; 2 insufficient_positive_deficits            NA             18</span></span>
 <span><span class="co">#&gt; 3          no_resolvable_decline            NA             NA</span></span>
 <span><span class="co">#&gt; 4 insufficient_positive_deficits            NA             18</span></span>
-<span><span class="co">#&gt;   final_observation_time hysteresis_status  k  H         I H_abs H_norm</span></span>
-<span><span class="co">#&gt; 1                     30     not_evaluated NA NA 0.1579226    NA     NA</span></span>
-<span><span class="co">#&gt; 2                     30     not_evaluated NA NA 0.0954700    NA     NA</span></span>
-<span><span class="co">#&gt; 3                     30     not_evaluated NA NA 0.1470789    NA     NA</span></span>
-<span><span class="co">#&gt; 4                     30     not_evaluated NA NA 0.1206503    NA     NA</span></span>
+<span><span class="co">#&gt;   final_observation_time hysteresis_status  k  H          I H_abs H_norm</span></span>
+<span><span class="co">#&gt; 1                     30     not_evaluated NA NA 0.15695467    NA     NA</span></span>
+<span><span class="co">#&gt; 2                     30     not_evaluated NA NA 0.09541137    NA     NA</span></span>
+<span><span class="co">#&gt; 3                     30     not_evaluated NA NA 0.14459650    NA     NA</span></span>
+<span><span class="co">#&gt; 4                     30     not_evaluated NA NA 0.12096242    NA     NA</span></span>
 <span><span class="co">#&gt;      I_norm</span></span>
-<span><span class="co">#&gt; 1 0.2826286</span></span>
-<span><span class="co">#&gt; 2 0.2901621</span></span>
-<span><span class="co">#&gt; 3 0.2495817</span></span>
-<span><span class="co">#&gt; 4 0.3516627</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 0.2807003</span></span>
+<span><span class="co">#&gt; 2 0.2895976</span></span>
+<span><span class="co">#&gt; 3 0.2446691</span></span>
+<span><span class="co">#&gt; 4 0.3524063</span></span></code></pre></div>
 <p>With <code>forcing_col = NULL</code>, a returned hysteresis-related
 field must be interpreted according to the installed function’s
 documented definition; it does not demonstrate a measured
@@ -559,10 +563,10 @@ monotonically with cycle count.</p>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">history</span></span>
 <span><span class="co">#&gt;   n_cycles  EAC_end memory_end</span></span>
-<span><span class="co">#&gt; 1        1 301.2744          0</span></span>
-<span><span class="co">#&gt; 2        2 296.6573          0</span></span>
-<span><span class="co">#&gt; 3        3 292.8844          0</span></span>
-<span><span class="co">#&gt; 4        4 290.9509          0</span></span></code></pre></div>
+<span><span class="co">#&gt; 1        1 301.2737          0</span></span>
+<span><span class="co">#&gt; 2        2 296.6552          0</span></span>
+<span><span class="co">#&gt; 3        3 292.8831          0</span></span>
+<span><span class="co">#&gt; 4        4 290.9562          0</span></span></code></pre></div>
 <p>Interpret the direction and magnitude as a model sensitivity result.
 An empirical claim about hydrological memory requires independent
 observations.</p>
@@ -590,7 +594,7 @@ observations.</p>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] HRRI_0.99.1</span></span>
+<span><span class="co">#&gt; [1] HRRI_0.99.2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    </span></span>
