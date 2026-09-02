@@ -132,7 +132,11 @@ head(rec)
 #> 4     NA 0.3887853
 #> 5     NA 0.3441486
 #> 6     NA 0.3043586
-plot_rri_recovery_landscape(rec)
+plot_rri_recovery_landscape(
+  rec,
+  metrics = c("depth_min_frac", "overshoot_frac", "I_norm",
+              "k", "tau_lag", "t_half")
+)
 #> `trajectory_class` not supplied; derived from displaced_plateau_flag and incomplete_return_frac.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the
 #> data's colour values.

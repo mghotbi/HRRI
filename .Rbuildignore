@@ -10,3 +10,4 @@
 ^analysis$
 ^_pkgdown\.yml$
 ^_pkgdown\.yml\.save$
+^\.github

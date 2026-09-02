@@ -1,0 +1,494 @@
+---
+title: "HRRI: Reading the Figures — A Worked Example"
+author:
+  - name: Mitra Ghotbi
+    email: mitra.ghotbi@gmail.com
+date: "`r Sys.Date()`"
+package: HRRI
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    css: css/hrri.css
+    fig_width: 7
+    fig_height: 4.4
+    dev: png
+vignette: >
+  %\VignetteIndexEntry{HRRI: Reading the Figures — A Worked Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse   = TRUE,
+  comment    = "#>",
+  fig.width  = 7,
+  fig.height = 4.4,
+  fig.align  = "center",
+  dpi        = 150,
+  out.width  = "100%",
+  message    = FALSE,
+  warning    = FALSE
+)
+
+if (requireNamespace("ggplot2", quietly = TRUE)) {
+  ggplot2::theme_set(
+    ggplot2::theme_minimal(base_size = 11) +
+      ggplot2::theme(
+        panel.grid.minor = ggplot2::element_blank(),
+        panel.grid.major = ggplot2::element_line(linewidth = 0.3,
+                                                 colour = "#dde3e1"),
+        axis.title       = ggplot2::element_text(colour = "#4a5451"),
+        axis.text        = ggplot2::element_text(colour = "#4a5451"),
+        strip.text       = ggplot2::element_text(face = "bold",
+                                                 colour = "#1c2321"),
+        plot.title       = ggplot2::element_text(face = "bold",
+                                                 colour = "#1c2321"),
+        legend.position  = "bottom"
+      )
+  )
+}
+```
+
+# How to use this vignette
+
+The companion vignette, `vignette("HRRI_workflow")`, shows *how to run* HRRI.
+This one shows *how to read what comes out*.
+
+We follow a single simulated experiment from beginning to end. Every figure is
+produced from that one experiment, so the panels connect: the trajectory you
+see in Section 4 is the same trajectory summarised in Section 6 and ranked in
+Section 7.
+
+Each figure is followed by two short blocks:
+
+<div class="note">
+**Reading it** — what the axes mean and what pattern to look for.
+</div>
+
+<div class="caution">
+**What it does not show** — the inference the figure cannot support. HRRI is
+deliberately conservative, and these limits are part of the method, not
+disclaimers bolted on afterwards.
+</div>
+
+```{r libraries}
+library(HRRI)
+library(ggplot2)
+packageVersion("HRRI")
+```
+
+# The experiment
+
+One flood–drain cycle across two plots, two depths and three plants, observed
+daily for 40 steps. The disturbance runs from day 12 to day 22.
+
+```{r simulate}
+PERTURB_START <- 12
+PERTURB_END   <- 22
+
+sim <- simulate_redox_holobiont(
+  n_plot               = 2,
+  n_depth              = 2,
+  n_plant              = 3,
+  n_time               = 40,
+  p_micro              = 25,
+  seed                 = 2026,
+  scenario             = "flood_drain",
+  n_cycles             = 1,
+  disturbance_strength = 0.72,
+  history_strength     = 0.55
+)
+
+nrow(sim$id)          # 2 x 2 x 3 x 40 = 480 observations
+names(sim$latent_state)
+```
+
+<div class="caution">
+`latent_state` is the simulator's ground truth. It exists so we can check
+whether HRRI recovers what it is meant to recover. With real data there is no
+such column, and nothing in the scoring path is allowed to read it.
+</div>
+
+# The four hidden states, made visible
+
+HRRI rests on four controls that are never measured directly. In simulation we
+can plot them, which is the clearest way to build intuition for what the index
+is chasing.
+
+```{r hidden-states, fig.height=5.2}
+ls_df <- as.data.frame(sim$latent_state)
+one   <- with(sim$id, plot == "P1" & depth == "D1" & plant_id == "Plant1")
+
+hidden <- data.frame(
+  time  = sim$id$time[one],
+  value = c(
+    ls_df$Q_accept[one],
+    ls_df$alpha_accept[one],
+    ls_df$k_accept_h[one],
+    ls_df$memory[one]
+  ),
+  state = factor(
+    rep(c("Capacity  (Q)", "Connectivity  (α)",
+          "Kinetics  (k)", "Memory  (M)"), each = sum(one)),
+    levels = c("Capacity  (Q)", "Connectivity  (α)",
+               "Kinetics  (k)", "Memory  (M)")
+  )
+)
+
+ggplot(hidden, aes(time, value)) +
+  annotate("rect", xmin = PERTURB_START, xmax = PERTURB_END,
+           ymin = -Inf, ymax = Inf, fill = "#2f6b6b", alpha = 0.10) +
+  geom_line(colour = "#2f6b6b", linewidth = 0.7) +
+  facet_wrap(~ state, scales = "free_y", ncol = 2) +
+  labs(x = "Time (days)", y = NULL,
+       title = "The four hidden states during one flood-drain cycle",
+       subtitle = "Shaded band = disturbance window") +
+  theme(legend.position = "none")
+```
+
+<div class="note">
+**Reading it** — Capacity is the electron inventory and moves slowly.
+Connectivity collapses during flooding as pore pathways close, then partially
+reopens. Kinetics tracks the rate of exchange. Memory is the one that does not
+come back: it ratchets upward and stays there. That asymmetry is the whole
+point of the framework.
+</div>
+
+## Memory is a holobiont state
+
+Since version 0.99.2, memory accumulates from four sources spanning all three
+domains, not from iron chemistry alone. The components are exported so the
+decomposition can be checked rather than assumed.
+
+```{r memory-components, fig.height=3.6}
+mem <- data.frame(
+  time  = rep(sim$id$time[one], 3),
+  value = c(ls_df$memory[one],
+            ls_df$plant_legacy[one],
+            ls_df$micro_legacy[one]),
+  component = factor(
+    rep(c("Memory (total)", "Plant legacy (aerenchyma)",
+          "Microbial legacy (community)"), each = sum(one)),
+    levels = c("Memory (total)", "Plant legacy (aerenchyma)",
+               "Microbial legacy (community)")
+  )
+)
+
+ggplot(mem, aes(time, value, colour = component, linetype = component)) +
+  annotate("rect", xmin = PERTURB_START, xmax = PERTURB_END,
+           ymin = -Inf, ymax = Inf, fill = "#9a6a24", alpha = 0.10) +
+  geom_line(linewidth = 0.7) +
+  scale_colour_manual(values = c("#1c2321", "#8c4a2f", "#6b5b8a")) +
+  scale_linetype_manual(values = c("solid", "dashed", "dotdash")) +
+  labs(x = "Time (days)", y = "Legacy (0-1)", colour = NULL, linetype = NULL,
+       title = "Memory decomposed across the holobiont")
+```
+
+<div class="note">
+**Reading it** — the microbial legacy rises quickly under sustained reduction
+and relaxes slowly afterwards. That asymmetry is deliberate: a component that
+tracked current conditions symmetrically would be a readout, not a memory.
+</div>
+
+<div class="caution">
+**What it does not show** — that these are the *correct* weights. They are
+illustrative (0.020 event load, 0.016 Fe ratchet, 0.012 plant, 0.012 microbial)
+and are not calibrated to measured legacy effects in any field system.
+</div>
+
+# Scoring the three domains
+
+```{r pipeline}
+res <- rri_pipeline_st(
+  ROS_flux     = sim$ROS_flux,
+  Eh_stability = sim$Eh_stability,
+  micro_data   = sim$micro_data,
+  id           = sim$id,
+  time_col     = "time",
+  group_cols   = c("plot", "depth", "plant_id"),
+  mode         = "snapshot",
+  reducer      = "per_domain",
+  scaling      = "pnorm",
+  direction_anchor_phys  = "FvFm",
+  direction_anchor_soil  = "Eh",
+  direction_anchor_micro = "ASV1"
+)
+
+scored <- attach_hrri_ids(res$row_scores, sim$id)
+attr(scored, "id_alignment")
+summary(scored$RRI)
+```
+
+<div class="caution">
+The `direction_anchor_*` arguments are not optional in practice. Latent axes
+from PCA have arbitrary sign; without an anchor variable whose direction you
+can justify, a high RRI could mean the opposite of what you intend. The
+function warns when anchors are missing.
+</div>
+
+# One trajectory in context
+
+```{r timeseries}
+plot_rri_timeseries(
+  sim, res,
+  plot_id       = "P1",
+  depth_id      = "D1",
+  plant_id      = "Plant1",
+  perturb_start = PERTURB_START,
+  perturb_end   = PERTURB_END
+)
+```
+
+<div class="note">
+**Reading it** — Eh, accessible capacity and the composite RRI on a shared time
+axis in separate panels, each in its own units. Look for whether RRI returns to
+its pre-event level, and whether it returns at the same time as Eh. A gap
+between the two is the interesting case.
+</div>
+
+<div class="caution">
+**What it does not show** — panels are not placed on a common axis, because Eh
+(mV) and RRI (dimensionless) are not commensurable. Visual co-movement is not
+evidence of a mechanistic link.
+</div>
+
+# Where the domains sit relative to each other
+
+```{r ternary, echo=TRUE, results="asis"}
+## ggtern is a Suggests dependency and, at the time of writing, is not
+## compatible with ggplot2 >= 3.5 (it errors on tern.axis.ticks.length.major).
+## Render defensively so the vignette builds either way.
+tern_ok <- requireNamespace("ggtern", quietly = TRUE) &&
+           requireNamespace("viridis", quietly = TRUE)
+
+if (tern_ok) {
+  p_tern <- try(
+    plot_RRI_ternary(res$row_scores_comp, point_size = 2.4,
+                     show_centroid = TRUE),
+    silent = TRUE
+  )
+  drawn <- !inherits(p_tern, "try-error") &&
+           !inherits(try(print(p_tern), silent = TRUE), "try-error")
+  if (!drawn) {
+    cat("*The ternary plot could not be rendered: the installed **ggtern** is",
+        "incompatible with this **ggplot2** version. The composition it would",
+        "show is summarised numerically below.*\n\n")
+  }
+} else {
+  cat("*Install **ggtern** and **viridis** to render this figure.*\n\n")
+}
+```
+
+Whether or not the ternary renders, the same information is available directly
+from the compositional table — each row sums to one across the three domains:
+
+```{r ternary-numeric}
+comp <- res$row_scores_comp[, c("Physio", "Soil", "Micro")]
+round(colMeans(comp, na.rm = TRUE), 3)          # centroid
+round(range(rowSums(comp, na.rm = TRUE)), 6)    # closure check: both 1
+```
+
+<div class="note">
+**Reading it** — each point is one observation placed by the *relative* weight
+of its Physiology, Soil and Microbial scores. Points near a vertex are
+dominated by that domain. The white diamond is the centroid. Movement of the
+cloud toward a vertex over an event means the domains are responding
+unequally.
+</div>
+
+<div class="caution">
+**What it does not show** — position is compositional, so it discards
+magnitude. Two samples with very different absolute RRI sit at the same point
+if their domain *ratios* match. Always read the ternary alongside Section 4.
+</div>
+
+# Domain-score state space
+
+```{r state-space}
+plot_rri_state_space(
+  res,
+  x_property = "Physio",
+  y_property = "Soil",
+  colour_by  = "RRI",
+  group_cols = c("plot", "depth", "plant_id")
+)
+```
+
+<div class="note">
+**Reading it** — the trajectory through domain space. Disturbance typically
+pushes points toward the origin; recovery is the return path. A return that
+does not retrace its outbound path is hysteresis, and it is visible here as an
+open loop.
+</div>
+
+<div class="caution">
+**What it does not show** — the axes are domain composite scores, not the
+hidden states of Section 3. Physiology is not Kinetics; Soil is not Capacity.
+Relabelling them as mechanistic properties would be a category error.
+</div>
+
+# Recovery signatures
+
+```{r recovery}
+rec <- rri_recovery_metrics(
+  res           = res,
+  id            = sim$id,
+  time_col      = "time",
+  group_cols    = c("plot", "depth", "plant_id"),
+  perturb_start = PERTURB_START,
+  perturb_end   = PERTURB_END,
+  rri_col       = "RRI"
+)
+
+rec[1:4, c("plot", "depth", "plant_id", "baseline_rri", "depth_min_frac",
+           "tau_lag", "overshoot_frac", "incomplete_return_frac",
+           "displaced_plateau_flag", "fit_status")]
+```
+
+<div class="note">
+**Reading it** — one row per trajectory. `depth_min_frac` is how far the score
+fell relative to baseline; `tau_lag` is how long recovery took to begin;
+`incomplete_return_frac` is the terminal shortfall. `fit_status` reports
+whether the rate estimate is trustworthy — always read `k` together with it.
+</div>
+
+<div class="caution">
+**What it does not show** — `alt_routing_flag` is retained as `NA` on purpose.
+A displaced plateau is consistent with alternative electron routing but does
+not establish it, so the package refuses to claim otherwise. Use
+`displaced_plateau_flag` and describe it as a displacement.
+</div>
+
+## Recovery map across all trajectories
+
+```{r recovery-map, fig.height=4.8}
+plot_rri_recovery_map(
+  res           = res,
+  id            = sim$id,
+  rec           = rec,
+  time_col      = "time",
+  group_cols    = c("plot", "depth", "plant_id"),
+  perturb_start = PERTURB_START,
+  perturb_end   = PERTURB_END
+)
+```
+
+<div class="note">
+**Reading it** — one row per trajectory, colour = RRI through time. Scan
+vertically at any time point to compare units; scan horizontally to follow one
+unit. Rows that stay dark to the right of the disturbance band did not
+recover.
+</div>
+
+## Ranking trajectories by signature
+
+```{r landscape, eval=requireNamespace("tidyr", quietly=TRUE) && requireNamespace("tidyselect", quietly=TRUE), fig.height=5}
+## Name the metrics explicitly rather than relying on the function default.
+## Older HRRI builds defaulted to A_norm / O_norm / tau_r, which
+## rri_recovery_metrics() no longer produces; being explicit makes this chunk
+## work against either version and documents which signatures are shown.
+plot_rri_recovery_landscape(
+  rec,
+  metrics = intersect(
+    c("depth_min_frac", "overshoot_frac", "I_norm", "k", "tau_lag", "t_half"),
+    names(rec)
+  ),
+  order_by = "I_norm"
+)
+```
+
+<div class="note">
+**Reading it** — trajectories as rows, recovery signatures as columns, each
+column scaled within the cohort. It answers "which units behaved similarly, and
+on which signature do they differ?" — the ordering is by incomplete return.
+</div>
+
+<div class="caution">
+**What it does not show** — scaling is cohort-relative, so a "high" cell means
+high *within this run*, not high in absolute terms. Two datasets cannot be
+compared cell-by-cell.
+</div>
+
+# Property diagnostics
+
+```{r properties, fig.height=5}
+props <- rri_property_scores(res, rec = rec)
+props$property_table
+
+plot_rri_properties(props, rri_value = mean(scored$RRI, na.rm = TRUE))
+```
+
+<div class="note">
+**Reading it** — the four diagnostics on one radar. Unavailable properties stay
+missing rather than being imputed, so a short spoke means "not supported by the
+supplied data", not "low".
+</div>
+
+<div class="caution">
+**What it does not show** — these are *named after* the four controls but are
+not measurements of them. Capacity here is an oxidative-oriented feature
+composite; Connectivity is an association descriptor; Kinetics is a
+recovery-speed descriptor; Memory is a persistent-displacement descriptor.
+Check `props$property_table` to see the method behind each score.
+</div>
+
+# Did HRRI recover the hidden state?
+
+Because the simulator defines a target, we can check agreement directly. This
+is an internal consistency check, not empirical validation.
+
+```{r validation, fig.height=4}
+ok <- is.finite(scored$RRI) & is.finite(sim$latent_truth)
+r  <- stats::cor(scored$RRI[ok], sim$latent_truth[ok])
+cat("r(RRI, latent_truth) =", round(r, 3), "on", sum(ok), "observations\n")
+
+ggplot(data.frame(truth = sim$latent_truth[ok], RRI = scored$RRI[ok]),
+       aes(truth, RRI)) +
+  geom_point(alpha = 0.25, size = 1.1, colour = "#2f6b6b") +
+  geom_smooth(method = "lm", formula = y ~ x, se = TRUE,
+              colour = "#8c4a2f", fill = "#8c4a2f", alpha = 0.12) +
+  labs(x = "Simulator target  z(t)", y = "HRRI score",
+       title = sprintf("Agreement with the prescribed target (r = %.3f)", r))
+```
+
+<div class="caution">
+**What it does not show** — this is agreement with a target *we defined*. It
+demonstrates that the scoring path is internally coherent. It is not predictive
+accuracy, not held-out error, and not evidence that HRRI tracks resilience in
+any real soil.
+</div>
+
+# Using your own data
+
+Every function above accepts plain data frames. Replace the simulator with your
+own measurements, keeping rows aligned across blocks:
+
+```{r own-data, eval=FALSE}
+res <- rri_pipeline(
+  soil  = my_soil,      # Eh, pH, Fe pools, EAC/EDC ...
+  plant = my_plant,     # SPAD, Fv/Fm, ROL ...
+  micro = my_micro,     # ASV table or functional genes
+  id    = my_ids,       # plot, depth, plant_id, time
+  direction_anchor_soil = "Eh",
+  direction_anchor_phys = "FvFm"
+)
+```
+
+Missing a domain is fine — supply what you have. Absent domains stay `NA`,
+remaining weights renormalise per row, and coverage is reported so a reduced
+panel is never silently treated as a complete one.
+
+<div class="method">
+A reduced panel changes the estimand. Scores from a soil-only run and a
+three-domain run are not interchangeable; compare them through
+`rri_sensitivity()` rather than assuming equivalence.
+</div>
+
+# Session information
+
+```{r session}
+sessionInfo()
+```

@@ -74,13 +74,18 @@ head(res$row_scores)
 head(res$row_scores_comp)
 
 # Ternary visualization requires res$row_scores_comp, not recovery metrics
+# ggtern is not compatible with every ggplot2 release, so attempt the
+# ternary plot defensively rather than letting it abort the example.
 if (requireNamespace("ggtern", quietly = TRUE) &&
     requireNamespace("ggplot2", quietly = TRUE) &&
     requireNamespace("viridis", quietly = TRUE)) {
-  plot_RRI_ternary(
-    res$row_scores_comp,
-    point_size = 3,
-    show_centroid = TRUE
+  try(
+    print(plot_RRI_ternary(
+      res$row_scores_comp,
+      point_size = 3,
+      show_centroid = TRUE
+    )),
+    silent = TRUE
   )
 }
 
@@ -114,7 +119,11 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 if (requireNamespace("ggplot2", quietly = TRUE) &&
     requireNamespace("tidyr", quietly = TRUE) &&
     requireNamespace("tidyselect", quietly = TRUE)) {
-  plot_rri_recovery_landscape(rec)
+  plot_rri_recovery_landscape(
+    rec,
+    metrics = c("depth_min_frac", "overshoot_frac", "I_norm",
+                "k", "tau_lag", "t_half")
+  )
 }
 
 }

@@ -236,13 +236,18 @@ head(res$row_scores_comp)
 #> 6 0.3587583 0.27840556 0.3628361 0.8841632
 
 # Ternary visualization requires res$row_scores_comp, not recovery metrics
+# ggtern is not compatible with every ggplot2 release, so attempt the
+# ternary plot defensively rather than letting it abort the example.
 if (requireNamespace("ggtern", quietly = TRUE) &&
     requireNamespace("ggplot2", quietly = TRUE) &&
     requireNamespace("viridis", quietly = TRUE)) {
-  plot_RRI_ternary(
-    res$row_scores_comp,
-    point_size = 3,
-    show_centroid = TRUE
+  try(
+    print(plot_RRI_ternary(
+      res$row_scores_comp,
+      point_size = 3,
+      show_centroid = TRUE
+    )),
+    silent = TRUE
   )
 }
 #> Warning: Ignoring unknown aesthetics: z
@@ -319,7 +324,11 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
 if (requireNamespace("ggplot2", quietly = TRUE) &&
     requireNamespace("tidyr", quietly = TRUE) &&
     requireNamespace("tidyselect", quietly = TRUE)) {
-  plot_rri_recovery_landscape(rec)
+  plot_rri_recovery_landscape(
+    rec,
+    metrics = c("depth_min_frac", "overshoot_frac", "I_norm",
+                "k", "tau_lag", "t_half")
+  )
 }
 #> `trajectory_class` not supplied; derived from displaced_plateau_flag and incomplete_return_frac.
 #> Warning: No shared levels found between `names(values)` of the manual scale and the

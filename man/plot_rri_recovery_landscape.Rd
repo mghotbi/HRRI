@@ -61,6 +61,10 @@ rec <- rri_recovery_metrics(
 )
 
 head(rec)
-plot_rri_recovery_landscape(rec)
+plot_rri_recovery_landscape(
+  rec,
+  metrics = c("depth_min_frac", "overshoot_frac", "I_norm",
+              "k", "tau_lag", "t_half")
+)
 
 }

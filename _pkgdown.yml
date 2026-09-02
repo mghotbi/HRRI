@@ -116,6 +116,7 @@ articles:
   navbar: ~
   contents:
   - HRRI_workflow
+  - HRRI_gallery
 
 authors:
   Mitra Ghotbi:
