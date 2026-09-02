@@ -9,17 +9,32 @@ plot_rri_recovery_landscape(
   group_cols = c("plot", "depth", "plant_id"),
   metrics = c("depth_min_frac", "overshoot_frac", "I_norm", "k", "tau_lag", "t_half"),
   order_by = "I_norm",
+  orient = c("concern", "raw"),
+  drop_empty = TRUE,
   base_size = 12
 )
 }
 \arguments{
-\item{rec}{A data frame returned by \code{rri_recovery_metrics()}.}
+\item{rec}{A data frame returned by \code{\link[=rri_recovery_metrics]{rri_recovery_metrics()}}.}
 
-\item{group_cols}{Character vector identifying trajectory labels.}
+\item{group_cols}{Character vector of columns identifying one trajectory.}
 
-\item{metrics}{Character vector of recovery metric columns to plot.}
+\item{metrics}{Character vector of recovery metric columns to plot. Defaults
+to the columns returned by \code{\link[=rri_recovery_metrics]{rri_recovery_metrics()}}. Legacy names
+(\code{A_norm}, \code{O_norm}, \code{tau_r}) are still labelled if supplied.}
 
 \item{order_by}{Character scalar. Metric used to order trajectories.}
+
+\item{orient}{Controls what darker colour means. \code{"concern"} (default)
+inverts metrics for which a \emph{smaller} value is the more concerning
+outcome, so a dark cell always reads as "more concerning" across the whole
+panel. \code{"raw"} scales every column upward, meaning dark is high-valued
+regardless of interpretation. See Details.}
+
+\item{drop_empty}{Logical. Drop metric columns that are \code{NA} for every
+trajectory rather than drawing a blank column. \code{k} and \code{t_half} are \code{NA}
+unless a recovery rate was fitted, so an all-\code{NA} column is common and
+means "not estimable here", not "zero".}
 
 \item{base_size}{Numeric. Base font size.}
 }
@@ -27,10 +42,29 @@ plot_rri_recovery_landscape(
 A \code{ggplot} object.
 }
 \description{
-Visualises user-level perturbation-recovery metrics from
-\code{rri_recovery_metrics()}. Each row is one trajectory and each column is a
-core resilience metric. Values are scaled within metric columns to make
-amplitudes, overshoot, incomplete recovery, and recovery times comparable.
+Visualises trajectory-level recovery metrics from \code{\link[=rri_recovery_metrics]{rri_recovery_metrics()}}.
+Each row is one trajectory and each column one recovery signature. Cell
+colour encodes the within-column scaled magnitude; the printed number is
+always the unscaled value, so nothing is hidden by the scaling.
+}
+\details{
+\strong{Why orientation matters.} The recovery signatures do not share a polarity.
+A large \code{depth_min_frac} (deep decline), a large \code{tau_lag} (slow onset) and a
+large \code{t_half} (slow return) are all unfavourable, but a large \code{k} is a
+\emph{fast} recovery rate and therefore favourable. Scaling every column upward
+and applying one colour ramp would make dark mean "bad" in some columns and
+"good" in others. With \code{orient = "concern"} the \code{k} column is inverted before
+scaling so the ramp is interpretable across the panel. \code{overshoot_frac} is
+treated as neutral and never inverted, because overshoot is not
+unambiguously favourable or unfavourable.
+
+Scaling is min-max \strong{within each column, within this cohort}. A dark cell
+means "high relative to the other trajectories in this run", not high in any
+absolute sense. Two datasets cannot be compared cell by cell.
+
+If \code{rec} has no \code{trajectory_class} column, one is derived from
+\code{displaced_plateau_flag} and \code{incomplete_return_frac}. The derived labels
+describe the score trajectory only and identify no mechanism.
 }
 \examples{
 sim <- simulate_redox_holobiont(
@@ -60,11 +94,13 @@ rec <- rri_recovery_metrics(
   perturb_end = 7
 )
 
-head(rec)
 plot_rri_recovery_landscape(
   rec,
   metrics = c("depth_min_frac", "overshoot_frac", "I_norm",
               "k", "tau_lag", "t_half")
 )
 
+}
+\seealso{
+\code{\link[=rri_recovery_metrics]{rri_recovery_metrics()}}, \code{\link[=plot_rri_recovery_map]{plot_rri_recovery_map()}}
 }

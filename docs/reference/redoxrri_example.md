@@ -331,9 +331,6 @@ if (requireNamespace("ggplot2", quietly = TRUE) &&
   )
 }
 #> `trajectory_class` not supplied; derived from displaced_plateau_flag and incomplete_return_frac.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
-#> Warning: No shared levels found between `names(values)` of the manual scale and the
-#> data's colour values.
+#> Dropping metric(s) with no finite values: k, t_half. Check `fit_status` - k and t_half are NA unless a rate was fitted. Set drop_empty = FALSE to keep the empty columns.
 
 ```
