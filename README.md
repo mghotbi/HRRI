@@ -121,6 +121,7 @@ Each function's help page states what its output does and does not support.
 
 ```r
 vignette("HRRI_workflow", package = "HRRI")
+vignette("HRRI_gallery", package = "HRRI")
 ```
 
 Walks through simulation, accessible-capacity estimation, domain scoring,
