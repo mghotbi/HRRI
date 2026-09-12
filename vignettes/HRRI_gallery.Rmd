@@ -34,7 +34,7 @@ knitr::opts_chunk$set(
 )
 
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  ggplot2::theme_set(
+  old_theme <- ggplot2::theme_set(
     ggplot2::theme_minimal(base_size = 11) +
       ggplot2::theme(
         panel.grid.minor = ggplot2::element_blank(),
@@ -258,10 +258,16 @@ evidence of a mechanistic link.
 # Where the domains sit relative to each other
 
 ```{r ternary, echo=TRUE, results="asis"}
-## ggtern is a Suggests dependency and, at the time of writing, is not
-## compatible with ggplot2 >= 3.5 (it errors on tern.axis.ticks.length.major).
-## Render defensively so the vignette builds either way.
-tern_ok <- requireNamespace("ggtern", quietly = TRUE) &&
+## ggtern is a Suggests dependency. Loading it -- not drawing with it --
+## patches ggplot2's element tree, and under ggplot2 >= 4.0.0 that patch makes
+## every later ggplot in the session fail with
+##   "The `tern.axis.ticks.length.major` theme element must be a <rel> object."
+## Vignettes are built in one R session, so a requireNamespace() here would
+## take the workflow vignette down with it. The ggplot2 version is therefore
+## checked before ggtern is touched at all; try() alone is too late.
+ggplot2_ok <- utils::packageVersion("ggplot2") < "4.0.0"
+tern_ok <- ggplot2_ok &&
+           requireNamespace("ggtern", quietly = TRUE) &&
            requireNamespace("viridis", quietly = TRUE)
 
 if (tern_ok) {
@@ -278,7 +284,12 @@ if (tern_ok) {
         "show is summarised numerically below.*\n\n")
   }
 } else {
-  cat("*Install **ggtern** and **viridis** to render this figure.*\n\n")
+  cat("*The ternary panel is skipped here: **ggtern** is either not installed",
+      "or not compatible with the installed **ggplot2**",
+      sprintf("(%s).", utils::packageVersion("ggplot2")),
+      "It is deliberately not loaded in that case, because loading it would",
+      "break the remaining figures. The same composition is given numerically",
+      "below.*\n\n")
 }
 ```
 
@@ -415,7 +426,9 @@ compared cell-by-cell.
 # Property diagnostics
 
 ```{r properties, fig.height=5}
-props <- rri_property_scores(res, rec = rec)
+## soil_df is what makes Capacity available. Without it the Capacity axis is
+## returned as NA and the radar shows a short spoke.
+props <- rri_property_scores(res, rec = rec, soil_df = sim$soil_data)
 props$property_table
 
 plot_rri_properties(props, rri_value = mean(scored$RRI, na.rm = TRUE))
@@ -486,6 +499,13 @@ A reduced panel changes the estimand. Scores from a soil-only run and a
 three-domain run are not interchangeable; compare them through
 `rri_sensitivity()` rather than assuming equivalence.
 </div>
+
+```{r restore-theme, include=FALSE}
+## theme_set() changes state that persists for the rest of the session.
+## Vignettes build in their own process so nothing outside is affected, but
+## restoring is the same courtesy CRAN asks for with par() and options().
+if (exists("old_theme")) ggplot2::theme_set(old_theme)
+```
 
 # Session information
 

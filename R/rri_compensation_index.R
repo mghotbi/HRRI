@@ -1,4 +1,4 @@
-#' Cross-domain asynchrony diagnostic
+#' @title Cross-domain asynchrony diagnostic
 #'
 #' @description Association or variance cancellation, not evidence of causal
 #' buffering. Variance_ratio is 1 - var(rowSums(X))/sum(var(X_j)); positive
@@ -15,7 +15,7 @@
 #' @importFrom stats var
 #' @importFrom utils combn
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(seed = 1)
 #'   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
 #'   rri_compensation_index(res)

@@ -29,8 +29,9 @@ Uses base graphics, so no optional plotting package is required.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# \donttest{
   demo <- rri_simulation_demo(seed = 20260830L)
   plot_rri_simulation_demo(demo, figure = "observations")
-} # }
+
+# }
 ```

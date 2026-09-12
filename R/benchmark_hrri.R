@@ -1,4 +1,4 @@
-#' Benchmark diagnostic agreement with a simulator-defined target
+#' @title Benchmark diagnostic agreement with a simulator-defined target
 #' @description Runs independent seeds and reports descriptive agreement, not
 #' held-out prediction, empirical validation or parameter identification.
 #' @param domains Nonempty subset of soil, plant and micro.
@@ -26,7 +26,7 @@
 #' process outcomes in a separate validation design.
 #' @seealso rri_pipeline, simulate_redox_holobiont, plot_hrri_benchmark
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' b <- benchmark_hrri(domains = "soil", n = 2, missing = 0.1)
 #' print(b)
 #' }
@@ -155,14 +155,14 @@ print.hrri_benchmark <- function(x, ...) {
   invisible(x)
 }
 
-#' Plot descriptive benchmark agreement
+#' @title Plot descriptive benchmark agreement
 #' @param bm An hrri_benchmark object.
 #' @param print Whether to display the plot.
 #' @param colour Scatter colour.
 #' @return Invisibly, a two-panel patchwork object. Requires patchwork.
 #' @importFrom ggplot2 ggplot aes geom_abline geom_point geom_histogram labs coord_fixed theme_classic
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   b <- benchmark_hrri(domains = "soil", n = 2, missing = 0.1)
 #'   plot_hrri_benchmark(b)
 #' }

@@ -11,8 +11,8 @@ species \\j\\ and \\s_j\\ is the stoichiometric O\\\_2\\ coefficient for
 complete oxidation to the specified endpoint.
 
 Stoichiometric coefficients follow the electron balance table of Ghotbi,
-Ghotbi, Stukenbrock, Mühling and Spielvogel (2026) (Box 1 of the
-mechanistic review):
+Ghotbi, Mühling and Stukenbrock (Box 1 of the mechanistic review,
+submitted):
 
 |  |  |  |
 |----|----|----|
@@ -170,22 +170,46 @@ A list:
 
   Integer. Number of reduced-pool columns found.
 
+- `n_species_observed`:
+
+  Integer vector. Number of species with a finite inventory in each row,
+  so a low demand from sparse data is not mistaken for a low demand from
+  a small inventory.
+
+- `species_coverage`:
+
+  Per-row fraction of the *requested* species that were observed.
+  Columns named but absent from `soil_df` count against coverage.
+
+- `interpretation`:
+
+  Character. A one-line reminder that the ratio compares a demand to a
+  stock, not to a delivery rate.
+
+- `ch4_unit_used`, `acetate_basis_used`:
+
+  The resolved values of `ch4_unit` and `acetate_basis`, recorded
+  because both change the numbers returned.
+
 - `components`:
 
-  Data frame (one row per species) with: `species`, `stoich_coef`,
-  `mean_inventory`, `mean_o2_contribution`, `fraction_of_total_demand`.
-  Returned only when `return_components = TRUE`.
+  Data frame (one row per species) with: `species`, `n_observed`,
+  `stoich_coef`, `mean_inventory_mmol`, `mean_o2_contribution`,
+  `fraction_total_demand`. Returned only when
+  `return_components = TRUE`.
 
 - `stoich_table`:
 
-  Data frame of the full stoichiometric table used, including any custom
-  overrides.
+  Data frame of the coefficients actually applied, one row per species
+  found, including any custom overrides: `species_arg`, `column_used`,
+  `stoich_coef_O2`, `endpoint`. Species not present in `soil_df` are
+  absent.
 
 ## Details
 
-**Interpretation — the 25-fold contrast.**
+**Interpretation — the 26-fold contrast.**
 
-The mechanistic review (Ghotbi *et al.*, 2026) provides a worked
+The mechanistic review (Ghotbi *et al.*, submitted) provides a worked
 example: a Fe-rich rhizosphere containing 50 mmol Fe(II) kg\\^{-1}\\, 5
 mmol FeS kg\\^{-1}\\, 2 mmol Mn(II) kg\\^{-1}\\, 2 mmol NH\\\_4^+\\
 kg\\^{-1}\\, 2 mmol acetate kg\\^{-1}\\, and 0.5 mmol CH\\\_4\\
@@ -216,17 +240,19 @@ stoichiometric potential demand, not a thermodynamic limit or rate.
 
 ## References
 
-Ghotbi, M., Ghotbi, M., Stukenbrock, E. H., Mühling, K. H., &
-Spielvogel, S. (2026). Rhizosphere redox recovery after hydrological
-disturbance: mechanisms across the soil–plant–microbiome continuum.
-*Manuscript submitted*.
+Ghotbi, M., Ghotbi, M., Mühling, K. H., & Stukenbrock, E. H. Rhizosphere
+redox recovery after hydrological disturbances: mechanisms across the
+soil–plant–microbiome continuum. *Submitted to Soil Biology &
+Biochemistry*.
 
 Stumm, W., & Lee, G. F. (1961). Oxygenation of ferrous iron. *Industrial
-& Engineering Chemistry*, 53, 143–146.
+& Engineering Chemistry*, **53**, 143–146.
+[doi:10.1021/ie50614a030](https://doi.org/10.1021/ie50614a030)
 
 Millero, F. J., Sotolongo, S., & Izaguirre, M. (1987). The oxidation
-kinetics of Fe(II) in seawater. *Geochimica et Cosmochimica Acta*, 51,
-793–801.
+kinetics of Fe(II) in seawater. *Geochimica et Cosmochimica Acta*,
+**51**, 793–801.
+[doi:10.1016/0016-7037(87)90093-7](https://doi.org/10.1016/0016-7037%2887%2990093-7)
 
 ## See also
 
@@ -237,7 +263,7 @@ kinetics of Fe(II) in seawater. *Geochimica et Cosmochimica Acta*, 51,
 ## Examples
 
 ``` r
-## Reproduce the worked example from Ghotbi et al. (2026) Box 1
+## Reproduce the worked example from Box 1 of the mechanistic review
 worked_example <- data.frame(
   Fe2 = 50.0, # mmol kg-1
   FeS = 5.0,

@@ -63,7 +63,7 @@ seeds are dependent. Compare methods using held-out seeds and independent
 process outcomes in a separate validation design.
 }
 \examples{
-\dontrun{
+\donttest{
 b <- benchmark_hrri(domains = "soil", n = 2, missing = 0.1)
 print(b)
 }

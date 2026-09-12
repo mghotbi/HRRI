@@ -1,4 +1,4 @@
-#' Event-window accessible reservoir capacities
+#' @title Event-window accessible reservoir capacities
 #'
 #' @description Computes Q * alpha * (1-exp(-k*tau)) for declared reservoirs.
 #' Q must be nonoverlapping electron-equivalent inventories with explicit reaction
@@ -236,7 +236,7 @@ rri_accessible_capacity <- function(
 }
 
 
-#' Illustrative reservoir parameter template
+#' @title Illustrative reservoir parameter template
 #' @description Returns example values, not calibrated mineral-specific constants.
 #' The default uses the core bulk EAC and EDC columns. Supply phase-resolved
 #' column names only when those inventories are nonoverlapping and expressed in

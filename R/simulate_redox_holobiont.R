@@ -1,4 +1,4 @@
-#' Simulate illustrative soil-plant-microbe redox trajectories
+#' @title Simulate illustrative soil-plant-microbe redox trajectories
 #'
 #' @description Synthetic daily trajectories with explicit Fe/Mn redistribution,
 #' plant indicators, gene abundance and transcript/count observation models.
@@ -15,6 +15,11 @@
 #' @param seed Integer or \code{NULL}. Random seed passed to
 #'   \code{\link[base]{set.seed}} before simulation; \code{NULL} means
 #'   no seeding (non-reproducible). All manuscript figures use explicit seeds.
+#'   The default is a fixed integer rather than \code{NULL} so that an
+#'   unseeded call is reproducible, which is the point of an illustrative
+#'   generator. This does not disturb the caller: the RNG kind and
+#'   \code{.Random.seed} are saved on entry and restored with
+#'   \code{\link[base]{on.exit}}, so the stream is returned exactly as found.
 #' @param scenario Character; one of \code{"flood_drain"} (default) or
 #'   \code{"drought_rewet"}. Determines the shape of the hydrological
 #'   forcing function and the sign of the dominant redox transition.
@@ -106,7 +111,7 @@
 #' auditable. These are illustrative weights, not calibrated rates.
 #' @importFrom stats rnorm runif rlnorm rnbinom
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(n_plot = 2, n_depth = 2, n_plant = 2,
 #'                                    n_time = 20, seed = 42)
 #'   nrow(sim$id)  # 2 x 2 x 2 x 20 = 160 rows

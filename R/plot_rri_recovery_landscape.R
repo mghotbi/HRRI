@@ -290,7 +290,7 @@ plot_rri_recovery_landscape <- function(
     ggplot2::geom_tile(colour = "white", linewidth = 0.45,
                        width = 0.96, height = 0.9) +
     ggplot2::geom_text(
-      ggplot2::aes(label = ifelse(is.na(.data$value), "—",
+      ggplot2::aes(label = ifelse(is.na(.data$value), "\u2014",
                                   signif(.data$value, 2)),
                    colour = .data$.label_col),
       size = base_size / 4, show.legend = FALSE

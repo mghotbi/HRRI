@@ -55,13 +55,69 @@ does not establish alternative electron routing. Hysteresis is only reported
 for a sufficiently closed, reversing forcing-response path. Temporal deficit
 asymmetry is a separate diagnostic. Analyse repeated events separately.
 }
-\examples{
-\dontrun{
-  sim <- simulate_redox_holobiont(seed = 1)
-  res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux,
-                      id = sim$id)
-  rri_recovery_metrics(res, time_col = "time",
-    group_cols = c("plot", "depth", "plant_id"),
-    perturb_start = 20, perturb_end = 30)
+\section{Why \code{k_recovery} and \code{t_half} are often \code{NA}}{
+
+The rate fit is deliberately conservative. It uses only recovery
+observations that lie after the observed trough, strictly below the
+pre-event baseline, and before the first crossing back through that
+baseline, and it requires at least \code{min_pts} such points. Short recovery
+windows routinely leave fewer, in which case \code{fit_status} is
+\code{"insufficient_positive_deficits"} and both \code{k_recovery} and \code{t_half} are
+returned as \code{NA} rather than being fitted to two points.
+
+This is missingness by design, not failure. A rate estimated from a handful
+of points spanning less than one recovery time constant is not informative,
+and reporting it would invite over-interpretation. Always read \code{k_recovery}
+together with \code{fit_status}, \code{n_fit} and \code{fit_r_squared}.
+
+If most trajectories return \code{NA}, extend the observation window rather than
+lowering \code{min_pts}: as a rule of thumb the record should continue for at
+least two or three times the expected recovery time after \code{perturb_end}.
 }
+
+\examples{
+## A window long enough for the rate fit to succeed. The event occupies
+## days 12-22 of a 40-day record, leaving 18 recovery observations.
+sim <- simulate_redox_holobiont(
+  n_plot = 2, n_depth = 2, n_plant = 2, n_time = 40,
+  p_micro = 10, seed = 2026
+)
+
+res <- suppressWarnings(rri_pipeline_st(
+  ROS_flux = sim$ROS_flux,
+  Eh_stability = sim$Eh_stability,
+  micro_data = sim$micro_data,
+  id = sim$id,
+  reducer = "per_domain",
+  scaling = "pnorm"
+))
+
+rec <- rri_recovery_metrics(
+  res = res, id = sim$id, time_col = "time",
+  group_cols = c("plot", "depth", "plant_id"),
+  perturb_start = 12, perturb_end = 22
+)
+
+## Inspect estimability before using any rate.
+table(rec$fit_status)
+rec[, c("plot", "depth", "plant_id", "depth_min_frac",
+        "k_recovery", "n_fit", "fit_status")]
+
+## Contrast: a short window leaves too few usable points and the rate
+## is correctly withheld.
+short <- simulate_redox_holobiont(
+  n_plot = 1, n_depth = 1, n_plant = 2, n_time = 12,
+  p_micro = 5, seed = 1
+)
+res_s <- suppressWarnings(rri_pipeline_st(
+  ROS_flux = short$ROS_flux, Eh_stability = short$Eh_stability,
+  micro_data = short$micro_data, id = short$id
+))
+rec_s <- rri_recovery_metrics(
+  res = res_s, id = short$id, time_col = "time",
+  group_cols = c("plot", "depth", "plant_id"),
+  perturb_start = 5, perturb_end = 7
+)
+table(rec_s$fit_status)
+
 }

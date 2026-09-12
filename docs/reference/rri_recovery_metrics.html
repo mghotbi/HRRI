@@ -7,7 +7,7 @@ asymmetry is a separate diagnostic. Analyse repeated events separately."><meta p
 A score decline does not identify pathway truncation; a displaced plateau
 does not establish alternative electron routing. Hysteresis is only reported
 for a sufficiently closed, reversing forcing-response path. Temporal deficit
-asymmetry is a separate diagnostic. Analyse repeated events separately."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@mitraghotbi"><meta name="twitter:site" content="@mitraghotbi"></head><body>
+asymmetry is a separate diagnostic. Analyse repeated events separately."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -15,7 +15,7 @@ asymmetry is a separate diagnostic. Analyse repeated events separately."><meta n
 
     <a class="navbar-brand me-2" href="../index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,12 +23,18 @@ asymmetry is a separate diagnostic. Analyse repeated events separately."><meta n
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/HRRI_workflow.html">Get started</a></li>
-<li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+      <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/HRRI_workflow.html">HRRI: Holobiont Redox Resilience Index — End-to-End Workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/HRRI_gallery.html">HRRI: Reading the Figures — A Worked Example</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/HRRI_workflow.html">End-to-end workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/HRRI_gallery.html">Gallery</a></li>
+  </ul></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-news" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">News</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-news"><li><h6 class="dropdown-header" data-toc-skip>Releases</h6></li>
+    <li><a class="dropdown-item" href="../news/index.html">Changelog</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../news/index.html">Changelog</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -127,17 +133,96 @@ k is a log-linear fit of positive baseline deficits after the observed minimum.
 It is a conditional trajectory descriptor, not a mechanistic exchange rate.
 Legacy alt_routing fields are retained as NA; use displaced_plateau_flag.</p>
     </div>
+    <div class="section level2">
+    <h2 id="why-k-recovery-and-t-half-are-often-na">Why <code>k_recovery</code> and <code>t_half</code> are often <code>NA</code><a class="anchor" aria-label="anchor" href="#why-k-recovery-and-t-half-are-often-na"></a></h2>
+
+
+<p>The rate fit is deliberately conservative. It uses only recovery
+observations that lie after the observed trough, strictly below the
+pre-event baseline, and before the first crossing back through that
+baseline, and it requires at least <code>min_pts</code> such points. Short recovery
+windows routinely leave fewer, in which case <code>fit_status</code> is
+<code>"insufficient_positive_deficits"</code> and both <code>k_recovery</code> and <code>t_half</code> are
+returned as <code>NA</code> rather than being fitted to two points.</p>
+<p>This is missingness by design, not failure. A rate estimated from a handful
+of points spanning less than one recovery time constant is not informative,
+and reporting it would invite over-interpretation. Always read <code>k_recovery</code>
+together with <code>fit_status</code>, <code>n_fit</code> and <code>fit_r_squared</code>.</p>
+<p>If most trajectories return <code>NA</code>, extend the observation window rather than
+lowering <code>min_pts</code>: as a rule of thumb the record should continue for at
+least two or three times the expected recovery time after <code>perturb_end</code>.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span>  <span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_redox_holobiont.html">simulate_redox_holobiont</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="rri_pipeline.html">rri_pipeline</a></span><span class="op">(</span>soil <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">Eh_stability</span>, plant <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">ROS_flux</span>,</span></span>
-<span class="r-in"><span>                      id <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="fu">rri_recovery_metrics</span><span class="op">(</span><span class="va">res</span>, time_col <span class="op">=</span> <span class="st">"time"</span>,</span></span>
-<span class="r-in"><span>    group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    perturb_start <span class="op">=</span> <span class="fl">20</span>, perturb_end <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## A window long enough for the rate fit to succeed. The event occupies</span></span></span>
+<span class="r-in"><span><span class="co">## days 12-22 of a 40-day record, leaving 18 recovery observations.</span></span></span>
+<span class="r-in"><span><span class="va">sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_redox_holobiont.html">simulate_redox_holobiont</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  n_plot <span class="op">=</span> <span class="fl">2</span>, n_depth <span class="op">=</span> <span class="fl">2</span>, n_plant <span class="op">=</span> <span class="fl">2</span>, n_time <span class="op">=</span> <span class="fl">40</span>,</span></span>
+<span class="r-in"><span>  p_micro <span class="op">=</span> <span class="fl">10</span>, seed <span class="op">=</span> <span class="fl">2026</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="rri_pipeline_st.html">rri_pipeline_st</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  ROS_flux <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">ROS_flux</span>,</span></span>
+<span class="r-in"><span>  Eh_stability <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">Eh_stability</span>,</span></span>
+<span class="r-in"><span>  micro_data <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">micro_data</span>,</span></span>
+<span class="r-in"><span>  id <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span>,</span></span>
+<span class="r-in"><span>  reducer <span class="op">=</span> <span class="st">"per_domain"</span>,</span></span>
+<span class="r-in"><span>  scaling <span class="op">=</span> <span class="st">"pnorm"</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu">rri_recovery_metrics</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  res <span class="op">=</span> <span class="va">res</span>, id <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span>, time_col <span class="op">=</span> <span class="st">"time"</span>,</span></span>
+<span class="r-in"><span>  group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  perturb_start <span class="op">=</span> <span class="fl">12</span>, perturb_end <span class="op">=</span> <span class="fl">22</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Inspect estimability before using any rate.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">rec</span><span class="op">$</span><span class="va">fit_status</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> insufficient_positive_deficits          no_resolvable_decline </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              3                              5 </span>
+<span class="r-in"><span><span class="va">rec</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span>, <span class="st">"depth_min_frac"</span>,</span></span>
+<span class="r-in"><span>        <span class="st">"k_recovery"</span>, <span class="st">"n_fit"</span>, <span class="st">"fit_status"</span><span class="op">)</span><span class="op">]</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   plot depth plant_id depth_min_frac k_recovery n_fit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   P1    D1   Plant1     0.00000000         NA     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   P2    D1   Plant1     0.00000000         NA     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   P1    D2   Plant1     0.15479833         NA     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   P2    D2   Plant1     0.08137064         NA     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   P1    D1   Plant2     0.00000000         NA     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   P2    D1   Plant2     0.00000000         NA     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   P1    D2   Plant2     0.07117166         NA     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   P2    D2   Plant2     0.00000000         NA     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                       fit_status</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          no_resolvable_decline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2          no_resolvable_decline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 insufficient_positive_deficits</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 insufficient_positive_deficits</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5          no_resolvable_decline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6          no_resolvable_decline</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 insufficient_positive_deficits</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8          no_resolvable_decline</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Contrast: a short window leaves too few usable points and the rate</span></span></span>
+<span class="r-in"><span><span class="co">## is correctly withheld.</span></span></span>
+<span class="r-in"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="simulate_redox_holobiont.html">simulate_redox_holobiont</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  n_plot <span class="op">=</span> <span class="fl">1</span>, n_depth <span class="op">=</span> <span class="fl">1</span>, n_plant <span class="op">=</span> <span class="fl">2</span>, n_time <span class="op">=</span> <span class="fl">12</span>,</span></span>
+<span class="r-in"><span>  p_micro <span class="op">=</span> <span class="fl">5</span>, seed <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res_s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="rri_pipeline_st.html">rri_pipeline_st</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  ROS_flux <span class="op">=</span> <span class="va">short</span><span class="op">$</span><span class="va">ROS_flux</span>, Eh_stability <span class="op">=</span> <span class="va">short</span><span class="op">$</span><span class="va">Eh_stability</span>,</span></span>
+<span class="r-in"><span>  micro_data <span class="op">=</span> <span class="va">short</span><span class="op">$</span><span class="va">micro_data</span>, id <span class="op">=</span> <span class="va">short</span><span class="op">$</span><span class="va">id</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">rec_s</span> <span class="op">&lt;-</span> <span class="fu">rri_recovery_metrics</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  res <span class="op">=</span> <span class="va">res_s</span>, id <span class="op">=</span> <span class="va">short</span><span class="op">$</span><span class="va">id</span>, time_col <span class="op">=</span> <span class="st">"time"</span>,</span></span>
+<span class="r-in"><span>  group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  perturb_start <span class="op">=</span> <span class="fl">5</span>, perturb_end <span class="op">=</span> <span class="fl">7</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">rec_s</span><span class="op">$</span><span class="va">fit_status</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> insufficient_positive_deficits </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              2 </span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -145,7 +230,7 @@ Legacy alt_routing fields are retained as NA; use displaced_plateau_flag.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by <a href="https://orcid.org/0000-0001-9185-9993" class="external-link">Mitra Ghotbi</a>.</p>
+  <p>Developed by Mitra Ghotbi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

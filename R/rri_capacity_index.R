@@ -1,4 +1,4 @@
-#' Oxidative-oriented soil feature composite
+#' @title Oxidative-oriented soil feature composite
 #'
 #' @description Standardizes selected measured features and averages them with
 #' declared weights. EAC is positive and EDC is inverted after scaling. This is

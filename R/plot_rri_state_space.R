@@ -1,4 +1,4 @@
-#' Plot domain-score space with correctly matched trajectory diagnostics
+#' @title Plot domain-score space with correctly matched trajectory diagnostics
 #'
 #' @param res RRI result with aligned identifiers in row_scores.
 #' @param rec Optional one-row-per-trajectory diagnostic table.
@@ -9,7 +9,7 @@
 #' @return ggplot. Domain scores are not relabelled as mechanistic properties.
 #' @importFrom ggplot2 ggplot aes geom_point labs theme_classic scale_colour_viridis_c
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(seed = 1)
 #'   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux,
 #'                       id = sim$id)

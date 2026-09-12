@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>HRRI · Soil–Plant–Microbial Redox Recovery Diagnostics • HRRI</title>
+<title>Diagnostics for Soil-Plant-Microbial Redox Recovery • HRRI</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/Source_Sans_3-0.4.10/font.css" rel="stylesheet">
@@ -14,14 +14,9 @@
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><link href="extra.css" rel="stylesheet">
-<meta property="og:title" content="HRRI · Soil–Plant–Microbial Redox Recovery Diagnostics">
-<meta name="description" content="Transparent, assumption-explicit diagnostics for longitudinal soil, plant and microbial observations spanning redox disturbance and recovery.
-">
-<meta property="og:description" content="Transparent, assumption-explicit diagnostics for longitudinal soil, plant and microbial observations spanning redox disturbance and recovery.
-">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:creator" content="@mitraghotbi">
-<meta name="twitter:site" content="@mitraghotbi">
+<meta property="og:title" content="Diagnostics for Soil-Plant-Microbial Redox Recovery">
+<meta name="description" content="Provides diagnostic functions for integrating longitudinal soil, plant and microbial observations during redox disturbance and recovery. Functions calculate stoichiometric potential oxygen demand, accessible electron capacity from explicitly supplied inventories and kinetic parameters, recovery signatures, fixed-reference domain scores, and exploratory multiblock scores with observation-coverage diagnostics. Memory is represented as a holobiont state accumulating from mineralogical, plant-acclimation and microbial-community legacies. An illustrative simulator produces closed Fe and Mn inventories alongside synthetic observations; its carbon, nitrogen, sulfur and oxygen budgets are not closed and its parameters are not calibrated to field rates. Simulation benchmarks assess agreement with a prescribed synthetic target and do not constitute empirical validation or parameter identification. Accuracy assessment is cluster-aware: intervals come from resampling whole trajectories, agreement is reported as Lin's concordance coefficient alongside correlation, and mean squared error is partitioned into bias, variance mismatch and lack of correlation. The measured quantities follow Sander, Hofstetter and Gorski (2015) &lt;doi:10.1021/acs.est.5b00006&gt; for mediated electrochemical determination of electron-accepting and electron-donating capacity, Kluepfel, Piepenbrock, Kappler and Sander (2014) &lt;doi:10.1038/ngeo2084&gt; for regeneration of electron-accepting capacity across repeated anoxic periods, Thompson, Chadwick, Rancourt and Chorover (2006) &lt;doi:10.1016/j.gca.2005.12.005&gt; for the increase in iron-oxide crystallinity under redox oscillation, and Keiluweit, Wanzek, Kleber, Nico and Fendorf (2017) &lt;doi:10.1038/s41467-017-01406-6&gt; for anaerobic microsites in otherwise aerobic soil. Agreement statistics follow Lin (1989) &lt;doi:10.2307/2532051&gt; and Kobayashi and Salam (2000) &lt;doi:10.2134/agronj2000.922345x&gt;.">
+<meta property="og:description" content="Provides diagnostic functions for integrating longitudinal soil, plant and microbial observations during redox disturbance and recovery. Functions calculate stoichiometric potential oxygen demand, accessible electron capacity from explicitly supplied inventories and kinetic parameters, recovery signatures, fixed-reference domain scores, and exploratory multiblock scores with observation-coverage diagnostics. Memory is represented as a holobiont state accumulating from mineralogical, plant-acclimation and microbial-community legacies. An illustrative simulator produces closed Fe and Mn inventories alongside synthetic observations; its carbon, nitrogen, sulfur and oxygen budgets are not closed and its parameters are not calibrated to field rates. Simulation benchmarks assess agreement with a prescribed synthetic target and do not constitute empirical validation or parameter identification. Accuracy assessment is cluster-aware: intervals come from resampling whole trajectories, agreement is reported as Lin's concordance coefficient alongside correlation, and mean squared error is partitioned into bias, variance mismatch and lack of correlation. The measured quantities follow Sander, Hofstetter and Gorski (2015) &lt;doi:10.1021/acs.est.5b00006&gt; for mediated electrochemical determination of electron-accepting and electron-donating capacity, Kluepfel, Piepenbrock, Kappler and Sander (2014) &lt;doi:10.1038/ngeo2084&gt; for regeneration of electron-accepting capacity across repeated anoxic periods, Thompson, Chadwick, Rancourt and Chorover (2006) &lt;doi:10.1016/j.gca.2005.12.005&gt; for the increase in iron-oxide crystallinity under redox oscillation, and Keiluweit, Wanzek, Kleber, Nico and Fendorf (2017) &lt;doi:10.1038/s41467-017-01406-6&gt; for anaerobic microsites in otherwise aerobic soil. Agreement statistics follow Lin (1989) &lt;doi:10.2307/2532051&gt; and Kobayashi and Salam (2000) &lt;doi:10.2134/agronj2000.922345x&gt;.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -31,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,13 +35,21 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="articles/HRRI_workflow.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/HRRI_workflow.html">HRRI: Holobiont Redox Resilience Index — End-to-End Workflow</a></li>
-    <li><a class="dropdown-item" href="articles/HRRI_gallery.html">HRRI: Reading the Figures — A Worked Example</a></li>
+<li><a class="dropdown-item" href="articles/HRRI_workflow.html">End-to-end workflow</a></li>
+    <li><a class="dropdown-item" href="articles/HRRI_gallery.html">Gallery</a></li>
+  </ul>
+</li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-news" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">News</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-news">
+<li><h6 class="dropdown-header" data-toc-skip>Releases</h6></li>
+    <li><a class="dropdown-item" href="news/index.html">Changelog</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="news/index.html">Changelog</a></li>
   </ul>
 </li>
       </ul>
@@ -218,7 +221,8 @@
 <h2 id="vignette">Vignette<a class="anchor" aria-label="anchor" href="#vignette"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"HRRI_workflow"</span>, package <span class="op">=</span> <span class="st">"HRRI"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"HRRI_workflow"</span>, package <span class="op">=</span> <span class="st">"HRRI"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html" class="external-link">vignette</a></span><span class="op">(</span><span class="st">"HRRI_gallery"</span>, package <span class="op">=</span> <span class="st">"HRRI"</span><span class="op">)</span></span></code></pre></div>
 <p>Walks through simulation, accessible-capacity estimation, domain scoring, recovery signatures, and the mineralogical-ratchet disturbance-history experiment.</p>
 </div>
 <div class="section level2">
@@ -226,7 +230,62 @@
 </h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"HRRI"</span><span class="op">)</span></span></code></pre></div>
-<p>Ghotbi, M., Ghotbi, M., Guerreiro, M., Komluski, J., &amp; Holtgrewe-Stukenbrock, E. H. (2026). HRRI: A direction-aware R framework for quantifying soil–plant–microbiome redox resilience across hydroclimatic disturbance events. Manuscript submitted.</p>
+</div>
+<div class="section level2">
+<h2 id="companion-manuscripts">Companion manuscripts<a class="anchor" aria-label="anchor" href="#companion-manuscripts"></a>
+</h2>
+<p>HRRI is the software component of three manuscripts, none yet published; two are under review. They are listed here because the package implements what they describe. Please cite the published version once available, and treat the entries below as provisional until then.</p>
+<p><strong>Software and diagnostics — the paper this package accompanies</strong> Ghotbi, M., Ghotbi, M., Komluski, J., &amp; Holtgrewe-Stukenbrock, E. H. HRRI: direction-aware diagnostics for soil–plant–microbiome redox recovery across hydroclimatic disturbances. <em>In preparation.</em> → implemented by <code><a href="reference/rri_pipeline_st.html">rri_pipeline_st()</a></code>, <code><a href="reference/rri_property_scores.html">rri_property_scores()</a></code>, <code><a href="reference/rri_recovery_metrics.html">rri_recovery_metrics()</a></code>, <code><a href="reference/rri_accuracy.html">rri_accuracy()</a></code>.</p>
+<p><strong>Theory — where the four hidden states come from</strong> Ghotbi, M., Kolody, B. C., Ghotbi, M., &amp; Holtgrewe-Stukenbrock, E. A Theory of Hydroclimatic Redox Resilience. <em>Submitted to Communications Earth &amp; Environment.</em> → the capacity–connectivity–kinetics–memory decomposition and the accessible-capacity expression <code>C_acc(tau) = sum_j Q_j a_j (1 - exp(-k_j tau))</code>, implemented by <code><a href="reference/rri_accessible_capacity.html">rri_accessible_capacity()</a></code>.</p>
+<p><strong>Mechanistic review — the biology the simulator encodes</strong> Ghotbi, M., Ghotbi, M., Mühling, K. H., &amp; Stukenbrock, E. H. Rhizosphere redox recovery after hydrological disturbances: mechanisms across the soil–plant–microbiome continuum. <em>Submitted to Soil Biology &amp; Biochemistry.</em> → the plant, microbial and mineralogical legacy terms in <code><a href="reference/simulate_redox_holobiont.html">simulate_redox_holobiont()</a></code>.</p>
+<p>None of these is required to use the package, and none is cited in <code>DESCRIPTION</code>: CRAN asks that the <code>Description</code> field carry only references a reader can actually retrieve, so it lists the published methods sources instead.</p>
+</div>
+<div class="section level2">
+<h2 id="published-methods-this-package-builds-on">Published methods this package builds on<a class="anchor" aria-label="anchor" href="#published-methods-this-package-builds-on"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Reference</th>
+<th>What HRRI takes from it</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Sander, Hofstetter &amp; Gorski (2015) <em>Environ. Sci. Technol.</em> 49:5862 <a href="https://doi.org/10.1021/acs.est.5b00006" class="external-link">doi:10.1021/acs.est.5b00006</a>
+</td>
+<td>Mediated electrochemical measurement of EAC and EDC — the capacity the index scores</td>
+</tr>
+<tr>
+<td>Klüpfel, Piepenbrock, Kappler &amp; Sander (2014) <em>Nat. Geosci.</em> 7:195 <a href="https://doi.org/10.1038/ngeo2084" class="external-link">doi:10.1038/ngeo2084</a>
+</td>
+<td>Electron-accepting capacity regenerates across repeated anoxic periods — the basis for treating memory as a state, not a trend</td>
+</tr>
+<tr>
+<td>Thompson, Chadwick, Rancourt &amp; Chorover (2006) <em>Geochim. Cosmochim. Acta</em> 70:1710 <a href="https://doi.org/10.1016/j.gca.2005.12.005" class="external-link">doi:10.1016/j.gca.2005.12.005</a>
+</td>
+<td>Iron-oxide crystallinity increases under redox oscillation — the mineralogical ratchet</td>
+</tr>
+<tr>
+<td>Keiluweit, Wanzek, Kleber, Nico &amp; Fendorf (2017) <em>Nat. Commun.</em> 8:1771 <a href="https://doi.org/10.1038/s41467-017-01406-6" class="external-link">doi:10.1038/s41467-017-01406-6</a>
+</td>
+<td>Anaerobic microsites persist in aerobic soil — why connectivity is separated from capacity</td>
+</tr>
+<tr>
+<td>Lin (1989) <em>Biometrics</em> 45:255 <a href="https://doi.org/10.2307/2532051" class="external-link">doi:10.2307/2532051</a>
+</td>
+<td>Concordance correlation coefficient, reported by <code><a href="reference/rri_accuracy.html">rri_accuracy()</a></code>
+</td>
+</tr>
+<tr>
+<td>Kobayashi &amp; Salam (2000) <em>Agron. J.</em> 92:345 <a href="https://doi.org/10.2134/agronj2000.922345x" class="external-link">doi:10.2134/agronj2000.922345x</a>
+</td>
+<td>MSE partition into bias, variance mismatch and lack of correlation</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
@@ -250,6 +309,7 @@
 </ul>
 </div>
 
+
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
@@ -260,8 +320,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>
-<a href="https://orcid.org/0000-0001-9185-9993" class="external-link">Mitra Ghotbi</a> <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-9185-9993" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Mitra Ghotbi <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-9185-9993" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -280,7 +339,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by <a href="https://orcid.org/0000-0001-9185-9993" class="external-link">Mitra Ghotbi</a>.</p>
+  <p>Developed by Mitra Ghotbi.</p>
 </div>
 
 <div class="pkgdown-footer-right">

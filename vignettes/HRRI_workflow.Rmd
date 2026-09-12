@@ -35,7 +35,7 @@ knitr::opts_chunk$set(
 
 ## Consistent figure styling across the vignette -------------------------
 if (requireNamespace("ggplot2", quietly = TRUE)) {
-  ggplot2::theme_set(
+  old_theme <- ggplot2::theme_set(
     ggplot2::theme_minimal(base_size = 11) +
       ggplot2::theme(
         panel.grid.minor = ggplot2::element_blank(),
@@ -354,7 +354,21 @@ matching row counts alone do **not** establish alignment. Shared identifier
 columns are checked for conflicts rather than silently overwritten.
 </div>
 
-## Correlation with latent truth
+## Agreement with the prescribed target
+
+A single pooled correlation is the wrong summary here, for two reasons.
+
+First, these 360 rows are **12 trajectories observed at 30 time points**, not
+360 independent observations. Rows within a trajectory are strongly dependent,
+so an interval computed from the row count is far too narrow.
+
+Second, Pearson's $r$ measures *association*, not *agreement*. A score equal to
+twice the target plus a constant correlates with it perfectly while matching it
+nowhere. Lin's concordance correlation coefficient penalises departure from the
+1:1 line and is the quantity that belongs beside it.
+
+`rri_accuracy()` reports both, with intervals obtained by resampling whole
+trajectories rather than rows.
 
 ```{r validation}
 ## rri_scored is aligned to sim$id, and hence to its latent_truth vector.
@@ -362,19 +376,78 @@ truth <- sim$latent_truth
 if (!is.numeric(truth) || length(truth) != nrow(rri_scored)) {
   stop("latent_truth must be a numeric vector with one value per sim$id row.")
 }
-ok <- is.finite(rri_scored$RRI) & is.finite(truth)
-if (sum(ok) >= 3L && stats::sd(rri_scored$RRI[ok]) > 0 &&
-    stats::sd(truth[ok]) > 0) {
-  r_val <- stats::cor(rri_scored$RRI[ok], truth[ok])
-} else {
-  r_val <- NA_real_
-  cat("Correlation unavailable: too few finite pairs or a constant vector.\n")
-}
-cat("r(RRI, latent truth):", round(r_val, 3), "\n")
+
+## One independent experimental unit = one plot x depth x plant trajectory.
+traj <- interaction(rri_scored$plot, rri_scored$depth, rri_scored$plant_id,
+                    drop = TRUE)
+
+acc <- rri_accuracy(
+  score   = rri_scored$RRI,
+  target  = truth,
+  cluster = traj,
+  n_boot  = 500,
+  n_perm  = 500,
+  seed    = 42
+)
+
+acc
 ```
 
-This is a within-simulation association, not independent predictive validation
-or evidence that the individual latent parameters have been identified.
+<div class="method">
+`effective_n` in the dependence table, not the row count, is what governs
+precision. Where the design effect is well above one, the naive interval
+should not be quoted: the function prints both widths so the difference is
+visible rather than asserted.
+</div>
+
+Splitting the error says which kind of disagreement is present, and the three
+components sum to the mean squared error exactly.
+
+```{r validation_decomp}
+acc$decomposition[, c("component", "percent")]
+
+## Exactness check: the residual is numerical noise, not a rounding allowance.
+c(mse      = attr(acc$decomposition, "mse"),
+  residual = attr(acc$decomposition, "residual"))
+```
+
+Large squared bias is a systematic offset, removable by recentring. Large
+variance mismatch means the score is flatter or more volatile than the target.
+Large lack of correlation means the score does not track the target's pattern,
+and no rescaling will repair it.
+
+`plot_rri_accuracy()` draws the same four questions as one figure.
+
+```{r validation_figure, fig.width=9.5, fig.height=7.5, out.width="100%"}
+plot_rri_accuracy(acc,
+                  score_label  = "RRI",
+                  target_label = "Prescribed target")
+```
+
+<div class="note">
+**Reading it.** **A** puts the fitted line against the dashed 1:1 line; a
+flatter fit means the score compresses the target's range. Open points are
+trajectory means, the level at which the units are independent. **B** is a
+Bland-Altman plot: a scatter that slopes or fans out shows disagreement that
+depends on level, which no correlation coefficient can reveal. **C** is the
+headline: the violet distribution resamples rows and is too narrow, the teal
+one resamples trajectories and is honest; the bars beneath give both widths.
+**D** partitions the mean squared error exactly.
+
+**What it does not show.** None of the four panels speaks to out-of-sample
+performance. The target is prescribed by the same simulator that produced the
+inputs, so a tight panel A means the estimator is self-consistent, not that it
+would recover an unobserved field quantity.
+</div>
+
+<div class="caution">
+`latent_truth` and `RRI` are produced by the same generator. Everything above
+therefore quantifies **internal consistency** — whether the estimator recovers
+the target its own simulator prescribed. It is not independent predictive
+validation, and it is not evidence that the individual latent parameters have
+been identified. An empirical claim requires a target measured independently of
+the score, replicated across independent experimental units.
+</div>
 
 # Recovery Signatures
 
@@ -452,6 +525,13 @@ history
 Interpret the direction and magnitude as a model sensitivity result. An
 empirical claim about hydrological memory requires independent observations.
 
+```{r restore-theme, include=FALSE}
+## theme_set() changes state that persists for the rest of the session.
+## Vignettes build in their own process so nothing outside is affected, but
+## restoring is the same courtesy CRAN asks for with par() and options().
+if (exists("old_theme")) ggplot2::theme_set(old_theme)
+```
+
 # Session Information
 
 ```{r sessionInfo}
@@ -460,4 +540,50 @@ sessionInfo()
 
 # References
 
-Ghotbi, M., Ghotbi, M., Guerreiro, M., Komluski, J., & Holtgrewe-Stukenbrock, E. H. (2026). HRRI: A direction-aware R framework for quantifying soil–plant–microbiome redox resilience across hydroclimatic disturbance events. Manuscript submitted.
+## Published methods
+
+Keiluweit, M., Wanzek, T., Kleber, M., Nico, P., & Fendorf, S. (2017).
+Anaerobic microsites have an unaccounted role in soil carbon stabilization.
+*Nature Communications*, **8**, 1771. <https://doi.org/10.1038/s41467-017-01406-6>
+
+Klüpfel, L., Piepenbrock, A., Kappler, A., & Sander, M. (2014). Humic
+substances as fully regenerable electron acceptors in recurrently anoxic
+environments. *Nature Geoscience*, **7**, 195–200.
+<https://doi.org/10.1038/ngeo2084>
+
+Kobayashi, K., & Salam, M. U. (2000). Comparing simulated and measured values
+using mean squared deviation and its components. *Agronomy Journal*, **92**,
+345–352. <https://doi.org/10.2134/agronj2000.922345x>
+
+Lin, L. I. (1989). A concordance correlation coefficient to evaluate
+reproducibility. *Biometrics*, **45**, 255–268.
+<https://doi.org/10.2307/2532051>
+
+Sander, M., Hofstetter, T. B., & Gorski, C. A. (2015). Electrochemical analyses
+of redox-active iron minerals: a review of nonmediated and mediated approaches.
+*Environmental Science & Technology*, **49**, 5862–5878.
+<https://doi.org/10.1021/acs.est.5b00006>
+
+Thompson, A., Chadwick, O. A., Rancourt, D. G., & Chorover, J. (2006).
+Iron-oxide crystallinity increases during soil redox oscillations.
+*Geochimica et Cosmochimica Acta*, **70**, 1710–1727.
+<https://doi.org/10.1016/j.gca.2005.12.005>
+
+## Companion manuscripts
+
+These describe the framework this package implements. None is published and two
+are under review; the entries are provisional and should be replaced with the
+published versions.
+
+Ghotbi, M., Ghotbi, M., Komluski, J., & Holtgrewe-Stukenbrock, E. H. HRRI:
+direction-aware diagnostics for soil–plant–microbiome redox recovery across
+hydroclimatic disturbances. *In preparation.*
+
+Ghotbi, M., Kolody, B. C., Ghotbi, M., & Holtgrewe-Stukenbrock, E. A Theory of
+Hydroclimatic Redox Resilience. *Submitted to Communications Earth &
+Environment.* — the source of the capacity, connectivity, kinetics and memory
+decomposition used throughout this vignette.
+
+Ghotbi, M., Ghotbi, M., Mühling, K. H., & Stukenbrock, E. H. Rhizosphere redox
+recovery after hydrological disturbances: mechanisms across the
+soil–plant–microbiome continuum. *Submitted to Soil Biology & Biochemistry.*

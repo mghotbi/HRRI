@@ -19,7 +19,7 @@
 #'
 #' @importFrom stats cor
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(seed = 1)
 #'   res <- rri_pipeline_st(sim$ROS_flux, sim$Eh_stability)
 #'   rri_latent_correlation(res, sim$latent_truth)

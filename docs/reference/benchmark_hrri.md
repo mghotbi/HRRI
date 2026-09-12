@@ -94,8 +94,19 @@ rri_pipeline, simulate_redox_holobiont, plot_hrri_benchmark
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# \donttest{
 b <- benchmark_hrri(domains = "soil", n = 2, missing = 0.1)
+#> Warning: Excluding simulator-derived hidden columns from scoring: Cacc_EAC, Cacc_EDC, Cacc_total, Cacc_fraction, net_oxidative_balance, alpha_accept, alpha_donate, k_accept_h, k_donate_h
+#> Warning: Unanchored latent axes have arbitrary signs; RRI is exploratory, not directionally validated resilience.
+#> benchmark_hrri: 1/2 seeds attempted
+#> Warning: Excluding simulator-derived hidden columns from scoring: Cacc_EAC, Cacc_EDC, Cacc_total, Cacc_fraction, net_oxidative_balance, alpha_accept, alpha_donate, k_accept_h, k_donate_h
+#> Warning: Unanchored latent axes have arbitrary signs; RRI is exploratory, not directionally validated resilience.
+#> benchmark_hrri: 2/2 seeds attempted
 print(b)
-} # }
+#> <hrri_benchmark> descriptive agreement, not predictive validation
+#>       RMSE        Bias    r_truth rank_truth n_rows spread_association
+#>  0.3215426 -0.08773519 -0.3207642 -0.3211588    120                 NA
+#>  mean_within_seed_sd n_requested n_seeds n_failed
+#>            0.3054143           2       2        0
+# }
 ```

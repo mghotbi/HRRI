@@ -4,12 +4,14 @@ S3method(as.data.frame,hrri_arch)
 S3method(print,hrri_arch)
 S3method(print,hrri_arch_validation)
 S3method(print,hrri_benchmark)
+S3method(print,rri_accuracy)
 S3method(summary,hrri_arch)
 export(attach_hrri_ids)
 export(benchmark_hrri)
 export(hrri_infer_architecture)
 export(plot_RRI_ternary)
 export(plot_hrri_benchmark)
+export(plot_rri_accuracy)
 export(plot_rri_properties)
 export(plot_rri_recovery_landscape)
 export(plot_rri_recovery_map)
@@ -18,10 +20,12 @@ export(plot_rri_state_space)
 export(plot_rri_timeseries)
 export(plot_rri_validation)
 export(rri_accessible_capacity)
+export(rri_accuracy)
 export(rri_capacity_index)
 export(rri_compensation_index)
 export(rri_connectivity_score)
 export(rri_default_reservoirs)
+export(rri_domain_influence)
 export(rri_kinetics_score)
 export(rri_latent_correlation)
 export(rri_memory_index)
@@ -40,18 +44,25 @@ export(theme_ems)
 export(validate_architecture)
 importFrom(ggplot2,
   aes,
+  after_stat,
   annotate,
   coord_equal,
   coord_fixed,
+  coord_flip,
   element_blank,
+  element_rect,
   element_text,
   facet_wrap,
   geom_abline,
+  geom_col,
+  geom_density,
   geom_histogram,
+  geom_hline,
   geom_line,
   geom_point,
   geom_text,
   geom_tile,
+  geom_vline,
   ggplot,
   labs,
   margin,
@@ -59,8 +70,10 @@ importFrom(ggplot2,
   scale_colour_manual,
   scale_colour_viridis_c,
   scale_fill_gradientn,
+  scale_fill_manual,
   scale_fill_viridis_c,
   scale_fill_viridis_d,
+  scale_y_continuous,
   theme,
   theme_classic,
   theme_minimal
@@ -101,6 +114,7 @@ importFrom(stats,
   pnorm,
   prcomp,
   predict,
+  quantile,
   rlnorm,
   rnbinom,
   rnorm,

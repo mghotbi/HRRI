@@ -122,3 +122,39 @@
   rownames(out) <- NULL
   out
 }
+
+## ---------------------------------------------------------------------------
+## ggtern availability
+##
+## ggtern patches ggplot2's internal element tree when its namespace is LOADED,
+## not when a ternary plot is drawn. Under ggplot2 >= 4.0.0, which rewrote the
+## plot object on S7, that patch leaves entries such as
+## `tern.axis.ticks.length.major` in a form ggplot2 rejects, and every
+## subsequent ggplot in the session fails in plot_theme() with
+##
+##   The `tern.axis.ticks.length.major` theme element must be a <rel> object.
+##
+## Wrapping the ternary call in try() does not help: by then the namespace is
+## already loaded and the damage is done, and it persists across vignettes built
+## in one R session. The version must therefore be checked BEFORE ggtern is
+## touched, which is what this helper does -- note that it never calls
+## requireNamespace("ggtern") on an incompatible ggplot2.
+##
+## Internal; not exported.
+hrri_ggtern_ok <- function(quiet = TRUE) {
+  if (!requireNamespace("ggplot2", quietly = TRUE)) return(FALSE)
+  if (utils::packageVersion("ggplot2") >= "4.0.0") {
+    if (!quiet) {
+      message("Skipping ggtern: it is not compatible with ggplot2 ",
+              utils::packageVersion("ggplot2"),
+              ". Loading it would break every later ggplot in this session.")
+    }
+    return(FALSE)
+  }
+  ## Safe to probe only once the ggplot2 version is known to be workable.
+  if (!requireNamespace("ggtern", quietly = TRUE)) {
+    if (!quiet) message("Skipping ggtern: the package is not installed.")
+    return(FALSE)
+  }
+  TRUE
+}

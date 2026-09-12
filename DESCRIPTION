@@ -1,8 +1,8 @@
 Package: HRRI
 Type: Package
 Title: Diagnostics for Soil-Plant-Microbial Redox Recovery
-Version: 0.99.2
-Date: 2026-09-01
+Version: 1.0.2
+Date: 2026-09-12
 Authors@R: c(
     person("Mitra", "Ghotbi",
            email = "mitra.ghotbi@gmail.com",
@@ -25,6 +25,22 @@ Description: Provides diagnostic functions for integrating longitudinal soil,
     are not closed and its parameters are not calibrated to field rates.
     Simulation benchmarks assess agreement with a prescribed synthetic target
     and do not constitute empirical validation or parameter identification.
+    Accuracy assessment is cluster-aware: intervals come from resampling whole
+    trajectories, agreement is reported as Lin's concordance coefficient
+    alongside correlation, and mean squared error is partitioned into bias,
+    variance mismatch and lack of correlation.
+    The measured quantities follow Sander, Hofstetter and Gorski (2015)
+    <doi:10.1021/acs.est.5b00006> for mediated electrochemical determination of
+    electron-accepting and electron-donating capacity, Kluepfel, Piepenbrock,
+    Kappler and Sander (2014) <doi:10.1038/ngeo2084> for regeneration of
+    electron-accepting capacity across repeated anoxic periods, Thompson,
+    Chadwick, Rancourt and Chorover (2006) <doi:10.1016/j.gca.2005.12.005> for
+    the increase in iron-oxide crystallinity under redox oscillation, and
+    Keiluweit, Wanzek, Kleber, Nico and Fendorf (2017)
+    <doi:10.1038/s41467-017-01406-6> for anaerobic microsites in otherwise
+    aerobic soil. Agreement statistics follow Lin (1989)
+    <doi:10.2307/2532051> and Kobayashi and Salam (2000)
+    <doi:10.2134/agronj2000.922345x>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Depends: R (>= 4.3.0)
@@ -39,7 +55,7 @@ Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
 NeedsCompilation: no
-Packaged: 2026-09-01 18:10:45 UTC; mitraghotbi
+Packaged: 2026-09-12 00:00:00 UTC; mitraghotbi
 Author: Mitra Ghotbi [aut, cre] (ORCID:
     <https://orcid.org/0000-0001-9185-9993>),
   Marjan Ghotbi [ctb] (ORCID: <https://orcid.org/0000-0003-4655-6445>)

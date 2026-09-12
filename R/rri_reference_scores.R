@@ -1,4 +1,4 @@
-#' Score departures from an explicitly defined reference
+#' @title Score departures from an explicitly defined reference
 #'
 #' @description An optional, transparent alternative to latent-axis scoring.
 #' Each feature score is max(0, 1 - abs(value - target) / tolerance).

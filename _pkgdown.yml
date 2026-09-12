@@ -3,128 +3,107 @@ url: https://mghotbi.github.io/HRRI/
 template:
   bootstrap: 5
   bslib:
-    base_font:    {google: "Source Sans 3"}
+    primary: "#2f6b6b"      # redox teal
+    secondary: "#8c4a2f"    # iron rust
+    base_font: {google: "Source Sans 3"}
     heading_font: {google: "Source Serif 4"}
-    code_font:    {google: "JetBrains Mono"}
-    primary:   "#2f6b6b"   # deep teal — redox
-    fg:        "#1c2321"
-    bg:        "#ffffff"
-    border-radius: "0.4rem"
-    btn-border-radius: "0.3rem"
-  opengraph:
-    twitter:
-      creator: "@mitraghotbi"
-      card: summary_large_image
-
-home:
-  title: HRRI · Soil–Plant–Microbial Redox Recovery Diagnostics
-  description: >
-    Transparent, assumption-explicit diagnostics for longitudinal soil, plant
-    and microbial observations spanning redox disturbance and recovery.
-  sidebar:
-    structure: [links, license, citation, authors, dev]
+    code_font: {google: "JetBrains Mono"}
 
 navbar:
   structure:
-    left:  [intro, reference, articles]
+    left:  [intro, reference, articles, news]
     right: [search, github]
   components:
-    intro:
-      text: Get started
-      href: articles/HRRI_workflow.html
-    reference:
-      text: Reference
-      href: reference/index.html
+    articles:
+      text: Articles
+      menu:
+      - text: End-to-end workflow
+        href: articles/HRRI_workflow.html
+      - text: Gallery
+        href: articles/HRRI_gallery.html
 
 reference:
 
-- title: Simulation
+- title: Scoring pipelines
   desc: >
-    Generate illustrative multi-domain trajectories with closed Fe and Mn
-    inventories under flood–drain or drought–rewet forcing.
-  contents:
-  - simulate_redox_holobiont
-  - rri_simulation_demo
-  - plot_rri_simulation_demo
-
-- title: Capacity and stoichiometry
-  desc: >
-    Event-window accessible capacity and electron-balance calculations from
-    explicitly supplied inventories and kinetic parameters.
-  contents:
-  - rri_accessible_capacity
-  - rri_default_reservoirs
-  - rri_o2_demand
-  - rri_capacity_index
-
-- title: Domain scoring
-  desc: >
-    Integrate plant, soil and microbial observations into composite scores,
-    with identifier alignment and coverage diagnostics.
+    Turn observed plant, soil and microbial measurements into a composite
+    resilience score, with explicit direction anchoring and coverage
+    diagnostics.
   contents:
   - rri_pipeline
   - rri_pipeline_st
   - rri_reference_scores
   - attach_hrri_ids
-  - rri_micro_functional_score
-  - rri_root_physio
+
+- title: The four hidden states
+  desc: >
+    Capacity, connectivity, kinetics and memory, and the accessible-capacity
+    expression that combines them over an event window.
+  contents:
+  - rri_accessible_capacity
+  - rri_default_reservoirs
+  - rri_capacity_index
+  - rri_connectivity_score
+  - rri_kinetics_score
+  - rri_memory_index
+  - rri_property_scores
 
 - title: Recovery signatures
   desc: >
-    Describe decline and return of a higher-is-better score across a single
-    disturbance event.
+    Lag, overshoot, hysteresis, truncation, incomplete return and persistent
+    alternative routing, extracted from a scored trajectory.
   contents:
   - rri_recovery_metrics
-  - rri_memory_index
-  - rri_kinetics_score
-  - rri_connectivity_score
   - rri_compensation_index
-  - rri_property_scores
-  - rri_sensitivity
+  - rri_root_physio
+  - rri_micro_functional_score
+  - rri_o2_demand
 
-- title: Benchmarking and inference
+- title: Model checking
   desc: >
-    Internal consistency checks against prescribed synthetic targets. These are
-    not empirical validation.
+    Whether the score behaves as claimed. Agreement statistics respect the
+    clustering of repeated observations; influence and sensitivity show where
+    the composite's variance actually comes from.
   contents:
-  - benchmark_hrri
-  - plot_hrri_benchmark
-  - hrri_infer_architecture
-  - validate_architecture
+  - rri_accuracy
+  - rri_domain_influence
+  - rri_sensitivity
   - rri_latent_correlation
+  - benchmark_hrri
+  - hrri_infer_architecture
 
-- title: Visualisation
-  desc: Publication-oriented diagnostic plots.
+- title: Figures
+  desc: Plotting functions, each documenting what its panels do and do not show.
   contents:
-  - plot_rri_timeseries
-  - plot_rri_state_space
-  - plot_RRI_ternary
-  - plot_rri_recovery_map
-  - plot_rri_recovery_landscape
+  - plot_rri_accuracy
   - plot_rri_properties
+  - plot_rri_recovery_landscape
+  - plot_rri_recovery_map
+  - plot_rri_state_space
+  - plot_rri_timeseries
   - plot_rri_validation
+  - plot_RRI_ternary
+  - plot_hrri_benchmark
+  - plot_rri_simulation_demo
   - theme_ems
 
-
-- title: Data
-  desc: Example dataset shipped with the package.
+- title: Simulation
+  desc: >
+    An illustrative generator with closed Fe and Mn inventories. Its outputs
+    are for demonstration and internal consistency checks, not calibration.
   contents:
-  - redoxrri_example
+  - simulate_redox_holobiont
+  - rri_simulation_demo
+  - HRRI_workflow_example
 
 articles:
-- title: Workflow
+- title: Articles
   navbar: ~
   contents:
   - HRRI_workflow
   - HRRI_gallery
 
-authors:
-  Mitra Ghotbi:
-    href: https://orcid.org/0000-0001-9185-9993
-  Marjan Ghotbi:
-    href: https://orcid.org/0000-0003-4655-6445
-
-footer:
-  structure:
-    left: developed_by
-    right: built_with
+news:
+  releases:
+  - text: "Changelog"
+    href: news/index.html

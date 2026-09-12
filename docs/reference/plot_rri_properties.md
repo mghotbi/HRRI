@@ -130,6 +130,5 @@ props <- rri_property_scores(
 )
 
 plot_rri_properties(props)
-#> Warning: Ignoring unknown parameters: `label.size`
 
 ```

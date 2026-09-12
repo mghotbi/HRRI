@@ -24,7 +24,7 @@ method, not disclaimers bolted on afterwards.
 library(HRRI)
 library(ggplot2)
 packageVersion("HRRI")
-#> [1] '0.99.2'
+#> [1] '1.0.2'
 ```
 
 ## The experiment
@@ -234,10 +234,16 @@ co-movement is not evidence of a mechanistic link.
 
 ``` r
 
-## ggtern is a Suggests dependency and, at the time of writing, is not
-## compatible with ggplot2 >= 3.5 (it errors on tern.axis.ticks.length.major).
-## Render defensively so the vignette builds either way.
-tern_ok <- requireNamespace("ggtern", quietly = TRUE) &&
+## ggtern is a Suggests dependency. Loading it -- not drawing with it --
+## patches ggplot2's element tree, and under ggplot2 >= 4.0.0 that patch makes
+## every later ggplot in the session fail with
+##   "The `tern.axis.ticks.length.major` theme element must be a <rel> object."
+## Vignettes are built in one R session, so a requireNamespace() here would
+## take the workflow vignette down with it. The ggplot2 version is therefore
+## checked before ggtern is touched at all; try() alone is too late.
+ggplot2_ok <- utils::packageVersion("ggplot2") < "4.0.0"
+tern_ok <- ggplot2_ok &&
+           requireNamespace("ggtern", quietly = TRUE) &&
            requireNamespace("viridis", quietly = TRUE)
 
 if (tern_ok) {
@@ -254,11 +260,19 @@ if (tern_ok) {
         "show is summarised numerically below.*\n\n")
   }
 } else {
-  cat("*Install **ggtern** and **viridis** to render this figure.*\n\n")
+  cat("*The ternary panel is skipped here: **ggtern** is either not installed",
+      "or not compatible with the installed **ggplot2**",
+      sprintf("(%s).", utils::packageVersion("ggplot2")),
+      "It is deliberately not loaded in that case, because loading it would",
+      "break the remaining figures. The same composition is given numerically",
+      "below.*\n\n")
 }
 ```
 
-![](HRRI_gallery_files/figure-html/ternary-1.png)
+*The ternary panel is skipped here: **ggtern** is either not installed
+or not compatible with the installed **ggplot2** (4.0.3). It is
+deliberately not loaded in that case, because loading it would break the
+remaining figures. The same composition is given numerically below.*
 
 Whether or not the ternary renders, the same information is available
 directly from the compositional table — each row sums to one across the
@@ -406,13 +420,20 @@ cannot be compared cell-by-cell.
 
 ``` r
 
-props <- rri_property_scores(res, rec = rec)
+## soil_df is what makes Capacity available. Without it the Capacity axis is
+## returned as NA and the radar shows a short spoke.
+props <- rri_property_scores(res, rec = rec, soil_df = sim$soil_data)
 props$property_table
-#>       property     score                                       method available
-#> 1     Capacity        NA                                  unavailable     FALSE
-#> 2 Connectivity 0.5576013                       cross_domain_magnitude      TRUE
-#> 3     Kinetics 0.8333333               Cohort-relative recovery speed      TRUE
-#> 4       Memory 0.4247667 Loop-area/persistent-displacement diagnostic      TRUE
+#>       property     score                                         method
+#> 1     Capacity 0.5090211 Oxidative-oriented feature composite; not Cacc
+#> 2 Connectivity 0.5576013                         cross_domain_magnitude
+#> 3     Kinetics 0.8333333                 Cohort-relative recovery speed
+#> 4       Memory 0.4247667   Loop-area/persistent-displacement diagnostic
+#>   available
+#> 1      TRUE
+#> 2      TRUE
+#> 3      TRUE
+#> 4      TRUE
 
 plot_rri_properties(props, rri_value = mean(scored$RRI, na.rm = TRUE))
 ```
@@ -491,7 +512,7 @@ rather than assuming equivalence.
 sessionInfo()
 #> R version 4.5.1 (2025-06-13)
 #> Platform: aarch64-apple-darwin20
-#> Running under: macOS Tahoe 26.5.1
+#> Running under: macOS Tahoe 26.6.2
 #> 
 #> Matrix products: default
 #> BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
@@ -507,24 +528,21 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] ggplot2_4.0.3 HRRI_0.99.2  
+#> [1] ggplot2_4.0.3 HRRI_1.0.2   
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] viridis_0.6.5      tensorA_0.36.2.1   sass_0.4.10        generics_0.1.4    
-#>  [5] tidyr_1.3.2        robustbase_0.99-7  lattice_0.23-1     digest_0.6.39     
-#>  [9] magrittr_2.0.5     bayesm_3.1-7       evaluate_1.0.5     grid_4.5.1        
-#> [13] RColorBrewer_1.1-3 fastmap_1.2.0      Matrix_1.7-6       plyr_1.8.9        
-#> [17] jsonlite_2.0.0     gridExtra_2.3.1    mgcv_1.9-4         purrr_1.2.2       
-#> [21] viridisLite_0.4.3  scales_1.4.0       textshaping_1.0.5  jquerylib_0.1.4   
-#> [25] cli_3.6.6          rlang_1.3.0        splines_4.5.1      withr_3.0.3       
-#> [29] cachem_1.1.0       yaml_2.3.12        otel_0.2.0         proto_1.0.0       
-#> [33] tools_4.5.1        dplyr_1.2.1        latex2exp_0.9.8    compositions_2.0-9
-#> [37] ggtern_4.0.0       vctrs_0.7.3        R6_2.6.1           lifecycle_1.0.5   
-#> [41] fs_2.1.0           htmlwidgets_1.6.4  MASS_7.3-66        ragg_1.5.2        
-#> [45] pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.1      pillar_1.11.1     
-#> [49] bslib_0.12.0       hexbin_1.28.6      gtable_0.3.6       glue_1.8.1        
-#> [53] Rcpp_1.1.2         systemfonts_1.3.2  DEoptimR_1.2-1     xfun_0.60         
-#> [57] tibble_3.3.1       tidyselect_1.2.1   rstudioapi_0.18.0  knitr_1.51        
-#> [61] farver_2.1.2       nlme_3.1-170       htmltools_0.5.9    igraph_2.3.3      
-#> [65] rmarkdown_2.31     labeling_0.4.3     compiler_4.5.1     S7_0.2.2
+#>  [1] sass_0.4.10        generics_0.1.4     tidyr_1.3.2        lattice_0.23-1    
+#>  [5] digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5     grid_4.5.1        
+#>  [9] RColorBrewer_1.1-3 fastmap_1.2.0      jsonlite_2.0.0     Matrix_1.7-6      
+#> [13] mgcv_1.9-4         purrr_1.2.2        viridisLite_0.4.3  scales_1.4.0      
+#> [17] textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6          rlang_1.3.0       
+#> [21] splines_4.5.1      withr_3.0.3        cachem_1.1.0       yaml_2.3.12       
+#> [25] otel_0.2.0         tools_4.5.1        dplyr_1.2.1        vctrs_0.7.3       
+#> [29] R6_2.6.1           lifecycle_1.0.5    fs_2.1.0           htmlwidgets_1.6.4 
+#> [33] ragg_1.5.2         pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.1     
+#> [37] pillar_1.11.1      bslib_0.12.0       gtable_0.3.6       glue_1.8.1        
+#> [41] systemfonts_1.3.2  xfun_0.60          tibble_3.3.1       tidyselect_1.2.1  
+#> [45] rstudioapi_0.18.0  knitr_1.51         farver_2.1.2       htmltools_0.5.9   
+#> [49] nlme_3.1-170       igraph_2.3.3       rmarkdown_2.31     labeling_0.4.3    
+#> [53] compiler_4.5.1     S7_0.2.2
 ```

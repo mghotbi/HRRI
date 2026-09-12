@@ -201,13 +201,20 @@ plot_rri_properties <- function(
   tip_df <- NULL
   if (isTRUE(show_values) && is.null(group_list)) {
     sc <- .extract_scores(props, rri_value)
+    tip_vals <- as.numeric(sc[axis_order])
     tip_df <- data.frame(
       axis = axis_order,
       x = 1.05 * cos(angles),
       y = 1.05 * sin(angles),
-      label = sprintf("%.2f", pmax(0, pmin(1, as.numeric(sc[axis_order])))),
+      label = sprintf("%.2f", pmax(0, pmin(1, tip_vals))),
       stringsAsFactors = FALSE
     )
+    ## An unavailable property has no number to show. sprintf() would render
+    ## it as the literal string "NA" at radius 1.05, which is exactly where
+    ## the axis name sits, producing an overlapping label such as "CNAacity".
+    ## Drop those rows: the short spoke already signals unavailability.
+    tip_df <- tip_df[is.finite(tip_vals), , drop = FALSE]
+    if (!nrow(tip_df)) tip_df <- NULL
   }
 
   # -- assemble plot -------------------------------------------------------------
@@ -257,12 +264,18 @@ plot_rri_properties <- function(
         alpha = fill_alpha,
         linewidth = 1.1
       )
-    p <- p + ggplot2::geom_point(
-        data = p_sub[seq_len(nrow(p_sub) - 1), ], # exclude closing duplicate
+    ## Exclude the closing duplicate vertex, and any vertex whose score was
+    ## unavailable: plotting an NA point only produces a removed-rows warning.
+    pts <- p_sub[seq_len(nrow(p_sub) - 1), , drop = FALSE]
+    pts <- pts[is.finite(pts$x) & is.finite(pts$y), , drop = FALSE]
+    if (nrow(pts)) {
+      p <- p + ggplot2::geom_point(
+        data = pts,
         ggplot2::aes(x = .data$x, y = .data$y),
         colour = col, size = 3, shape = 21,
         fill = col, stroke = 1.2
       )
+    }
   }
 
   # axis labels
@@ -284,7 +297,6 @@ plot_rri_properties <- function(
         size = base_size / 4.5,
         fill = "white",
         colour = "#1A3A5C",
-        label.size = 0.2,
         label.padding = grid::unit(0.12, "lines")
       )
   }
@@ -340,8 +352,7 @@ plot_rri_properties <- function(
           size = base_size / 3.5,
           fontface = "bold",
           fill = "white",
-          colour = "#1A3A5C",
-          label.size = 0.3
+          colour = "#1A3A5C"
         )
     }
   }

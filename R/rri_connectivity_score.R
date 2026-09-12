@@ -1,4 +1,4 @@
-#' Cross-domain association or graph-topology summary
+#' @title Cross-domain association or graph-topology summary
 #'
 #' @description Retains the legacy function name. Correlation magnitude is
 #' association, not electron-transfer encounter probability or measured alpha.
@@ -10,7 +10,7 @@
 #' @return Score, association coefficients and method/provenance information.
 #' @importFrom igraph vcount ecount edge_attr is_directed simplify global_efficiency transitivity centr_degree
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(seed = 1)
 #'   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
 #'   rri_connectivity_score(res)

@@ -72,7 +72,12 @@ simulate_redox_holobiont(
   Integer or `NULL`. Random seed passed to
   [`set.seed`](https://rdrr.io/r/base/Random.html) before simulation;
   `NULL` means no seeding (non-reproducible). All manuscript figures use
-  explicit seeds.
+  explicit seeds. The default is a fixed integer rather than `NULL` so
+  that an unseeded call is reproducible, which is the point of an
+  illustrative generator. This does not disturb the caller: the RNG kind
+  and `.Random.seed` are saved on entry and restored with
+  [`on.exit`](https://rdrr.io/r/base/on.exit.html), so the stream is
+  returned exactly as found.
 
 - scenario:
 
@@ -244,10 +249,17 @@ is auditable. These are illustrative weights, not calibrated rates.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# \donttest{
   sim <- simulate_redox_holobiont(n_plot = 2, n_depth = 2, n_plant = 2,
                                    n_time = 20, seed = 42)
   nrow(sim$id)  # 2 x 2 x 2 x 20 = 160 rows
+#> [1] 160
   names(sim)    # top-level list elements
-} # }
+#>  [1] "id"                   "forcing"              "latent_state"        
+#>  [4] "soil_data"            "plant_data"           "micro_gene_abundance"
+#>  [7] "micro_metat_counts"   "micro_metat_metadata" "micro_traits"        
+#> [10] "fluxes"               "conservation_checks"  "ROS_flux"            
+#> [13] "Eh_stability"         "micro_data"           "latent_truth"        
+#> [16] "graph"                "metadata"            
+# }
 ```

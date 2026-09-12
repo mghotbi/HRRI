@@ -1,8 +1,14 @@
 library(testthat)
 
+## skip_if_not_installed() calls requireNamespace(), and loading ggtern is
+## itself what breaks ggplot2 >= 4.0.0 for the rest of the session -- including
+## every later test file. The ggplot2 version is therefore checked first, and
+## ggtern is never touched when it cannot work.
 test_that("plot_RRI_ternary returns a ggtern plot", {
-  skip_if_not_installed("ggtern")
   skip_if_not_installed("ggplot2")
+  skip_if(utils::packageVersion("ggplot2") >= "4.0.0",
+          "ggtern is incompatible with ggplot2 >= 4.0.0; loading it would break later tests")
+  skip_if_not_installed("ggtern")
   skip_if_not_installed("viridis")
 
   ternary_df <- data.frame(
@@ -20,6 +26,9 @@ test_that("plot_RRI_ternary returns a ggtern plot", {
 })
 
 test_that("plot_RRI_ternary rejects non-compositional input", {
+  skip_if_not_installed("ggplot2")
+  skip_if(utils::packageVersion("ggplot2") >= "4.0.0",
+          "ggtern is incompatible with ggplot2 >= 4.0.0; loading it would break later tests")
   skip_if_not_installed("ggtern")
 
   bad_df <- data.frame(
@@ -36,6 +45,9 @@ test_that("plot_RRI_ternary rejects non-compositional input", {
 })
 
 test_that("plot_RRI_ternary errors when required columns are missing", {
+  skip_if_not_installed("ggplot2")
+  skip_if(utils::packageVersion("ggplot2") >= "4.0.0",
+          "ggtern is incompatible with ggplot2 >= 4.0.0; loading it would break later tests")
   skip_if_not_installed("ggtern")
 
   bad_df <- data.frame(
@@ -50,6 +62,9 @@ test_that("plot_RRI_ternary errors when required columns are missing", {
 })
 
 test_that("plot_RRI_ternary drops invalid rows but errors if none remain", {
+  skip_if_not_installed("ggplot2")
+  skip_if(utils::packageVersion("ggplot2") >= "4.0.0",
+          "ggtern is incompatible with ggplot2 >= 4.0.0; loading it would break later tests")
   skip_if_not_installed("ggtern")
 
   df <- data.frame(

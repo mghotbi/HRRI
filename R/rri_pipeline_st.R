@@ -1,4 +1,4 @@
-#' Exploratory domain-score integration (legacy interface)
+#' @title Exploratory domain-score integration (legacy interface)
 #' @description Integrates plant, soil and microbial latent scores. Direction is
 #' not biologically identifiable without justified anchors. All three domains
 #' may be incomplete. Available positive domain weights are renormalized per row.
@@ -58,7 +58,7 @@
 #' @importFrom stats median sd prcomp pnorm cov
 #' @importFrom igraph simplify vcount ecount edge_attr is_directed cluster_fast_greedy modularity transitivity global_efficiency centr_degree
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(seed = 1)
 #'   res <- rri_pipeline_st(sim$ROS_flux, sim$Eh_stability, id = sim$id)
 #'   head(res$row_scores)

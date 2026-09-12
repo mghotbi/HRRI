@@ -32,8 +32,12 @@
 #'
 #' @importFrom rlang .data
 #' @examples
-#' \dontrun{
-#' # Optional packages ggtern and viridis are required.
+#' \donttest{
+#' ## ggtern cannot be used with ggplot2 >= 4.0.0, and loading it there breaks
+#' ## later ggplot output, so the example skips rather than errors.
+#' if (utils::packageVersion("ggplot2") < "4.0.0" &&
+#'     requireNamespace("ggtern", quietly = TRUE) &&
+#'     requireNamespace("viridis", quietly = TRUE)) {
 #' sim <- simulate_redox_holobiont(
 #'   n_plot = 2,
 #'   n_depth = 2,
@@ -43,7 +47,7 @@
 #'   seed = 1234
 #' )
 #'
-#' # ---- Compute RedoxRRI ----
+#' # ---- Compute HRRI ----
 #' res <- rri_pipeline_st(
 #'   ROS_flux = sim$ROS_flux,
 #'   Eh_stability = sim$Eh_stability,
@@ -63,6 +67,7 @@
 #'   show_centroid = TRUE
 #' )
 #' }
+#' }
 #'
 #' @export
 plot_RRI_ternary <- function(
@@ -81,8 +86,17 @@ plot_RRI_ternary <- function(
   centroid_method <- match.arg(centroid_method)
 
   # ---- dependency checks ----
-  if (!requireNamespace("ggtern", quietly = TRUE)) {
-    stop("plot_RRI_ternary() requires the {ggtern} package.")
+  ## The ggplot2 version is checked first, on purpose. Merely loading ggtern
+  ## patches ggplot2's element tree, and under ggplot2 >= 4.0.0 that patch
+  ## breaks every later ggplot in the session, not just this one. See
+  ## hrri_ggtern_ok() in R/rri_internal.R.
+  if (!hrri_ggtern_ok()) {
+    stop("plot_RRI_ternary() needs {ggtern}, which is either not installed ",
+         "or not compatible with the installed ggplot2 (",
+         utils::packageVersion("ggplot2"), "). ggtern was not loaded, ",
+         "because loading it would break subsequent ggplot2 output in this ",
+         "session. Use the compositional table in `row_scores_comp` instead.",
+         call. = FALSE)
   }
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("plot_RRI_ternary() requires the {ggplot2} package.")

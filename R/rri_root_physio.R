@@ -1,4 +1,4 @@
-#' Exploratory root-trait composite
+#' @title Exploratory root-trait composite
 #' @description A weighted standardized trait summary. Trait direction is
 #' context-dependent: greater ROL, porosity, aerenchyma or SRL is not universally
 #' better plant performance or greater oxygen delivery to every root region.

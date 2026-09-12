@@ -20,7 +20,7 @@ This conditions on the already computed features, reductions and missingness.
 Sensitivity to domain aggregation weights
 }
 \examples{
-\dontrun{
+\donttest{
   sim <- simulate_redox_holobiont(seed = 1)
   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
   rri_sensitivity(res)

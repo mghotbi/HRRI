@@ -1,4 +1,4 @@
-#' Fit a conditional capacity-recovery curve (legacy function name)
+#' @title Fit a conditional capacity-recovery curve (legacy function name)
 #' @description Fits y(t) = B * (1 - A * exp(-r * t)) after a specified
 #' disturbance peak. B is fixed from the observed baseline. A is a fractional
 #' recovery deficit and r is a trajectory recovery rate. They are NOT the
@@ -482,7 +482,7 @@ as.data.frame.hrri_arch <- function(x, row.names = NULL, optional = FALSE, ...) 
 
 
 # ── validate_architecture ───────────────────────────────────────────────────────
-#' Compare explicitly matched estimands
+#' @title Compare explicitly matched estimands
 #' @rdname hrri_infer_architecture
 #' @description Tabulates estimates and independently supplied targets.
 #' There is no default mapping from recovery-curve amplitude to accessibility

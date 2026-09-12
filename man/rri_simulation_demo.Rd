@@ -23,7 +23,7 @@ latent_truth column enters the observed-feature index. This is a software
 demonstration, not a validation of latent-state recovery or ecological prediction.
 }
 \examples{
-\dontrun{
+\donttest{
   demo <- rri_simulation_demo(seed = 20260830L)
   head(demo$scores)
 }

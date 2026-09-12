@@ -1,4 +1,4 @@
-#' Scatter of HRRI score against a simulator-defined target
+#' @title Scatter of HRRI score against a simulator-defined target
 #'
 #' @description Plots mean RRI versus a declared synthetic target per aggregate row, annotated
 #'   with descriptive Pearson r and direct score-target RMSE, not LOO error.
@@ -15,7 +15,7 @@
 #' @importFrom ggplot2 ggplot aes geom_abline geom_line geom_point geom_text annotate labs coord_equal scale_fill_viridis_c scale_fill_viridis_d
 #' @importFrom stats predict lm
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(seed = 1)
 #'   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
 #'   agg <- data.frame(RRI = res$row_scores$RRI, truth = sim$latent_truth)

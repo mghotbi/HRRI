@@ -36,7 +36,7 @@ with descriptive Pearson r and direct score-target RMSE, not LOO error.
 No model is trained or held out by this plotting function.
 }
 \examples{
-\dontrun{
+\donttest{
   sim <- simulate_redox_holobiont(seed = 1)
   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
   agg <- data.frame(RRI = res$row_scores$RRI, truth = sim$latent_truth)

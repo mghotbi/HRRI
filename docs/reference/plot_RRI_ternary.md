@@ -86,8 +86,12 @@ mean. Otherwise, a simplex arithmetic mean is used.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-# Optional packages ggtern and viridis are required.
+# \donttest{
+## ggtern cannot be used with ggplot2 >= 4.0.0, and loading it there breaks
+## later ggplot output, so the example skips rather than errors.
+if (utils::packageVersion("ggplot2") < "4.0.0" &&
+    requireNamespace("ggtern", quietly = TRUE) &&
+    requireNamespace("viridis", quietly = TRUE)) {
 sim <- simulate_redox_holobiont(
   n_plot = 2,
   n_depth = 2,
@@ -97,7 +101,7 @@ sim <- simulate_redox_holobiont(
   seed = 1234
 )
 
-# ---- Compute RedoxRRI ----
+# ---- Compute HRRI ----
 res <- rri_pipeline_st(
   ROS_flux = sim$ROS_flux,
   Eh_stability = sim$Eh_stability,
@@ -116,5 +120,6 @@ p <- plot_RRI_ternary(
   point_size = 3,
   show_centroid = TRUE
 )
-} # }
+}
+# }
 ```

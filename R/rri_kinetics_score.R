@@ -1,4 +1,4 @@
-#' Descriptive recovery speed score
+#' @title Descriptive recovery speed score
 #'
 #' @description Combines response lag and one rate descriptor. By default k and
 #' log(2)/k are not counted as separate evidence. No causal exchange rate is inferred.

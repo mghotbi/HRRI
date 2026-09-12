@@ -51,10 +51,13 @@ A ggplot object.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# \donttest{
   sim <- simulate_redox_holobiont(seed = 1)
   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
+#> Warning: Unanchored latent axes have arbitrary signs; RRI is exploratory, not directionally validated resilience.
+#> Warning: Excluding simulator-derived hidden columns from scoring: Cacc_EAC, Cacc_EDC, Cacc_total, Cacc_fraction, net_oxidative_balance, alpha_accept, alpha_donate, k_accept_h, k_donate_h
   agg <- data.frame(RRI = res$row_scores$RRI, truth = sim$latent_truth)
   plot_rri_validation(agg)
-} # }
+
+# }
 ```

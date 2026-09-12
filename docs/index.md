@@ -144,6 +144,7 @@ support.
 ``` r
 
 vignette("HRRI_workflow", package = "HRRI")
+vignette("HRRI_gallery", package = "HRRI")
 ```
 
 Walks through simulation, accessible-capacity estimation, domain
@@ -157,10 +158,53 @@ disturbance-history experiment.
 citation("HRRI")
 ```
 
-Ghotbi, M., Ghotbi, M., Guerreiro, M., Komluski, J., &
-Holtgrewe-Stukenbrock, E. H. (2026). HRRI: A direction-aware R framework
-for quantifying soil–plant–microbiome redox resilience across
-hydroclimatic disturbance events. Manuscript submitted.
+## Companion manuscripts
+
+HRRI is the software component of three manuscripts, none yet published;
+two are under review. They are listed here because the package
+implements what they describe. Please cite the published version once
+available, and treat the entries below as provisional until then.
+
+**Software and diagnostics — the paper this package accompanies**
+Ghotbi, M., Ghotbi, M., Komluski, J., & Holtgrewe-Stukenbrock, E. H.
+HRRI: direction-aware diagnostics for soil–plant–microbiome redox
+recovery across hydroclimatic disturbances. *In preparation.* →
+implemented by
+[`rri_pipeline_st()`](https://mghotbi.github.io/HRRI/reference/rri_pipeline_st.md),
+[`rri_property_scores()`](https://mghotbi.github.io/HRRI/reference/rri_property_scores.md),
+[`rri_recovery_metrics()`](https://mghotbi.github.io/HRRI/reference/rri_recovery_metrics.md),
+[`rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/rri_accuracy.md).
+
+**Theory — where the four hidden states come from** Ghotbi, M., Kolody,
+B. C., Ghotbi, M., & Holtgrewe-Stukenbrock, E. A Theory of Hydroclimatic
+Redox Resilience. *Submitted to Communications Earth & Environment.* →
+the capacity–connectivity–kinetics–memory decomposition and the
+accessible-capacity expression
+`C_acc(tau) = sum_j Q_j a_j (1 - exp(-k_j tau))`, implemented by
+[`rri_accessible_capacity()`](https://mghotbi.github.io/HRRI/reference/rri_accessible_capacity.md).
+
+**Mechanistic review — the biology the simulator encodes** Ghotbi, M.,
+Ghotbi, M., Mühling, K. H., & Stukenbrock, E. H. Rhizosphere redox
+recovery after hydrological disturbances: mechanisms across the
+soil–plant–microbiome continuum. *Submitted to Soil Biology &
+Biochemistry.* → the plant, microbial and mineralogical legacy terms in
+[`simulate_redox_holobiont()`](https://mghotbi.github.io/HRRI/reference/simulate_redox_holobiont.md).
+
+None of these is required to use the package, and none is cited in
+`DESCRIPTION`: CRAN asks that the `Description` field carry only
+references a reader can actually retrieve, so it lists the published
+methods sources instead.
+
+## Published methods this package builds on
+
+| Reference | What HRRI takes from it |
+|----|----|
+| Sander, Hofstetter & Gorski (2015) *Environ. Sci. Technol.* 49:5862 [doi:10.1021/acs.est.5b00006](https://doi.org/10.1021/acs.est.5b00006) | Mediated electrochemical measurement of EAC and EDC — the capacity the index scores |
+| Klüpfel, Piepenbrock, Kappler & Sander (2014) *Nat. Geosci.* 7:195 [doi:10.1038/ngeo2084](https://doi.org/10.1038/ngeo2084) | Electron-accepting capacity regenerates across repeated anoxic periods — the basis for treating memory as a state, not a trend |
+| Thompson, Chadwick, Rancourt & Chorover (2006) *Geochim. Cosmochim. Acta* 70:1710 [doi:10.1016/j.gca.2005.12.005](https://doi.org/10.1016/j.gca.2005.12.005) | Iron-oxide crystallinity increases under redox oscillation — the mineralogical ratchet |
+| Keiluweit, Wanzek, Kleber, Nico & Fendorf (2017) *Nat. Commun.* 8:1771 [doi:10.1038/s41467-017-01406-6](https://doi.org/10.1038/s41467-017-01406-6) | Anaerobic microsites persist in aerobic soil — why connectivity is separated from capacity |
+| Lin (1989) *Biometrics* 45:255 [doi:10.2307/2532051](https://doi.org/10.2307/2532051) | Concordance correlation coefficient, reported by [`rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/rri_accuracy.md) |
+| Kobayashi & Salam (2000) *Agron. J.* 92:345 [doi:10.2134/agronj2000.922345x](https://doi.org/10.2134/agronj2000.922345x) | MSE partition into bias, variance mismatch and lack of correlation |
 
 ## License
 

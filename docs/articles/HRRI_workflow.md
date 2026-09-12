@@ -50,7 +50,7 @@ empirical ecological inference.
 
 library(HRRI)
 packageVersion("HRRI")
-#> [1] '0.99.2'
+#> [1] '1.0.2'
 
 ## Compatibility shim -----------------------------------------------------
 ## rri_pipeline() is the convenience wrapper around rri_pipeline_st().
@@ -314,7 +314,24 @@ row order — matching row counts alone do **not** establish alignment.
 Shared identifier columns are checked for conflicts rather than silently
 overwritten.
 
-### Correlation with latent truth
+### Agreement with the prescribed target
+
+A single pooled correlation is the wrong summary here, for two reasons.
+
+First, these 360 rows are **12 trajectories observed at 30 time
+points**, not 360 independent observations. Rows within a trajectory are
+strongly dependent, so an interval computed from the row count is far
+too narrow.
+
+Second, Pearson’s $`r`$ measures *association*, not *agreement*. A score
+equal to twice the target plus a constant correlates with it perfectly
+while matching it nowhere. Lin’s concordance correlation coefficient
+penalises departure from the 1:1 line and is the quantity that belongs
+beside it.
+
+[`rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/rri_accuracy.md)
+reports both, with intervals obtained by resampling whole trajectories
+rather than rows.
 
 ``` r
 
@@ -323,21 +340,125 @@ truth <- sim$latent_truth
 if (!is.numeric(truth) || length(truth) != nrow(rri_scored)) {
   stop("latent_truth must be a numeric vector with one value per sim$id row.")
 }
-ok <- is.finite(rri_scored$RRI) & is.finite(truth)
-if (sum(ok) >= 3L && stats::sd(rri_scored$RRI[ok]) > 0 &&
-    stats::sd(truth[ok]) > 0) {
-  r_val <- stats::cor(rri_scored$RRI[ok], truth[ok])
-} else {
-  r_val <- NA_real_
-  cat("Correlation unavailable: too few finite pairs or a constant vector.\n")
-}
-cat("r(RRI, latent truth):", round(r_val, 3), "\n")
-#> r(RRI, latent truth): 0.467
+
+## One independent experimental unit = one plot x depth x plant trajectory.
+traj <- interaction(rri_scored$plot, rri_scored$depth, rri_scored$plant_id,
+                    drop = TRUE)
+
+acc <- rri_accuracy(
+  score   = rri_scored$RRI,
+  target  = truth,
+  cluster = traj,
+  n_boot  = 500,
+  n_perm  = 500,
+  seed    = 42
+)
+
+acc
+#> Agreement with reference target
+#> -------------------------------------------------------------- 
+#>  statistic row_level cluster_mean_level ci_lower ci_upper
+#>  pearson_r    0.4668             0.5454   0.3037   0.5959
+#>   lins_ccc    0.1412             0.0782   0.0829   0.2147
+#>       rmse    0.1732             0.1631   0.1296   0.2052
+#>        mae    0.1415             0.1264   0.0971   0.1836
+#>       bias   -0.1124            -0.1124  -0.1688  -0.0497
+#>         r2  -21.5196           -98.0483 -34.2773 -14.7249
+#> 
+#> Dependence structure
+#>   360 observations in 12 clusters (mean size 30.0)
+#>   ICC 0.768, design effect 23.3, effective n 15
+#> 
+#> Error decomposition (percent of MSE)
+#>   squared_bias          42.1%
+#>   variance_mismatch     39.1%
+#>   lack_of_correlation   18.8%
+#> 
+#> Calibration: target = 0.565 + 0.118 x score  (ideal 0 and 1)
+#> Cluster permutation test: p = 0.0220 (500 permutations)
+#> 
+#> Notes
+#>   Rows are strongly clustered (ICC 0.77, design effect 23.3). The 360
+#>   observations carry roughly the information of 15 independent ones; quote
+#>   the cluster bootstrap interval, not one based on n = 360. 
+#>   Ignoring clustering would give a 95% interval for r of width 0.145;
+#>   resampling whole trajectories gives width 0.292, 2.0 times wider. Report
+#>   the latter. 
+#>   Correlation (0.467) exceeds concordance (0.141). The score tracks the
+#>   target's pattern but does not agree with it in level or scale; see
+#>   calibration. 
+#>   Calibration slope is 0.12 rather than 1: the score compresses or
+#>   exaggerates the target's range. 
+#>   R2 is negative: as an absolute predictor the score does worse than the
+#>   target's own mean. It may still rank correctly; check pearson_r. 
+#>   Error is dominated by squared_bias (42% of MSE). 
+#>   If score and target derive from the same generator, this is internal
+#>   consistency, not validation.
 ```
 
-This is a within-simulation association, not independent predictive
-validation or evidence that the individual latent parameters have been
-identified.
+`effective_n` in the dependence table, not the row count, is what
+governs precision. Where the design effect is well above one, the naive
+interval should not be quoted: the function prints both widths so the
+difference is visible rather than asserted.
+
+Splitting the error says which kind of disagreement is present, and the
+three components sum to the mean squared error exactly.
+
+``` r
+
+acc$decomposition[, c("component", "percent")]
+#>             component  percent
+#> 1        squared_bias 42.10174
+#> 2   variance_mismatch 39.10814
+#> 3 lack_of_correlation 18.79012
+
+## Exactness check: the residual is numerical noise, not a rounding allowance.
+c(mse      = attr(acc$decomposition, "mse"),
+  residual = attr(acc$decomposition, "residual"))
+#>           mse      residual 
+#>  3.000571e-02 -1.040834e-17
+```
+
+Large squared bias is a systematic offset, removable by recentring.
+Large variance mismatch means the score is flatter or more volatile than
+the target. Large lack of correlation means the score does not track the
+target’s pattern, and no rescaling will repair it.
+
+[`plot_rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/plot_rri_accuracy.md)
+draws the same four questions as one figure.
+
+``` r
+
+plot_rri_accuracy(acc,
+                  score_label  = "RRI",
+                  target_label = "Prescribed target")
+```
+
+![](HRRI_workflow_files/figure-html/validation_figure-1.png)
+
+**Reading it.** **A** puts the fitted line against the dashed 1:1 line;
+a flatter fit means the score compresses the target’s range. Open points
+are trajectory means, the level at which the units are independent.
+**B** is a Bland-Altman plot: a scatter that slopes or fans out shows
+disagreement that depends on level, which no correlation coefficient can
+reveal. **C** is the headline: the violet distribution resamples rows
+and is too narrow, the teal one resamples trajectories and is honest;
+the bars beneath give both widths. **D** partitions the mean squared
+error exactly.
+
+**What it does not show.** None of the four panels speaks to
+out-of-sample performance. The target is prescribed by the same
+simulator that produced the inputs, so a tight panel A means the
+estimator is self-consistent, not that it would recover an unobserved
+field quantity.
+
+`latent_truth` and `RRI` are produced by the same generator. Everything
+above therefore quantifies **internal consistency** — whether the
+estimator recovers the target its own simulator prescribed. It is not
+independent predictive validation, and it is not evidence that the
+individual latent parameters have been identified. An empirical claim
+requires a target measured independently of the score, replicated across
+independent experimental units.
 
 ## Recovery Signatures
 
@@ -492,7 +613,7 @@ observations.
 sessionInfo()
 #> R version 4.5.1 (2025-06-13)
 #> Platform: aarch64-apple-darwin20
-#> Running under: macOS Tahoe 26.5.1
+#> Running under: macOS Tahoe 26.6.2
 #> 
 #> Matrix products: default
 #> BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
@@ -508,26 +629,72 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] HRRI_0.99.2
+#> [1] HRRI_1.0.2
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    
 #>  [5] tidyselect_1.2.1   tidyr_1.3.2        jquerylib_0.1.4    systemfonts_1.3.2 
 #>  [9] scales_1.4.0       textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0     
-#> [13] ggplot2_4.0.3      R6_2.6.1           generics_0.1.4     igraph_2.3.3      
-#> [17] knitr_1.51         htmlwidgets_1.6.4  tibble_3.3.1       desc_1.4.3        
-#> [21] bslib_0.12.0       pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.3.0       
-#> [25] cachem_1.1.0       xfun_0.60          fs_2.1.0           sass_0.4.10       
-#> [29] S7_0.2.2           otel_0.2.0         cli_3.6.6          pkgdown_2.2.1     
-#> [33] magrittr_2.0.5     digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0 
-#> [37] lifecycle_1.0.5    vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1        
-#> [41] farver_2.1.2       ragg_1.5.2         purrr_1.2.2        rmarkdown_2.31    
-#> [45] tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.9
+#> [13] ggplot2_4.0.3      R6_2.6.1           labeling_0.4.3     patchwork_1.3.2   
+#> [17] generics_0.1.4     igraph_2.3.3       knitr_1.51         htmlwidgets_1.6.4 
+#> [21] tibble_3.3.1       desc_1.4.3         bslib_0.12.0       pillar_1.11.1     
+#> [25] RColorBrewer_1.1-3 rlang_1.3.0        cachem_1.1.0       xfun_0.60         
+#> [29] fs_2.1.0           sass_0.4.10        S7_0.2.2           otel_0.2.0        
+#> [33] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    
+#> [37] digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0  lifecycle_1.0.5   
+#> [41] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      
+#> [45] ragg_1.5.2         purrr_1.2.2        rmarkdown_2.31     tools_4.5.1       
+#> [49] pkgconfig_2.0.3    htmltools_0.5.9
 ```
 
 ## References
 
-Ghotbi, M., Ghotbi, M., Guerreiro, M., Komluski, J., &
-Holtgrewe-Stukenbrock, E. H. (2026). HRRI: A direction-aware R framework
-for quantifying soil–plant–microbiome redox resilience across
-hydroclimatic disturbance events. Manuscript submitted.
+### Published methods
+
+Keiluweit, M., Wanzek, T., Kleber, M., Nico, P., & Fendorf, S. (2017).
+Anaerobic microsites have an unaccounted role in soil carbon
+stabilization. *Nature Communications*, **8**, 1771.
+<https://doi.org/10.1038/s41467-017-01406-6>
+
+Klüpfel, L., Piepenbrock, A., Kappler, A., & Sander, M. (2014). Humic
+substances as fully regenerable electron acceptors in recurrently anoxic
+environments. *Nature Geoscience*, **7**, 195–200.
+<https://doi.org/10.1038/ngeo2084>
+
+Kobayashi, K., & Salam, M. U. (2000). Comparing simulated and measured
+values using mean squared deviation and its components. *Agronomy
+Journal*, **92**, 345–352. <https://doi.org/10.2134/agronj2000.922345x>
+
+Lin, L. I. (1989). A concordance correlation coefficient to evaluate
+reproducibility. *Biometrics*, **45**, 255–268.
+<https://doi.org/10.2307/2532051>
+
+Sander, M., Hofstetter, T. B., & Gorski, C. A. (2015). Electrochemical
+analyses of redox-active iron minerals: a review of nonmediated and
+mediated approaches. *Environmental Science & Technology*, **49**,
+5862–5878. <https://doi.org/10.1021/acs.est.5b00006>
+
+Thompson, A., Chadwick, O. A., Rancourt, D. G., & Chorover, J. (2006).
+Iron-oxide crystallinity increases during soil redox oscillations.
+*Geochimica et Cosmochimica Acta*, **70**, 1710–1727.
+<https://doi.org/10.1016/j.gca.2005.12.005>
+
+### Companion manuscripts
+
+These describe the framework this package implements. None is published
+and two are under review; the entries are provisional and should be
+replaced with the published versions.
+
+Ghotbi, M., Ghotbi, M., Komluski, J., & Holtgrewe-Stukenbrock, E. H.
+HRRI: direction-aware diagnostics for soil–plant–microbiome redox
+recovery across hydroclimatic disturbances. *In preparation.*
+
+Ghotbi, M., Kolody, B. C., Ghotbi, M., & Holtgrewe-Stukenbrock, E. A
+Theory of Hydroclimatic Redox Resilience. *Submitted to Communications
+Earth & Environment.* — the source of the capacity, connectivity,
+kinetics and memory decomposition used throughout this vignette.
+
+Ghotbi, M., Ghotbi, M., Mühling, K. H., & Stukenbrock, E. H. Rhizosphere
+redox recovery after hydrological disturbances: mechanisms across the
+soil–plant–microbiome continuum. *Submitted to Soil Biology &
+Biochemistry.*

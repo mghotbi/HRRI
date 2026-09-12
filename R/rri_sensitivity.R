@@ -1,4 +1,4 @@
-#' Sensitivity to domain aggregation weights
+#' @title Sensitivity to domain aggregation weights
 #' @param res RRI result.
 #' @param weight_grid Plant weights in (0,1), or a data frame/matrix with
 #' named Physio, Soil, Micro columns specifying complete alternative weights.
@@ -6,7 +6,7 @@
 #' This conditions on the already computed features, reductions and missingness.
 #' @importFrom stats cor
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(seed = 1)
 #'   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
 #'   rri_sensitivity(res)

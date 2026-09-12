@@ -1,4 +1,4 @@
-#' Persistent-displacement and loop-area diagnostic
+#' @title Persistent-displacement and loop-area diagnostic
 #'
 #' @description A descriptive composite, not proof of ecological memory. Slow
 #' relaxation, baseline drift and continuing forcing can also produce displacement.

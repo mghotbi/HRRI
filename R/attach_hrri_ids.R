@@ -1,4 +1,4 @@
-#' Attach design identifiers to a score table with explicit alignment checks
+#' @title Attach design identifiers to a score table with explicit alignment checks
 #'
 #' @description Joins experimental design identifiers onto a pipeline score
 #' table. Alignment is established by a shared unique \code{row_id}, or by a

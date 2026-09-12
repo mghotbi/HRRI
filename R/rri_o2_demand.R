@@ -12,8 +12,8 @@
 #' for complete oxidation to the specified endpoint.
 #'
 #' Stoichiometric coefficients follow the electron balance table of Ghotbi,
-#' Ghotbi, Stukenbrock, Mühling and Spielvogel (2026) (Box 1 of the
-#' mechanistic review):
+#' Ghotbi, Mühling and Stukenbrock (Box 1 of the mechanistic review,
+#' submitted):
 #' \tabular{llr}{
 #'   \strong{Reduced pool} \tab \strong{Endpoint} \tab \strong{O\eqn{_2} (mol mol\eqn{^{-1}})}\cr
 #'   Fe\eqn{^{2+}} \tab Fe(III) oxyhydroxide \tab 0.25 \cr
@@ -72,9 +72,9 @@
 #'   per-species contribution matrix.
 #'
 #' @details
-#' \strong{Interpretation --- the 25-fold contrast.}
+#' \strong{Interpretation --- the 26-fold contrast.}
 #'
-#' The mechanistic review (Ghotbi \emph{et al.}, 2026) provides a worked
+#' The mechanistic review (Ghotbi \emph{et al.}, submitted) provides a worked
 #' example: a Fe-rich rhizosphere containing 50 mmol Fe(II) kg\eqn{^{-1}},
 #' 5 mmol FeS kg\eqn{^{-1}}, 2 mmol Mn(II) kg\eqn{^{-1}}, 2 mmol NH\eqn{_4^+}
 #' kg\eqn{^{-1}}, 2 mmol acetate kg\eqn{^{-1}}, and 0.5 mmol CH\eqn{_4}
@@ -112,31 +112,47 @@
 #'   \item{\code{o2_demand_vol}}{Volumetric O\eqn{_2} demand (mmol L\eqn{^{-1}}
 #'     porewater); \code{NA} if \code{bulk_density} is \code{NULL}.}
 #'   \item{\code{n_species_used}}{Integer. Number of reduced-pool columns found.}
+#'   \item{\code{n_species_observed}}{Integer vector. Number of species with a
+#'     finite inventory in each row, so a low demand from sparse data is not
+#'     mistaken for a low demand from a small inventory.}
+#'   \item{\code{species_coverage}}{Per-row fraction of the \emph{requested}
+#'     species that were observed. Columns named but absent from
+#'     \code{soil_df} count against coverage.}
+#'   \item{\code{interpretation}}{Character. A one-line reminder that the
+#'     ratio compares a demand to a stock, not to a delivery rate.}
+#'   \item{\code{ch4_unit_used}, \code{acetate_basis_used}}{The resolved
+#'     values of \code{ch4_unit} and \code{acetate_basis}, recorded because
+#'     both change the numbers returned.}
 #'   \item{\code{components}}{Data frame (one row per species) with:
-#'     \code{species}, \code{stoich_coef}, \code{mean_inventory},
-#'     \code{mean_o2_contribution}, \code{fraction_of_total_demand}.
+#'     \code{species}, \code{n_observed}, \code{stoich_coef},
+#'     \code{mean_inventory_mmol}, \code{mean_o2_contribution},
+#'     \code{fraction_total_demand}.
 #'     Returned only when \code{return_components = TRUE}.}
-#'   \item{\code{stoich_table}}{Data frame of the full stoichiometric table
-#'     used, including any custom overrides.}
+#'   \item{\code{stoich_table}}{Data frame of the coefficients actually
+#'     applied, one row per species found, including any custom overrides:
+#'     \code{species_arg}, \code{column_used}, \code{stoich_coef_O2},
+#'     \code{endpoint}. Species not present in \code{soil_df} are absent.}
 #' }
 #'
 #' @references
-#' Ghotbi, M., Ghotbi, M., Stukenbrock, E. H., Mühling, K. H., &
-#' Spielvogel, S. (2026). Rhizosphere redox recovery after hydrological
-#' disturbance: mechanisms across the soil--plant--microbiome continuum.
-#' \emph{Manuscript submitted}.
+#' Ghotbi, M., Ghotbi, M., Mühling, K. H., & Stukenbrock, E. H. Rhizosphere
+#' redox recovery after hydrological disturbances: mechanisms across the
+#' soil--plant--microbiome continuum.
+#' \emph{Submitted to Soil Biology & Biochemistry}.
 #'
 #' Stumm, W., & Lee, G. F. (1961). Oxygenation of ferrous iron.
-#' \emph{Industrial & Engineering Chemistry}, 53, 143--146.
+#' \emph{Industrial & Engineering Chemistry}, \strong{53}, 143--146.
+#' \doi{10.1021/ie50614a030}
 #'
 #' Millero, F. J., Sotolongo, S., & Izaguirre, M. (1987). The oxidation kinetics
-#' of Fe(II) in seawater. \emph{Geochimica et Cosmochimica Acta}, 51, 793--801.
+#' of Fe(II) in seawater. \emph{Geochimica et Cosmochimica Acta},
+#' \strong{51}, 793--801. \doi{10.1016/0016-7037(87)90093-7}
 #'
 #' @seealso \code{\link{rri_accessible_capacity}},
 #'   \code{\link{rri_capacity_index}}, \code{\link{rri_root_physio}}
 #'
 #' @examples
-#' ## Reproduce the worked example from Ghotbi et al. (2026) Box 1
+#' ## Reproduce the worked example from Box 1 of the mechanistic review
 #' worked_example <- data.frame(
 #'   Fe2 = 50.0, # mmol kg-1
 #'   FeS = 5.0,
@@ -187,7 +203,7 @@ rri_o2_demand <- function(
   ch4_unit <- match.arg(ch4_unit)
   acetate_basis <- match.arg(acetate_basis)
 
-  ## -- stoichiometric coefficients (Box 1, Ghotbi et al. 2026) -----------------
+  ## -- stoichiometric coefficients (Box 1 of the mechanistic review) -----------------
   # O2 mol consumed per mol reduced species for complete oxidation
   stoich <- c(
     fe2_col     = 0.25, # Fe2+ → Fe(III)(OH)3
@@ -203,7 +219,7 @@ rri_o2_demand <- function(
   if (!is.null(custom_coefs)) {
     if (!is.numeric(custom_coefs) || is.null(names(custom_coefs)) ||
         anyDuplicated(names(custom_coefs)) || anyNA(names(custom_coefs)))
-      stop("custom_coefs must be uniquely named numeric coefficients.");
+      stop("custom_coefs must be uniquely named numeric coefficients.")
     bad <- setdiff(names(custom_coefs), names(stoich))
     if (length(bad) > 0) {
       warning("custom_coefs names not recognised and will be ignored: ",
@@ -235,7 +251,14 @@ rri_o2_demand <- function(
                   !is.na(x) && nzchar(x), logical(1)))) stop("Species columns must be single names.")
   if (anyDuplicated(unlist(specified))) stop("A reservoir column cannot be counted twice.")
   numeric_cols <- intersect(c(unlist(specified), o2_supply_col), names(soil_df))
-  soil_df[, numeric_cols] <- .rri_numeric_df(soil_df[, numeric_cols, drop = FALSE])
+  ## Guarded: when every column the caller named is absent, numeric_cols is
+  ## empty and the assignment below would be a zero-column replacement,
+  ## raising a cryptic error from `[<-.data.frame` before the informative
+  ## stop() a few lines down ever runs.
+  if (length(numeric_cols)) {
+    soil_df[, numeric_cols] <- .rri_numeric_df(
+      soil_df[, numeric_cols, drop = FALSE])
+  }
   present <- Filter(
     function(x) !is.null(x) && x %in% names(soil_df),
     col_args

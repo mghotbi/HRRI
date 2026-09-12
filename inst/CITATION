@@ -16,21 +16,49 @@ bibentry(
     )
   ),
   year = "2026",
-  note = "R package version 0.99.1",
+  note = sprintf("R package version %s", meta$Version),
   url = "https://github.com/mghotbi/HRRI"
 )
 
 ## Methodology manuscript
 bibentry(
   bibtype = "Unpublished",
-  title = "HRRI: A Direction-Aware R Framework for Quantifying Soil–Plant–Microbiome Redox Resilience Across Hydroclimatic Disturbance Events",
+  title = paste("HRRI: direction-aware diagnostics for soil-plant-microbiome",
+                "redox recovery across hydroclimatic disturbances"),
   author = c(
     person("Mitra", "Ghotbi"),
     person("Marjan", "Ghotbi"),
-    person("Marco", "Guerreiro"),
     person("Jovan", "Komluski"),
     person("Eva H.", "Holtgrewe-Stukenbrock")
   ),
   year = "2026",
-  note = "Manuscript submitted"
+  note = "Manuscript in preparation"
+)
+## Theory manuscript
+bibentry(
+  bibtype = "Unpublished",
+  title   = "A Theory of Hydroclimatic Redox Resilience",
+  author  = c(
+    person("Mitra", "Ghotbi"),
+    person("Bethany C.", "Kolody"),
+    person("Marjan", "Ghotbi"),
+    person("Eva", "Holtgrewe-Stukenbrock")
+  ),
+  year = "2026",
+  note = "Submitted to Communications Earth & Environment"
+)
+
+## Mechanistic review
+bibentry(
+  bibtype = "Unpublished",
+  title   = paste("Rhizosphere redox recovery after hydrological disturbances:",
+                  "mechanisms across the soil-plant-microbiome continuum"),
+  author  = c(
+    person("Mitra", "Ghotbi"),
+    person("Marjan", "Ghotbi"),
+    person("Karl H.", "Muehling"),
+    person("Eva H.", "Stukenbrock")
+  ),
+  year = "2026",
+  note = "Submitted to Soil Biology & Biochemistry"
 )

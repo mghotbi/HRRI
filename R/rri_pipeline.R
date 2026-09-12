@@ -1,4 +1,4 @@
-#' Score observed soil, plant and microbial panels
+#' @title Score observed soil, plant and microbial panels
 #'
 #' @description Exploratory integration of available numeric domain observations.
 #' A larger score is not automatically greater resilience: justify feature

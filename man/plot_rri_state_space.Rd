@@ -34,7 +34,7 @@ ggplot. Domain scores are not relabelled as mechanistic properties.
 Plot domain-score space with correctly matched trajectory diagnostics
 }
 \examples{
-\dontrun{
+\donttest{
   sim <- simulate_redox_holobiont(seed = 1)
   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux,
                       id = sim$id)

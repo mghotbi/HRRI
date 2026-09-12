@@ -1,4 +1,4 @@
-#' Aligned time series with separate physical units
+#' @title Aligned time series with separate physical units
 #' @description Shows Eh, EAC and the observation-derived score in separate
 #' panels sharing time. It does not place unlike units on a common axis.
 #' @param sim Simulator output containing id and soil_data.
@@ -10,7 +10,7 @@
 #' @importFrom ggplot2 ggplot aes annotate geom_line geom_point facet_wrap scale_colour_manual labs
 #' @importFrom stats setNames
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   sim <- simulate_redox_holobiont(seed = 1)
 #'   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux,
 #'                       id = sim$id)

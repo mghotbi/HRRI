@@ -92,12 +92,26 @@ A list:
 \item{\code{o2_demand_vol}}{Volumetric O\eqn{_2} demand (mmol L\eqn{^{-1}}
 porewater); \code{NA} if \code{bulk_density} is \code{NULL}.}
 \item{\code{n_species_used}}{Integer. Number of reduced-pool columns found.}
+\item{\code{n_species_observed}}{Integer vector. Number of species with a
+finite inventory in each row, so a low demand from sparse data is not
+mistaken for a low demand from a small inventory.}
+\item{\code{species_coverage}}{Per-row fraction of the \emph{requested}
+species that were observed. Columns named but absent from
+\code{soil_df} count against coverage.}
+\item{\code{interpretation}}{Character. A one-line reminder that the
+ratio compares a demand to a stock, not to a delivery rate.}
+\item{\code{ch4_unit_used}, \code{acetate_basis_used}}{The resolved
+values of \code{ch4_unit} and \code{acetate_basis}, recorded because
+both change the numbers returned.}
 \item{\code{components}}{Data frame (one row per species) with:
-\code{species}, \code{stoich_coef}, \code{mean_inventory},
-\code{mean_o2_contribution}, \code{fraction_of_total_demand}.
+\code{species}, \code{n_observed}, \code{stoich_coef},
+\code{mean_inventory_mmol}, \code{mean_o2_contribution},
+\code{fraction_total_demand}.
 Returned only when \code{return_components = TRUE}.}
-\item{\code{stoich_table}}{Data frame of the full stoichiometric table
-used, including any custom overrides.}
+\item{\code{stoich_table}}{Data frame of the coefficients actually
+applied, one row per species found, including any custom overrides:
+\code{species_arg}, \code{column_used}, \code{stoich_coef_O2},
+\code{endpoint}. Species not present in \code{soil_df} are absent.}
 }
 }
 \description{
@@ -112,8 +126,8 @@ species \eqn{j} and \eqn{s_j} is the stoichiometric O\eqn{_2} coefficient
 for complete oxidation to the specified endpoint.
 
 Stoichiometric coefficients follow the electron balance table of Ghotbi,
-Ghotbi, Stukenbrock, Mühling and Spielvogel (2026) (Box 1 of the
-mechanistic review):
+Ghotbi, Mühling and Stukenbrock (Box 1 of the mechanistic review,
+submitted):
 \tabular{llr}{
 \strong{Reduced pool} \tab \strong{Endpoint} \tab \strong{O\eqn{_2} (mol mol\eqn{^{-1}})}\cr
 Fe\eqn{^{2+}} \tab Fe(III) oxyhydroxide \tab 0.25 \cr
@@ -132,9 +146,9 @@ indicate that the specified O\eqn{_2} stock is smaller than the demand.
 This stock ratio does not determine recovery or account for continuing O2 delivery.
 }
 \details{
-\strong{Interpretation --- the 25-fold contrast.}
+\strong{Interpretation --- the 26-fold contrast.}
 
-The mechanistic review (Ghotbi \emph{et al.}, 2026) provides a worked
+The mechanistic review (Ghotbi \emph{et al.}, submitted) provides a worked
 example: a Fe-rich rhizosphere containing 50 mmol Fe(II) kg\eqn{^{-1}},
 5 mmol FeS kg\eqn{^{-1}}, 2 mmol Mn(II) kg\eqn{^{-1}}, 2 mmol NH\eqn{_4^+}
 kg\eqn{^{-1}}, 2 mmol acetate kg\eqn{^{-1}}, and 0.5 mmol CH\eqn{_4}
@@ -163,7 +177,7 @@ but actual O\eqn{_2} consumption rates will be pH-modulated. This function
 reports a stoichiometric potential demand, not a thermodynamic limit or rate.
 }
 \examples{
-## Reproduce the worked example from Ghotbi et al. (2026) Box 1
+## Reproduce the worked example from Box 1 of the mechanistic review
 worked_example <- data.frame(
   Fe2 = 50.0, # mmol kg-1
   FeS = 5.0,
@@ -192,16 +206,18 @@ demand$components
 
 }
 \references{
-Ghotbi, M., Ghotbi, M., Stukenbrock, E. H., Mühling, K. H., &
-Spielvogel, S. (2026). Rhizosphere redox recovery after hydrological
-disturbance: mechanisms across the soil--plant--microbiome continuum.
-\emph{Manuscript submitted}.
+Ghotbi, M., Ghotbi, M., Mühling, K. H., & Stukenbrock, E. H. Rhizosphere
+redox recovery after hydrological disturbances: mechanisms across the
+soil--plant--microbiome continuum.
+\emph{Submitted to Soil Biology & Biochemistry}.
 
 Stumm, W., & Lee, G. F. (1961). Oxygenation of ferrous iron.
-\emph{Industrial & Engineering Chemistry}, 53, 143--146.
+\emph{Industrial & Engineering Chemistry}, \strong{53}, 143--146.
+\doi{10.1021/ie50614a030}
 
 Millero, F. J., Sotolongo, S., & Izaguirre, M. (1987). The oxidation kinetics
-of Fe(II) in seawater. \emph{Geochimica et Cosmochimica Acta}, 51, 793--801.
+of Fe(II) in seawater. \emph{Geochimica et Cosmochimica Acta},
+\strong{51}, 793--801. \doi{10.1016/0016-7037(87)90093-7}
 }
 \seealso{
 \code{\link{rri_accessible_capacity}},

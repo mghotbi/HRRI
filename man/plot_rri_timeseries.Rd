@@ -34,7 +34,7 @@ Shows Eh, EAC and the observation-derived score in separate
 panels sharing time. It does not place unlike units on a common axis.
 }
 \examples{
-\dontrun{
+\donttest{
   sim <- simulate_redox_holobiont(seed = 1)
   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux,
                       id = sim$id)

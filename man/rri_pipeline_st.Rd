@@ -146,7 +146,7 @@ Event scores are descriptive products of resistance and reference proximity;
 baseline/recovery label defaults must be matched to the supplied data.
 }
 \examples{
-\dontrun{
+\donttest{
   sim <- simulate_redox_holobiont(seed = 1)
   res <- rri_pipeline_st(sim$ROS_flux, sim$Eh_stability, id = sim$id)
   head(res$row_scores)

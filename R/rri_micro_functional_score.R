@@ -1,4 +1,4 @@
-#' Construct an explicitly weighted microbial guild contrast
+#' @title Construct an explicitly weighted microbial guild contrast
 #' @description Summarises supplied guild measurements or proxies. The weights
 #' define a contrast, not a universal ordering of microbial resilience.
 #' Denitrification, sulfate reduction and methanogenesis may be beneficial or

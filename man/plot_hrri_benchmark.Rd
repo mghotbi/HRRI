@@ -20,7 +20,7 @@ Invisibly, a two-panel patchwork object. Requires patchwork.
 Plot descriptive benchmark agreement
 }
 \examples{
-\dontrun{
+\donttest{
   b <- benchmark_hrri(domains = "soil", n = 2, missing = 0.1)
   plot_hrri_benchmark(b)
 }

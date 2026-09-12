@@ -41,10 +41,43 @@ Memory a persistent-displacement descriptor. None proves the named mechanism.
 \description{
 Summarise supported diagnostics without fabricating missing properties
 }
-\examples{
-\dontrun{
-  sim <- simulate_redox_holobiont(seed = 1)
-  res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
-  rri_property_scores(res)
+\section{Which inputs each property needs}{
+
+Only Connectivity is derived from \code{res} alone. The other three require an
+additional argument, and are returned as \code{NA} with method \code{"unavailable"}
+when it is absent:
+\itemize{
+\item \strong{Capacity} needs \code{soil_df} containing the columns named by
+\code{eac_col} and \code{edc_col}. Passing only \code{res} and \code{rec} is the usual
+reason Capacity comes back \code{NA}.
+\item \strong{Kinetics} and \strong{Memory} need \code{rec}, the table
+returned by \code{\link[=rri_recovery_metrics]{rri_recovery_metrics()}}.
 }
+A message names any missing input. \code{NA} here means "not supplied", never
+"measured and found to be zero".
+}
+
+\examples{
+sim <- simulate_redox_holobiont(
+  n_plot = 2, n_depth = 2, n_plant = 2, n_time = 40, p_micro = 10,
+  seed = 2026
+)
+res <- suppressWarnings(rri_pipeline_st(
+  ROS_flux = sim$ROS_flux, Eh_stability = sim$Eh_stability,
+  micro_data = sim$micro_data, id = sim$id
+))
+rec <- rri_recovery_metrics(
+  res = res, id = sim$id, time_col = "time",
+  group_cols = c("plot", "depth", "plant_id"),
+  perturb_start = 12, perturb_end = 22
+)
+
+## All four properties available: soil_df supplies Capacity, rec supplies
+## Kinetics and Memory.
+full <- rri_property_scores(res, rec = rec, soil_df = sim$soil_data)
+full$property_table
+
+## Omitting soil_df leaves Capacity unavailable, and says so.
+partial <- rri_property_scores(res, rec = rec)
+partial$property_table
 }

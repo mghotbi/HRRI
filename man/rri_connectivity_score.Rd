@@ -29,7 +29,7 @@ association, not electron-transfer encounter probability or measured alpha.
 Network summaries concern unweighted topology, not biochemical connectivity.
 }
 \examples{
-\dontrun{
+\donttest{
   sim <- simulate_redox_holobiont(seed = 1)
   res <- rri_pipeline(soil = sim$Eh_stability, plant = sim$ROS_flux)
   rri_connectivity_score(res)

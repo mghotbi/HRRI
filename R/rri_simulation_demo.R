@@ -1,4 +1,4 @@
-#' Reproducible observable-only HRRI demonstration
+#' @title Reproducible observable-only HRRI demonstration
 #'
 #' @description Generates both forcing scenarios with the package simulator,
 #' calibrates illustrative targets using a separate baseline simulation, and
@@ -12,7 +12,7 @@
 #' synthetic parameters; it is deliberately separate from observable scoring.
 #' @importFrom stats median aggregate
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   demo <- rri_simulation_demo(seed = 20260830L)
 #'   head(demo$scores)
 #' }
@@ -78,7 +78,7 @@ rri_simulation_demo <- function(seed = 20260830L) {
       input_domains="DNA represents functional potential, not microbial process activity"))
 }
 
-#' Draw the reproducible simulation demonstration
+#' @title Draw the reproducible simulation demonstration
 #' @param demo Result of rri_simulation_demo.
 #' @param figure observations, coverage or capacity.
 #' @return Invisibly returns the plotted data table; draws on the active device.
@@ -86,7 +86,7 @@ rri_simulation_demo <- function(seed = 20260830L) {
 #' @importFrom graphics par plot abline mtext lines legend matplot
 #' @importFrom stats aggregate
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   demo <- rri_simulation_demo(seed = 20260830L)
 #'   plot_rri_simulation_demo(demo, figure = "observations")
 #' }

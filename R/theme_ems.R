@@ -1,12 +1,12 @@
 #' @title EMS plotting theme
 #'
-#' @description A simple ggplot theme used for RedoxRRI visualizations.
+#' @description A simple ggplot theme used for HRRI visualizations.
 #'
 #' @param base_size Base font size
 #' @return A ggplot2 theme object
 #' @importFrom ggplot2 theme_classic theme element_text element_blank
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'   library(ggplot2)
 #'   ggplot(data.frame(x = 1:3, y = 1:3), aes(x, y)) +
 #'     geom_point() + theme_ems()

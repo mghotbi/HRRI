@@ -230,9 +230,39 @@ must be matched to the supplied data.
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# \donttest{
   sim <- simulate_redox_holobiont(seed = 1)
   res <- rri_pipeline_st(sim$ROS_flux, sim$Eh_stability, id = sim$id)
+#> Warning: Unanchored latent axes have arbitrary signs; RRI is exploratory, not directionally validated resilience.
+#> Warning: Excluding simulator-derived hidden columns from scoring: Cacc_EAC, Cacc_EDC, Cacc_total, Cacc_fraction, net_oxidative_balance, alpha_accept, alpha_donate, k_accept_h, k_donate_h
   head(res$row_scores)
-} # }
+#>   plot depth plant_id time row_id      unit_id history_pair history    scenario
+#> 1   P1    D1   Plant1    1      1 P1.D1.Plant1  P1_D1_Pair1   naive flood_drain
+#> 2   P2    D1   Plant1    1      2 P2.D1.Plant1  P2_D1_Pair1   naive flood_drain
+#> 3   P3    D1   Plant1    1      3 P3.D1.Plant1  P3_D1_Pair1   naive flood_drain
+#> 4   P4    D1   Plant1    1      4 P4.D1.Plant1  P4_D1_Pair1   naive flood_drain
+#> 5   P1    D2   Plant1    1      5 P1.D2.Plant1  P1_D2_Pair1   naive flood_drain
+#> 6   P2    D2   Plant1    1      6 P2.D2.Plant1  P2_D2_Pair1   naive flood_drain
+#>   rescue cycle    phase event_intensity      WFPS water_table_cm    Physio
+#> 1   none     1 baseline      0.06572853 0.5780600      -5.464198 0.3104766
+#> 2   none     1 baseline      0.06572853 0.6064134      -7.448936 0.3368434
+#> 3   none     1 baseline      0.06572853 0.5707389      -4.951720 0.3281934
+#> 4   none     1 baseline      0.06572853 0.6558207     -10.907448 0.3670551
+#> 5   none     1 baseline      0.06572853 0.7280600      -7.964198 0.2724980
+#> 6   none     1 baseline      0.06572853 0.7564134      -9.948936 0.3439660
+#>        Soil Micro       RRI domain_coverage n_domains Micro_abundance
+#> 1 0.1043981    NA 0.2143066            0.75         2              NA
+#> 2 0.1005309    NA 0.2265642            0.75         2              NA
+#> 3 0.1566488    NA 0.2481392            0.75         2              NA
+#> 4 0.0661552    NA 0.2266351            0.75         2              NA
+#> 5 0.6788061    NA 0.4621085            0.75         2              NA
+#> 6 0.5062489    NA 0.4196980            0.75         2              NA
+#>   Micro_network Micro_mfa
+#> 1            NA        NA
+#> 2            NA        NA
+#> 3            NA        NA
+#> 4            NA        NA
+#> 5            NA        NA
+#> 6            NA        NA
+# }
 ```

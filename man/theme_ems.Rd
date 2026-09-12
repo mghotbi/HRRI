@@ -13,10 +13,10 @@ theme_ems(base_size = 12)
 A ggplot2 theme object
 }
 \description{
-A simple ggplot theme used for RedoxRRI visualizations.
+A simple ggplot theme used for HRRI visualizations.
 }
 \examples{
-\dontrun{
+\donttest{
   library(ggplot2)
   ggplot(data.frame(x = 1:3, y = 1:3), aes(x, y)) +
     geom_point() + theme_ems()

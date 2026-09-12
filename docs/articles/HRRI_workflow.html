@@ -24,7 +24,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.99.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,13 +33,21 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item"><a class="nav-link" href="../articles/HRRI_workflow.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
+<li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/HRRI_workflow.html">HRRI: Holobiont Redox Resilience Index — End-to-End Workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/HRRI_gallery.html">HRRI: Reading the Figures — A Worked Example</a></li>
+<li><a class="dropdown-item" href="../articles/HRRI_workflow.html">End-to-end workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/HRRI_gallery.html">Gallery</a></li>
+  </ul>
+</li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-news" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">News</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-news">
+<li><h6 class="dropdown-header" data-toc-skip>Releases</h6></li>
+    <li><a class="dropdown-item" href="../news/index.html">Changelog</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../news/index.html">Changelog</a></li>
   </ul>
 </li>
       </ul>
@@ -67,7 +75,7 @@ Ghotbi</h4>
                   <a class="author_email" href="mailto:#"></a><a href="mailto:mitra.ghotbi@gmail.com" class="email">mitra.ghotbi@gmail.com</a>
       
                   
-            <h4 data-toc-skip class="date">2026-09-02</h4>
+            <h4 data-toc-skip class="date">2026-09-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mghotbi/HRRI/blob/HEAD/vignettes/HRRI_workflow.Rmd" class="external-link"><code>vignettes/HRRI_workflow.Rmd</code></a></small>
       <div class="d-none name"><code>HRRI_workflow.Rmd</code></div>
@@ -157,7 +165,7 @@ checks, not empirical ecological inference.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mghotbi/HRRI" class="external-link">HRRI</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"HRRI"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '0.99.2'</span></span>
+<span><span class="co">#&gt; [1] '1.0.2'</span></span>
 <span></span>
 <span><span class="co">## Compatibility shim -----------------------------------------------------</span></span>
 <span><span class="co">## rri_pipeline() is the convenience wrapper around rri_pipeline_st().</span></span>
@@ -410,27 +418,140 @@ must preserve input row order — matching row counts alone do
 checked for conflicts rather than silently overwritten.</p>
 </div>
 <div class="section level3">
-<h3 id="correlation-with-latent-truth">Correlation with latent truth<a class="anchor" aria-label="anchor" href="#correlation-with-latent-truth"></a>
+<h3 id="agreement-with-the-prescribed-target">Agreement with the prescribed target<a class="anchor" aria-label="anchor" href="#agreement-with-the-prescribed-target"></a>
 </h3>
+<p>A single pooled correlation is the wrong summary here, for two
+reasons.</p>
+<p>First, these 360 rows are <strong>12 trajectories observed at 30 time
+points</strong>, not 360 independent observations. Rows within a
+trajectory are strongly dependent, so an interval computed from the row
+count is far too narrow.</p>
+<p>Second, Pearson’s
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
+measures <em>association</em>, not <em>agreement</em>. A score equal to
+twice the target plus a constant correlates with it perfectly while
+matching it nowhere. Lin’s concordance correlation coefficient penalises
+departure from the 1:1 line and is the quantity that belongs beside
+it.</p>
+<p><code><a href="../reference/rri_accuracy.html">rri_accuracy()</a></code> reports both, with intervals obtained by
+resampling whole trajectories rather than rows.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## rri_scored is aligned to sim$id, and hence to its latent_truth vector.</span></span>
 <span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">latent_truth</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">truth</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">truth</span><span class="op">)</span> <span class="op">!=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"latent_truth must be a numeric vector with one value per sim$id row."</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span><span class="va">ok</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">$</span><span class="va">RRI</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">truth</span><span class="op">)</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ok</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="fl">3L</span> <span class="op">&amp;&amp;</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">$</span><span class="va">RRI</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span></span>
-<span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/sd.html" class="external-link">sd</a></span><span class="op">(</span><span class="va">truth</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">r_val</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">$</span><span class="va">RRI</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span>, <span class="va">truth</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
-<span>  <span class="va">r_val</span> <span class="op">&lt;-</span> <span class="cn">NA_real_</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Correlation unavailable: too few finite pairs or a constant vector.\n"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"r(RRI, latent truth):"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">r_val</span>, <span class="fl">3</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; r(RRI, latent truth): 0.467</span></span></code></pre></div>
-<p>This is a within-simulation association, not independent predictive
-validation or evidence that the individual latent parameters have been
-identified.</p>
+<span></span>
+<span><span class="co">## One independent experimental unit = one plot x depth x plant trajectory.</span></span>
+<span><span class="va">traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/interaction.html" class="external-link">interaction</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">$</span><span class="va">plot</span>, <span class="va">rri_scored</span><span class="op">$</span><span class="va">depth</span>, <span class="va">rri_scored</span><span class="op">$</span><span class="va">plant_id</span>,</span>
+<span>                    drop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">acc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_accuracy.html">rri_accuracy</a></span><span class="op">(</span></span>
+<span>  score   <span class="op">=</span> <span class="va">rri_scored</span><span class="op">$</span><span class="va">RRI</span>,</span>
+<span>  target  <span class="op">=</span> <span class="va">truth</span>,</span>
+<span>  cluster <span class="op">=</span> <span class="va">traj</span>,</span>
+<span>  n_boot  <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  n_perm  <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  seed    <span class="op">=</span> <span class="fl">42</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">acc</span></span>
+<span><span class="co">#&gt; Agreement with reference target</span></span>
+<span><span class="co">#&gt; -------------------------------------------------------------- </span></span>
+<span><span class="co">#&gt;  statistic row_level cluster_mean_level ci_lower ci_upper</span></span>
+<span><span class="co">#&gt;  pearson_r    0.4668             0.5454   0.3037   0.5959</span></span>
+<span><span class="co">#&gt;   lins_ccc    0.1412             0.0782   0.0829   0.2147</span></span>
+<span><span class="co">#&gt;       rmse    0.1732             0.1631   0.1296   0.2052</span></span>
+<span><span class="co">#&gt;        mae    0.1415             0.1264   0.0971   0.1836</span></span>
+<span><span class="co">#&gt;       bias   -0.1124            -0.1124  -0.1688  -0.0497</span></span>
+<span><span class="co">#&gt;         r2  -21.5196           -98.0483 -34.2773 -14.7249</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Dependence structure</span></span>
+<span><span class="co">#&gt;   360 observations in 12 clusters (mean size 30.0)</span></span>
+<span><span class="co">#&gt;   ICC 0.768, design effect 23.3, effective n 15</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Error decomposition (percent of MSE)</span></span>
+<span><span class="co">#&gt;   squared_bias          42.1%</span></span>
+<span><span class="co">#&gt;   variance_mismatch     39.1%</span></span>
+<span><span class="co">#&gt;   lack_of_correlation   18.8%</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Calibration: target = 0.565 + 0.118 x score  (ideal 0 and 1)</span></span>
+<span><span class="co">#&gt; Cluster permutation test: p = 0.0220 (500 permutations)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Notes</span></span>
+<span><span class="co">#&gt;   Rows are strongly clustered (ICC 0.77, design effect 23.3). The 360</span></span>
+<span><span class="co">#&gt;   observations carry roughly the information of 15 independent ones; quote</span></span>
+<span><span class="co">#&gt;   the cluster bootstrap interval, not one based on n = 360. </span></span>
+<span><span class="co">#&gt;   Ignoring clustering would give a 95% interval for r of width 0.145;</span></span>
+<span><span class="co">#&gt;   resampling whole trajectories gives width 0.292, 2.0 times wider. Report</span></span>
+<span><span class="co">#&gt;   the latter. </span></span>
+<span><span class="co">#&gt;   Correlation (0.467) exceeds concordance (0.141). The score tracks the</span></span>
+<span><span class="co">#&gt;   target's pattern but does not agree with it in level or scale; see</span></span>
+<span><span class="co">#&gt;   calibration. </span></span>
+<span><span class="co">#&gt;   Calibration slope is 0.12 rather than 1: the score compresses or</span></span>
+<span><span class="co">#&gt;   exaggerates the target's range. </span></span>
+<span><span class="co">#&gt;   R2 is negative: as an absolute predictor the score does worse than the</span></span>
+<span><span class="co">#&gt;   target's own mean. It may still rank correctly; check pearson_r. </span></span>
+<span><span class="co">#&gt;   Error is dominated by squared_bias (42% of MSE). </span></span>
+<span><span class="co">#&gt;   If score and target derive from the same generator, this is internal</span></span>
+<span><span class="co">#&gt;   consistency, not validation.</span></span></code></pre></div>
+<div class="method">
+<p><code>effective_n</code> in the dependence table, not the row count,
+is what governs precision. Where the design effect is well above one,
+the naive interval should not be quoted: the function prints both widths
+so the difference is visible rather than asserted.</p>
+</div>
+<p>Splitting the error says which kind of disagreement is present, and
+the three components sum to the mean squared error exactly.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">acc</span><span class="op">$</span><span class="va">decomposition</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"component"</span>, <span class="st">"percent"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;             component  percent</span></span>
+<span><span class="co">#&gt; 1        squared_bias 42.10174</span></span>
+<span><span class="co">#&gt; 2   variance_mismatch 39.10814</span></span>
+<span><span class="co">#&gt; 3 lack_of_correlation 18.79012</span></span>
+<span></span>
+<span><span class="co">## Exactness check: the residual is numerical noise, not a rounding allowance.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>mse      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">acc</span><span class="op">$</span><span class="va">decomposition</span>, <span class="st">"mse"</span><span class="op">)</span>,</span>
+<span>  residual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">acc</span><span class="op">$</span><span class="va">decomposition</span>, <span class="st">"residual"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;           mse      residual </span></span>
+<span><span class="co">#&gt;  3.000571e-02 -1.040834e-17</span></span></code></pre></div>
+<p>Large squared bias is a systematic offset, removable by recentring.
+Large variance mismatch means the score is flatter or more volatile than
+the target. Large lack of correlation means the score does not track the
+target’s pattern, and no rescaling will repair it.</p>
+<p><code><a href="../reference/plot_rri_accuracy.html">plot_rri_accuracy()</a></code> draws the same four questions as one
+figure.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rri_accuracy.html">plot_rri_accuracy</a></span><span class="op">(</span><span class="va">acc</span>,</span>
+<span>                  score_label  <span class="op">=</span> <span class="st">"RRI"</span>,</span>
+<span>                  target_label <span class="op">=</span> <span class="st">"Prescribed target"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="HRRI_workflow_files/figure-html/validation_figure-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<div class="note">
+<p><strong>Reading it.</strong> <strong>A</strong> puts the fitted line
+against the dashed 1:1 line; a flatter fit means the score compresses
+the target’s range. Open points are trajectory means, the level at which
+the units are independent. <strong>B</strong> is a Bland-Altman plot: a
+scatter that slopes or fans out shows disagreement that depends on
+level, which no correlation coefficient can reveal. <strong>C</strong>
+is the headline: the violet distribution resamples rows and is too
+narrow, the teal one resamples trajectories and is honest; the bars
+beneath give both widths. <strong>D</strong> partitions the mean squared
+error exactly.</p>
+<p><strong>What it does not show.</strong> None of the four panels
+speaks to out-of-sample performance. The target is prescribed by the
+same simulator that produced the inputs, so a tight panel A means the
+estimator is self-consistent, not that it would recover an unobserved
+field quantity.</p>
+</div>
+<div class="caution">
+<p><code>latent_truth</code> and <code>RRI</code> are produced by the
+same generator. Everything above therefore quantifies <strong>internal
+consistency</strong> — whether the estimator recovers the target its own
+simulator prescribed. It is not independent predictive validation, and
+it is not evidence that the individual latent parameters have been
+identified. An empirical claim requires a target measured independently
+of the score, replicated across independent experimental units.</p>
+</div>
 </div>
 </div>
 <div class="section level2">
@@ -447,7 +568,7 @@ evidence.</p>
 group</strong>. Because the pipeline returns one row per plant, we must
 first average RRI across plants within each plot × depth × time cell
 before calling recovery metrics.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Step 1 — use the aligned score table created in the pipeline chunk.</span></span>
 <span><span class="co">## Step 2 — aggregate to one row per plot × depth × time (mean over plants).</span></span>
 <span><span class="co">## The data-frame method avoids formula-level complete-case filtering.</span></span>
@@ -552,7 +673,7 @@ stated rules. They do not establish a universal mineralogical ratchet.
 In this version, crystallisation is continuous rather than restricted to
 reoxidation events, and end-state EAC is not constrained to decline
 monotonically with cycle count.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">history</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, <span class="kw">function</span><span class="op">(</span><span class="va">nc</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_redox_holobiont.html">simulate_redox_holobiont</a></span><span class="op">(</span>n_plot<span class="op">=</span><span class="fl">1</span>, n_depth<span class="op">=</span><span class="fl">1</span>, n_plant<span class="op">=</span><span class="fl">2</span>,</span>
 <span>    n_time<span class="op">=</span><span class="fl">30</span>, p_micro<span class="op">=</span><span class="fl">5</span>, seed<span class="op">=</span><span class="fl">99</span>, n_cycles<span class="op">=</span><span class="va">nc</span>,</span>
@@ -575,11 +696,11 @@ observations.</p>
 <div class="section level2">
 <h2 id="session-information">Session Information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.5.1 (2025-06-13)</span></span>
 <span><span class="co">#&gt; Platform: aarch64-apple-darwin20</span></span>
-<span><span class="co">#&gt; Running under: macOS Tahoe 26.5.1</span></span>
+<span><span class="co">#&gt; Running under: macOS Tahoe 26.6.2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Matrix products: default</span></span>
 <span><span class="co">#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib </span></span>
@@ -595,29 +716,70 @@ observations.</p>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] HRRI_0.99.2</span></span>
+<span><span class="co">#&gt; [1] HRRI_1.0.2</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    </span></span>
 <span><span class="co">#&gt;  [5] tidyselect_1.2.1   tidyr_1.3.2        jquerylib_0.1.4    systemfonts_1.3.2 </span></span>
 <span><span class="co">#&gt;  [9] scales_1.4.0       textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0     </span></span>
-<span><span class="co">#&gt; [13] ggplot2_4.0.3      R6_2.6.1           generics_0.1.4     igraph_2.3.3      </span></span>
-<span><span class="co">#&gt; [17] knitr_1.51         htmlwidgets_1.6.4  tibble_3.3.1       desc_1.4.3        </span></span>
-<span><span class="co">#&gt; [21] bslib_0.12.0       pillar_1.11.1      RColorBrewer_1.1-3 rlang_1.3.0       </span></span>
-<span><span class="co">#&gt; [25] cachem_1.1.0       xfun_0.60          fs_2.1.0           sass_0.4.10       </span></span>
-<span><span class="co">#&gt; [29] S7_0.2.2           otel_0.2.0         cli_3.6.6          pkgdown_2.2.1     </span></span>
-<span><span class="co">#&gt; [33] magrittr_2.0.5     digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0 </span></span>
-<span><span class="co">#&gt; [37] lifecycle_1.0.5    vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1        </span></span>
-<span><span class="co">#&gt; [41] farver_2.1.2       ragg_1.5.2         purrr_1.2.2        rmarkdown_2.31    </span></span>
-<span><span class="co">#&gt; [45] tools_4.5.1        pkgconfig_2.0.3    htmltools_0.5.9</span></span></code></pre></div>
+<span><span class="co">#&gt; [13] ggplot2_4.0.3      R6_2.6.1           labeling_0.4.3     patchwork_1.3.2   </span></span>
+<span><span class="co">#&gt; [17] generics_0.1.4     igraph_2.3.3       knitr_1.51         htmlwidgets_1.6.4 </span></span>
+<span><span class="co">#&gt; [21] tibble_3.3.1       desc_1.4.3         bslib_0.12.0       pillar_1.11.1     </span></span>
+<span><span class="co">#&gt; [25] RColorBrewer_1.1-3 rlang_1.3.0        cachem_1.1.0       xfun_0.60         </span></span>
+<span><span class="co">#&gt; [29] fs_2.1.0           sass_0.4.10        S7_0.2.2           otel_0.2.0        </span></span>
+<span><span class="co">#&gt; [33] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    </span></span>
+<span><span class="co">#&gt; [37] digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0  lifecycle_1.0.5   </span></span>
+<span><span class="co">#&gt; [41] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      </span></span>
+<span><span class="co">#&gt; [45] ragg_1.5.2         purrr_1.2.2        rmarkdown_2.31     tools_4.5.1       </span></span>
+<span><span class="co">#&gt; [49] pkgconfig_2.0.3    htmltools_0.5.9</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Ghotbi, M., Ghotbi, M., Guerreiro, M., Komluski, J., &amp;
-Holtgrewe-Stukenbrock, E. H. (2026). HRRI: A direction-aware R framework
-for quantifying soil–plant–microbiome redox resilience across
-hydroclimatic disturbance events. Manuscript submitted.</p>
+<div class="section level3">
+<h3 id="published-methods">Published methods<a class="anchor" aria-label="anchor" href="#published-methods"></a>
+</h3>
+<p>Keiluweit, M., Wanzek, T., Kleber, M., Nico, P., &amp; Fendorf, S.
+(2017). Anaerobic microsites have an unaccounted role in soil carbon
+stabilization. <em>Nature Communications</em>, <strong>8</strong>, 1771.
+<a href="https://doi.org/10.1038/s41467-017-01406-6" class="external-link uri">https://doi.org/10.1038/s41467-017-01406-6</a></p>
+<p>Klüpfel, L., Piepenbrock, A., Kappler, A., &amp; Sander, M. (2014).
+Humic substances as fully regenerable electron acceptors in recurrently
+anoxic environments. <em>Nature Geoscience</em>, <strong>7</strong>,
+195–200. <a href="https://doi.org/10.1038/ngeo2084" class="external-link uri">https://doi.org/10.1038/ngeo2084</a></p>
+<p>Kobayashi, K., &amp; Salam, M. U. (2000). Comparing simulated and
+measured values using mean squared deviation and its components.
+<em>Agronomy Journal</em>, <strong>92</strong>, 345–352. <a href="https://doi.org/10.2134/agronj2000.922345x" class="external-link uri">https://doi.org/10.2134/agronj2000.922345x</a></p>
+<p>Lin, L. I. (1989). A concordance correlation coefficient to evaluate
+reproducibility. <em>Biometrics</em>, <strong>45</strong>, 255–268. <a href="https://doi.org/10.2307/2532051" class="external-link uri">https://doi.org/10.2307/2532051</a></p>
+<p>Sander, M., Hofstetter, T. B., &amp; Gorski, C. A. (2015).
+Electrochemical analyses of redox-active iron minerals: a review of
+nonmediated and mediated approaches. <em>Environmental Science &amp;
+Technology</em>, <strong>49</strong>, 5862–5878. <a href="https://doi.org/10.1021/acs.est.5b00006" class="external-link uri">https://doi.org/10.1021/acs.est.5b00006</a></p>
+<p>Thompson, A., Chadwick, O. A., Rancourt, D. G., &amp; Chorover, J.
+(2006). Iron-oxide crystallinity increases during soil redox
+oscillations. <em>Geochimica et Cosmochimica Acta</em>,
+<strong>70</strong>, 1710–1727. <a href="https://doi.org/10.1016/j.gca.2005.12.005" class="external-link uri">https://doi.org/10.1016/j.gca.2005.12.005</a></p>
+</div>
+<div class="section level3">
+<h3 id="companion-manuscripts">Companion manuscripts<a class="anchor" aria-label="anchor" href="#companion-manuscripts"></a>
+</h3>
+<p>These describe the framework this package implements. None is
+published and two are under review; the entries are provisional and
+should be replaced with the published versions.</p>
+<p>Ghotbi, M., Ghotbi, M., Komluski, J., &amp; Holtgrewe-Stukenbrock, E.
+H. HRRI: direction-aware diagnostics for soil–plant–microbiome redox
+recovery across hydroclimatic disturbances. <em>In preparation.</em></p>
+<p>Ghotbi, M., Kolody, B. C., Ghotbi, M., &amp; Holtgrewe-Stukenbrock,
+E. A Theory of Hydroclimatic Redox Resilience. <em>Submitted to
+Communications Earth &amp; Environment.</em> — the source of the
+capacity, connectivity, kinetics and memory decomposition used
+throughout this vignette.</p>
+<p>Ghotbi, M., Ghotbi, M., Mühling, K. H., &amp; Stukenbrock, E. H.
+Rhizosphere redox recovery after hydrological disturbances: mechanisms
+across the soil–plant–microbiome continuum. <em>Submitted to Soil
+Biology &amp; Biochemistry.</em></p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -626,7 +788,7 @@ hydroclimatic disturbance events. Manuscript submitted.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by <a href="https://orcid.org/0000-0001-9185-9993" class="external-link">Mitra Ghotbi</a>.</p>
+  <p>Developed by Mitra Ghotbi.</p>
 </div>
 
 <div class="pkgdown-footer-right">
