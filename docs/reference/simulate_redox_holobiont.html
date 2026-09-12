@@ -15,7 +15,7 @@ Gene abundance indicates potential; transcript counts are observations, not flux
 
     <a class="navbar-brand me-2" href="../index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,7 @@ Gene abundance indicates potential; transcript counts are observations, not flux
 <span>  n_plant <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  n_time <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  p_micro <span class="op">=</span> <span class="fl">60</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">123</span>,</span>
+<span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  scenario <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"flood_drain"</span>, <span class="st">"drought_rewet"</span><span class="op">)</span>,</span>
 <span>  n_cycles <span class="op">=</span> <span class="fl">2L</span>,</span>
 <span>  disturbance_strength <span class="op">=</span> <span class="fl">0.65</span>,</span>
@@ -125,11 +125,11 @@ features generated alongside functional gene data.</p></dd>
 <dd><p>Integer or <code>NULL</code>. Random seed passed to
 <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></code> before simulation; <code>NULL</code> means
 no seeding (non-reproducible). All manuscript figures use explicit seeds.
-The default is a fixed integer rather than <code>NULL</code> so that an
-unseeded call is reproducible, which is the point of an illustrative
-generator. This does not disturb the caller: the RNG kind and
+Defaults to <code>NULL</code>, so the function does not touch the random stream
+unless a seed is requested. When one is supplied, the RNG kind and
 <code>.Random.seed</code> are saved on entry and restored with
-<code><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit</a></code>, so the stream is returned exactly as found.</p></dd>
+<code><a href="https://rdrr.io/r/base/on.exit.html" class="external-link">on.exit</a></code>, so the caller's stream is returned exactly
+as found, including when the function exits on an error.</p></dd>
 
 
 <dt id="arg-scenario">scenario<a class="anchor" aria-label="anchor" href="#arg-scenario"></a></dt>

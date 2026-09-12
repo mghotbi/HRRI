@@ -1,7 +1,7 @@
 Package: HRRI
 Type: Package
 Title: Diagnostics for Soil-Plant-Microbial Redox Recovery
-Version: 1.0.2
+Version: 1.0.5
 Date: 2026-09-12
 Authors@R: c(
     person("Mitra", "Ghotbi",

@@ -21,8 +21,13 @@ library(ggplot2)
 if (!exists("rri_accuracy", mode = "function"))      source("rri_accuracy.R")
 if (!exists("plot_rri_accuracy", mode = "function")) source("plot_rri_accuracy.R")
 
-out_dir <- "accuracy_output"
-dir.create(out_dir, showWarnings = FALSE)
+## Output goes to the session temporary directory unless HRRI_OUT names
+## somewhere else. Nothing shipped with the package writes to the user's
+## working directory or home filespace without being asked to.
+out_dir <- Sys.getenv("HRRI_OUT",
+                      unset = file.path(tempdir(), "hrri-accuracy"))
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
+cat("Figures will be written to:", out_dir, "\n")
 
 set.seed(2026)
 

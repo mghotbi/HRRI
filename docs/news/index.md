@@ -1,5 +1,58 @@
 # Changelog
 
+## HRRI 1.0.5
+
+### Fixes
+
+- [`simulate_redox_holobiont()`](https://mghotbi.github.io/HRRI/reference/simulate_redox_holobiont.md)
+  now defaults to `seed = NULL` rather than `seed = 123`, so no function
+  in the package touches the random stream unless a seed is requested.
+  This is what the CRAN Cookbook recommends, and the earlier
+  justification for keeping a fixed default did not survive checking:
+  every call in the package’s own examples, tests and vignettes passes a
+  seed explicitly, so nothing depended on it. Users who called the
+  simulator with no arguments and relied on reproducible output should
+  now pass `seed` themselves.
+
+## HRRI 1.0.4
+
+### Fixes
+
+- [`benchmark_hrri()`](https://mghotbi.github.io/HRRI/reference/benchmark_hrri.md)
+  now restores the RNG kind as well as `.Random.seed`, so all three
+  functions that seed behave identically. It could not previously change
+  the kind, so no behaviour depended on this, but the uniformity makes
+  the guarantee checkable at a glance rather than function by function.
+
+- `tests/testthat/test-pipeline-partial.R` collected warnings by
+  superassignment. It now accumulates them in an environment, so a
+  search for `<<-` across the package sources and tests returns nothing
+  at all.
+
+- `inst/scripts/check_model_accuracy.R` wrote its figures to a directory
+  created under the working directory. It now writes to
+  [`tempdir()`](https://rdrr.io/r/base/tempfile.html) unless the
+  `HRRI_OUT` environment variable names somewhere else, and prints the
+  destination. Nothing shipped with the package writes outside the
+  temporary directory unless asked to.
+
+## HRRI 1.0.3
+
+### Fixes, in response to CRAN review
+
+- [`benchmark_hrri()`](https://mghotbi.github.io/HRRI/reference/benchmark_hrri.md)
+  no longer uses `<<-`. The assignment resolved to the function’s own
+  frame rather than to `.GlobalEnv`, so it was not a policy violation,
+  but confirming that required reading the surrounding code. The
+  [`tryCatch()`](https://rdrr.io/r/base/conditions.html) handler now
+  returns the failure as a classed value and the caller records it.
+  Behaviour is unchanged; the package now contains no `<<-`.
+
+- The only remaining references to `.GlobalEnv` are the blocks that save
+  and restore `.Random.seed`. `.Random.seed` lives in `.GlobalEnv`, so
+  any function that seeds necessarily writes there; these blocks put it
+  back exactly as found, including on an error exit.
+
 ## HRRI 1.0.2
 
 ### Fixes

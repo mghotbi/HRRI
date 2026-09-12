@@ -61,9 +61,11 @@ benchmark_hrri <- function(domains = c("soil", "plant", "micro"),
     stop("pipeline_args must not replace the benchmark observation inputs.")
   sim_args <- utils::modifyList(list(n_plot = 1, n_depth = 1, n_plant = 2,
                                     n_time = 30, p_micro = 20), sim_args)
+  old_kind <- RNGkind()
   had_rng <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
   if (had_rng) old_rng <- get(".Random.seed", envir = .GlobalEnv)
   on.exit({
+    do.call(RNGkind, as.list(old_kind))
     if (had_rng) assign(".Random.seed", old_rng, envir = .GlobalEnv)
     else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
       rm(".Random.seed", envir = .GlobalEnv)
@@ -80,7 +82,7 @@ benchmark_hrri <- function(domains = c("soil", "plant", "micro"),
   results <- vector("list", n); errors <- vector("list", n)
   for (i in seq_along(seeds)) {
     s <- seeds[i]
-    results[i] <- list(tryCatch({
+    attempt <- tryCatch({
       sim <- do.call(simulate_redox_holobiont, c(sim_args, list(seed = s)))
       truth <- sim$latent_truth
       if (!is.numeric(truth) || length(truth) != nrow(sim$id))
@@ -105,9 +107,21 @@ benchmark_hrri <- function(domains = c("soil", "plant", "micro"),
       rs$residual <- rs$RRI - truth
       rs
     }, error = function(e) {
-      errors[i] <<- list(data.frame(seed = s, error = conditionMessage(e)))
-      NULL
-    }))
+      ## The failure is returned as a value rather than assigned by a
+      ## superassignment into the enclosing frame. That assignment resolved
+      ## locally, never to .GlobalEnv, but returning the condition removes the
+      ## need to verify that by reading the surrounding code.
+      structure(list(seed = s, message = conditionMessage(e)),
+                class = "hrri_seed_failure")
+    })
+    if (inherits(attempt, "hrri_seed_failure")) {
+      errors[i]  <- list(data.frame(seed = attempt$seed,
+                                    error = attempt$message,
+                                    stringsAsFactors = FALSE))
+      results[i] <- list(NULL)
+    } else {
+      results[i] <- list(attempt)
+    }
     if (isTRUE(verbose)) message("benchmark_hrri: ", i, "/", n, " seeds attempted")
   }
   failures <- do.call(rbind, Filter(Negate(is.null), errors))

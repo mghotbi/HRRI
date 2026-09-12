@@ -15,11 +15,11 @@
 #' @param seed Integer or \code{NULL}. Random seed passed to
 #'   \code{\link[base]{set.seed}} before simulation; \code{NULL} means
 #'   no seeding (non-reproducible). All manuscript figures use explicit seeds.
-#'   The default is a fixed integer rather than \code{NULL} so that an
-#'   unseeded call is reproducible, which is the point of an illustrative
-#'   generator. This does not disturb the caller: the RNG kind and
+#'   Defaults to \code{NULL}, so the function does not touch the random stream
+#'   unless a seed is requested. When one is supplied, the RNG kind and
 #'   \code{.Random.seed} are saved on entry and restored with
-#'   \code{\link[base]{on.exit}}, so the stream is returned exactly as found.
+#'   \code{\link[base]{on.exit}}, so the caller's stream is returned exactly
+#'   as found, including when the function exits on an error.
 #' @param scenario Character; one of \code{"flood_drain"} (default) or
 #'   \code{"drought_rewet"}. Determines the shape of the hydrological
 #'   forcing function and the sign of the dominant redox transition.
@@ -124,7 +124,7 @@ simulate_redox_holobiont <- function(
   n_plant = 6,
   n_time = 30,
   p_micro = 60,
-  seed = 123,
+  seed = NULL,
   scenario = c("flood_drain", "drought_rewet"),
   n_cycles = 2L,
   disturbance_strength = 0.65,

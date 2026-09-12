@@ -66,13 +66,12 @@ test_that("seeding never disturbs the caller's random stream", {
     expect_true(any(grepl("seed", names(formals(f)))),
                 info = paste(fn, "seeds without exposing a seed argument"))
   }
-  ## Diagnostics default to no seeding at all.
-  expect_null(eval(formals(rri_accuracy)$seed))
-  ## The simulator deliberately keeps a fixed default so that an unseeded call
-  ## is reproducible, which is the point of an illustrative generator. That is
-  ## acceptable only because the caller's stream is restored on exit, which the
-  ## next expectation is what actually verifies.
-  expect_true(is.numeric(eval(formals(simulate_redox_holobiont)$seed)))
+  ## Nothing seeds unless asked: every seed argument defaults to NULL.
+  for (fn in c("rri_accuracy", "simulate_redox_holobiont")) {
+    f <- get(fn, envir = asNamespace(pkg))
+    expect_null(eval(formals(f)$seed),
+                info = paste(fn, "seed does not default to NULL"))
+  }
 
   set.seed(99)
   before <- get(".Random.seed", envir = globalenv())

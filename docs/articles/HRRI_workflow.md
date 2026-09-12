@@ -50,7 +50,7 @@ empirical ecological inference.
 
 library(HRRI)
 packageVersion("HRRI")
-#> [1] '1.0.2'
+#> [1] '1.0.5'
 
 ## Compatibility shim -----------------------------------------------------
 ## rri_pipeline() is the convenience wrapper around rri_pipeline_st().
@@ -629,7 +629,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] HRRI_1.0.2
+#> [1] HRRI_1.0.5
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    

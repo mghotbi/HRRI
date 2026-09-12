@@ -17,15 +17,19 @@ test_that("hidden simulator states cannot enter observation scoring", {
                   Capacity=seq(.2,.8,length.out=5), Truth=seq(.8,.2,length.out=5))
   ## Collect every warning, then assert the hidden-column one was raised.
   ## (An unanchored-axis warning is also emitted and must not mask it.)
-  seen <- character()
+  ## Warnings are collected into an environment rather than by superassignment,
+  ## so that no superassignment appears anywhere in the package or its tests.
+  bucket <- new.env(parent = emptyenv())
+  bucket$seen <- character()
   z <- withCallingHandlers(
     rri_pipeline(soil = x, method_soil = "scale",
                  direction_anchor_soil = "Eh"),
     warning = function(cond) {
-      seen <<- c(seen, conditionMessage(cond))
+      bucket$seen <- c(bucket$seen, conditionMessage(cond))
       invokeRestart("muffleWarning")
     }
   )
+  seen <- bucket$seen
   expect_true(any(grepl("hidden", seen, fixed = TRUE)))
   expect_equal(z$row_scores$Soil, .rri_scale(x$Eh))
 })

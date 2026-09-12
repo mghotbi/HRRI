@@ -16,7 +16,7 @@ simulate_redox_holobiont(
   n_plant = 6,
   n_time = 30,
   p_micro = 60,
-  seed = 123,
+  seed = NULL,
   scenario = c("flood_drain", "drought_rewet"),
   n_cycles = 2L,
   disturbance_strength = 0.65,
@@ -72,12 +72,12 @@ simulate_redox_holobiont(
   Integer or `NULL`. Random seed passed to
   [`set.seed`](https://rdrr.io/r/base/Random.html) before simulation;
   `NULL` means no seeding (non-reproducible). All manuscript figures use
-  explicit seeds. The default is a fixed integer rather than `NULL` so
-  that an unseeded call is reproducible, which is the point of an
-  illustrative generator. This does not disturb the caller: the RNG kind
-  and `.Random.seed` are saved on entry and restored with
-  [`on.exit`](https://rdrr.io/r/base/on.exit.html), so the stream is
-  returned exactly as found.
+  explicit seeds. Defaults to `NULL`, so the function does not touch the
+  random stream unless a seed is requested. When one is supplied, the
+  RNG kind and `.Random.seed` are saved on entry and restored with
+  [`on.exit`](https://rdrr.io/r/base/on.exit.html), so the caller's
+  stream is returned exactly as found, including when the function exits
+  on an error.
 
 - scenario:
 

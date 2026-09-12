@@ -14,14 +14,14 @@ Source:
 [`inst/CITATION`](https://github.com/mghotbi/HRRI/blob/HEAD/inst/CITATION)
 
 Ghotbi M, Ghotbi M (2026). *HRRI: Holobiont Redox Resilience Index for
-Integrative Stress Biology*. R package version 1.0.2,
+Integrative Stress Biology*. R package version 1.0.5,
 <https://github.com/mghotbi/HRRI>.
 
     @Manual{,
       title = {HRRI: Holobiont Redox Resilience Index for Integrative Stress Biology},
       author = {Mitra Ghotbi and Marjan Ghotbi},
       year = {2026},
-      note = {R package version 1.0.2},
+      note = {R package version 1.0.5},
       url = {https://github.com/mghotbi/HRRI},
     }
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">HRRI</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,31 @@
       <small>Source: <a href="https://github.com/mghotbi/HRRI/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.5" id="hrri-105">HRRI 1.0.5<a class="anchor" aria-label="anchor" href="#hrri-105"></a></h2>
+<div class="section level3">
+<h3 id="fixes-1-0-5">Fixes<a class="anchor" aria-label="anchor" href="#fixes-1-0-5"></a></h3>
+<ul><li>
+<code><a href="../reference/simulate_redox_holobiont.html">simulate_redox_holobiont()</a></code> now defaults to <code>seed = NULL</code> rather than <code>seed = 123</code>, so no function in the package touches the random stream unless a seed is requested. This is what the CRAN Cookbook recommends, and the earlier justification for keeping a fixed default did not survive checking: every call in the package’s own examples, tests and vignettes passes a seed explicitly, so nothing depended on it. Users who called the simulator with no arguments and relied on reproducible output should now pass <code>seed</code> themselves.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.4" id="hrri-104">HRRI 1.0.4<a class="anchor" aria-label="anchor" href="#hrri-104"></a></h2>
+<div class="section level3">
+<h3 id="fixes-1-0-4">Fixes<a class="anchor" aria-label="anchor" href="#fixes-1-0-4"></a></h3>
+<ul><li><p><code><a href="../reference/benchmark_hrri.html">benchmark_hrri()</a></code> now restores the RNG kind as well as <code>.Random.seed</code>, so all three functions that seed behave identically. It could not previously change the kind, so no behaviour depended on this, but the uniformity makes the guarantee checkable at a glance rather than function by function.</p></li>
+<li><p><code>tests/testthat/test-pipeline-partial.R</code> collected warnings by superassignment. It now accumulates them in an environment, so a search for <code>&lt;&lt;-</code> across the package sources and tests returns nothing at all.</p></li>
+<li><p><code>inst/scripts/check_model_accuracy.R</code> wrote its figures to a directory created under the working directory. It now writes to <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code> unless the <code>HRRI_OUT</code> environment variable names somewhere else, and prints the destination. Nothing shipped with the package writes outside the temporary directory unless asked to.</p></li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.3" id="hrri-103">HRRI 1.0.3<a class="anchor" aria-label="anchor" href="#hrri-103"></a></h2>
+<div class="section level3">
+<h3 id="fixes-in-response-to-cran-review-1-0-3">Fixes, in response to CRAN review<a class="anchor" aria-label="anchor" href="#fixes-in-response-to-cran-review-1-0-3"></a></h3>
+<ul><li><p><code><a href="../reference/benchmark_hrri.html">benchmark_hrri()</a></code> no longer uses <code>&lt;&lt;-</code>. The assignment resolved to the function’s own frame rather than to <code>.GlobalEnv</code>, so it was not a policy violation, but confirming that required reading the surrounding code. The <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">tryCatch()</a></code> handler now returns the failure as a classed value and the caller records it. Behaviour is unchanged; the package now contains no <code>&lt;&lt;-</code>.</p></li>
+<li><p>The only remaining references to <code>.GlobalEnv</code> are the blocks that save and restore <code>.Random.seed</code>. <code>.Random.seed</code> lives in <code>.GlobalEnv</code>, so any function that seeds necessarily writes there; these blocks put it back exactly as found, including on an error exit.</p></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.2" id="hrri-102">HRRI 1.0.2<a class="anchor" aria-label="anchor" href="#hrri-102"></a></h2>
 <div class="section level3">

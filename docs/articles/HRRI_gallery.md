@@ -24,7 +24,7 @@ method, not disclaimers bolted on afterwards.
 library(HRRI)
 library(ggplot2)
 packageVersion("HRRI")
-#> [1] '1.0.2'
+#> [1] '1.0.5'
 ```
 
 ## The experiment
@@ -528,7 +528,7 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] ggplot2_4.0.3 HRRI_1.0.2   
+#> [1] ggplot2_4.0.3 HRRI_1.0.5   
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] sass_0.4.10        generics_0.1.4     tidyr_1.3.2        lattice_0.23-1    
