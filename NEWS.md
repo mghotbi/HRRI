@@ -1,3 +1,20 @@
+# HRRI 1.0.6
+
+## Changes
+
+* `plot_rri_properties()` no longer places the composite RRI on a fifth spoke.
+  RRI is built from the plant, soil and microbial domains; Capacity,
+  Connectivity, Kinetics and Memory are property descriptors built from
+  different inputs. Drawing them on one radar invited the polygon to be read as
+  averaging across incommensurable quantities.
+
+  The chart now has four axes. The centre shows the mean of the *resolved*
+  property axes, with the count of resolved axes beneath it, so a mean resting
+  on two axes is not mistaken for one resting on four. An axis whose supporting
+  measurement was absent is excluded from the mean rather than counted as zero.
+  The composite is reported in the subtitle for reference.
+
+
 # HRRI 1.0.5
 
 ## Fixes
