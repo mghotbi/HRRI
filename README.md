@@ -120,6 +120,9 @@ Each function's help page states what its output does and does not support.
 ## Vignette
 
 ```r
+vignette(package = "HRRI")     
+browseVignettes("HRRI")
+
 vignette("HRRI_workflow", package = "HRRI")
 vignette("HRRI_gallery", package = "HRRI")
 ```
