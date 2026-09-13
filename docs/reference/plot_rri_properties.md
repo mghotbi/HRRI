@@ -1,7 +1,9 @@
 # Radar Chart of Available HRRI Diagnostics
 
 Displays available diagnostic summaries labelled Capacity, Connectivity,
-Kinetics and Memory alongside the composite RRI score. These axes are
+Kinetics and Memory. The composite RRI is not an axis: it is built from
+the plant, soil and microbial domains rather than from these four
+properties, so averaging across it is not defensible. These axes are
 operational descriptors returned by
 [`rri_property_scores`](https://mghotbi.github.io/HRRI/reference/rri_property_scores.md);
 they are not direct measurements or identified estimates of the
@@ -33,8 +35,10 @@ plot_rri_properties(
 
 - rri_value:
 
-  Optional numeric. Composite RRI to display in the chart centre
-  annotation. Defaults to `props$rri_summary` if available.
+  Optional numeric. Composite RRI, reported in the subtitle for
+  reference. It is not plotted as an axis and does not enter the centre
+  value, which is the mean of the resolved property axes. Defaults to
+  `props$rri_summary` if available.
 
 - group_list:
 
@@ -89,8 +93,6 @@ commensurable.
 
 - **Memory** — loop-area and persistent-displacement descriptor; not an
   identified causal memory state.
-
-- **RRI** — composite score under the declared scaling and weights.
 
 ## Examples
 

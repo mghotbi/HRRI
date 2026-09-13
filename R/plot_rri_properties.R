@@ -2,7 +2,9 @@
 #'
 #' @description
 #' Displays available diagnostic summaries labelled Capacity, Connectivity,
-#' Kinetics and Memory alongside the composite RRI score. These axes are
+#' Kinetics and Memory. The composite RRI is not an axis: it is built from
+#' the plant, soil and microbial domains rather than from these four
+#' properties, so averaging across it is not defensible. These axes are
 #' operational descriptors returned by \code{\link{rri_property_scores}};
 #' they are not direct measurements or identified estimates of the theoretical
 #' mechanisms bearing the same names.
@@ -10,8 +12,10 @@
 #' @param props A list returned by \code{\link{rri_property_scores}}, or a
 #'   named numeric vector with elements \code{Capacity}, \code{Connectivity},
 #'   \code{Kinetics}, \code{Memory} (values in `[0, 1]`).
-#' @param rri_value Optional numeric. Composite RRI to display in the chart
-#'   centre annotation. Defaults to \code{props$rri_summary} if available.
+#' @param rri_value Optional numeric. Composite RRI, reported in the subtitle
+#'   for reference. It is not plotted as an axis and does not enter the
+#'   centre value, which is the mean of the resolved property axes.
+#'   Defaults to \code{props$rri_summary} if available.
 #' @param group_list Optional named list of property score vectors, one per
 #'   group (e.g., per thaw stage or treatment). If supplied, multiple
 #'   overlapping polygons are drawn, one per group.
@@ -38,7 +42,7 @@
 #'     not a mineral exchange rate.
 #'   \item \strong{Memory} --- loop-area and persistent-displacement descriptor;
 #'     not an identified causal memory state.
-#'   \item \strong{RRI} --- composite score under the declared scaling and weights.
+#'   
 #' }
 #'
 #' @return A \code{ggplot} object.
@@ -109,16 +113,19 @@ plot_rri_properties <- function(
     if (length(missing_p) > 0) {
       sc[missing_p] <- NA_real_
     }
-    if (!is.null(rri_val) && is.finite(rri_val)) {
-      sc["RRI"] <- as.numeric(rri_val)
-    } else if (!"RRI" %in% names(sc)) {
-      sc["RRI"] <- NA_real_
-    }
+    ## RRI is deliberately NOT added to the score vector: it is not a property
+    ## axis. It travels separately and is annotated at the centre.
     sc
   }
 
   # -- axis order -----------------------------------------------------------------
-  axis_order <- c("Capacity", "Connectivity", "Kinetics", "Memory", "RRI")
+  ## Four property axes only. RRI is the plant/soil/microbial domain composite:
+  ## a different quantity from these four descriptors, built from different
+  ## inputs. Placing it on a fifth spoke invites the reader to read the polygon
+  ## as averaging across it, which is not a defensible operation. It is shown
+  ## at the centre for reference, and the centre value is the mean of the
+  ## resolved property axes rather than the composite.
+  axis_order <- c("Capacity", "Connectivity", "Kinetics", "Memory")
   n_axes <- length(axis_order)
 
   # -- build polygon data ---------------------------------------------------------
@@ -332,36 +339,47 @@ plot_rri_properties <- function(
       ggplot2::scale_colour_manual(values = colour_map, guide = "none")
   }
 
-  # RRI annotation in centre (single-group mode)
-  if (is.null(group_list)) {
-    centre_val <- if (!is.null(rri_value) && is.finite(rri_value)) {
-      rri_value
-    } else if (is.list(props) && !is.null(props$rri_summary) &&
-      is.finite(props$rri_summary)) {
-      props$rri_summary
-    } else {
-      NA_real_
-    }
+    # Centre annotation (single-group mode): the mean of the RESOLVED property
+    # axes, not the domain composite. An axis whose supporting measurement was
+    # absent is excluded from the mean rather than counted as zero, and the
+    # count is shown so a reader can see how many of the four it rests on.
+    if (is.null(group_list)) {
+      sc_c     <- .extract_scores(props, rri_value)
+      pvals    <- suppressWarnings(as.numeric(sc_c[axis_order]))
+      pvals    <- pmax(0, pmin(1, pvals))
+      resolved <- is.finite(pvals)
+      centre_val <- if (any(resolved)) mean(pvals[resolved]) else NA_real_
 
-    if (!is.na(centre_val)) {
-      p <- p +
-        ggplot2::annotate(
-          "label",
-          x = 0, y = 0,
-          label = sprintf("RRI\n%.3f", centre_val),
-          size = base_size / 3.5,
-          fontface = "bold",
-          fill = "white",
-          colour = "#1A3A5C"
-        )
+      if (!is.na(centre_val)) {
+        p <- p +
+          ggplot2::annotate(
+            "label",
+            x = 0, y = 0,
+            label = sprintf("mean\n%.2f\nof %d", centre_val, sum(resolved)),
+            size = base_size / 3.9,
+            fontface = "bold",
+            lineheight = 0.95,
+            fill = "white",
+            colour = "#1A3A5C",
+            label.padding = ggplot2::unit(0.35, "lines")
+          )
+      }
     }
-  }
 
   p <- p +
     ggplot2::coord_equal(xlim = c(-1.35, 1.35), ylim = c(-1.35, 1.35)) +
     ggplot2::labs(
       title = title,
-      subtitle = "Operational descriptors; polygon area is not a mechanistic quantity"
+      subtitle = {
+        rv <- if (!is.null(rri_value) && is.finite(rri_value)) rri_value
+              else if (is.list(props) && !is.null(props$rri_summary) &&
+                       is.finite(props$rri_summary)) props$rri_summary
+              else NA_real_
+        b <- "Operational descriptors; polygon area is not a mechanistic quantity"
+        if (is.finite(rv))
+          sprintf("%s.\nCentre is the mean of the resolved axes, not the domain composite (RRI = %.3f).", b, rv)
+        else paste0(b, ".\nCentre is the mean of the resolved axes.")
+      }
     ) +
     ggplot2::theme_void(base_size = base_size) +
     ggplot2::theme(
