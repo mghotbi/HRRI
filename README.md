@@ -4,6 +4,8 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![R >= 4.3](https://img.shields.io/badge/R-%3E%3D%204.3-276DC3.svg)](https://cran.r-project.org/)
+[![Vignette: workflow](https://img.shields.io/badge/vignette-workflow-2f6b6b.svg)](https://rpubs.com/mgh/1458235)
+[![Vignette: gallery](https://img.shields.io/badge/vignette-gallery-8c4a2f.svg)](https://rpubs.com/mgh/1458237)
 <!-- badges: end -->
 
 > Diagnostics for soil–plant–microbial redox recovery across hydroclimatic
