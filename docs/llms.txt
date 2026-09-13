@@ -161,15 +161,13 @@ citation("HRRI")
 ## Companion manuscripts
 
 HRRI is the software component of three manuscripts, none yet published;
-two are under review. They are listed here because the package
-implements what they describe. Please cite the published version once
-available, and treat the entries below as provisional until then.
+two are under review. They are listed because the package implements
+what they describe. Please cite the published version once available.
 
-**Software and diagnostics — the paper this package accompanies**
-Ghotbi, M., Ghotbi, M., Komluski, J., & Holtgrewe-Stukenbrock, E. H.
-HRRI: direction-aware diagnostics for soil–plant–microbiome redox
-recovery across hydroclimatic disturbances. *In preparation.* →
-implemented by
+**Software and framework — the paper this package accompanies** Ghotbi,
+M., Ghotbi, M., Komluski, J., & Holtgrewe-Stukenbrock, E. H. HRRI: a
+framework for diagnosing redox recovery in soil–plant–microbiome
+systems. *In preparation.* → implemented by
 [`rri_pipeline_st()`](https://mghotbi.github.io/HRRI/reference/rri_pipeline_st.md),
 [`rri_property_scores()`](https://mghotbi.github.io/HRRI/reference/rri_property_scores.md),
 [`rri_recovery_metrics()`](https://mghotbi.github.io/HRRI/reference/rri_recovery_metrics.md),
@@ -179,8 +177,7 @@ implemented by
 B. C., Ghotbi, M., & Holtgrewe-Stukenbrock, E. A Theory of Hydroclimatic
 Redox Resilience. *Submitted to Communications Earth & Environment.* →
 the capacity–connectivity–kinetics–memory decomposition and the
-accessible-capacity expression
-`C_acc(tau) = sum_j Q_j a_j (1 - exp(-k_j tau))`, implemented by
+accessible-capacity expression, implemented by
 [`rri_accessible_capacity()`](https://mghotbi.github.io/HRRI/reference/rri_accessible_capacity.md).
 
 **Mechanistic review — the biology the simulator encodes** Ghotbi, M.,
@@ -190,21 +187,60 @@ soil–plant–microbiome continuum. *Submitted to Soil Biology &
 Biochemistry.* → the plant, microbial and mineralogical legacy terms in
 [`simulate_redox_holobiont()`](https://mghotbi.github.io/HRRI/reference/simulate_redox_holobiont.md).
 
-None of these is required to use the package, and none is cited in
-`DESCRIPTION`: CRAN asks that the `Description` field carry only
-references a reader can actually retrieve, so it lists the published
-methods sources instead.
+None is required to use the package, and none is cited in `DESCRIPTION`:
+CRAN asks that the `Description` field carry only references a reader
+can retrieve, so it lists the published methods sources instead.
 
 ## Published methods this package builds on
 
+Every DOI below was resolved against Crossref before being listed.
+
+**Measuring the four quantities**
+
 | Reference | What HRRI takes from it |
 |----|----|
-| Sander, Hofstetter & Gorski (2015) *Environ. Sci. Technol.* 49:5862 [doi:10.1021/acs.est.5b00006](https://doi.org/10.1021/acs.est.5b00006) | Mediated electrochemical measurement of EAC and EDC — the capacity the index scores |
-| Klüpfel, Piepenbrock, Kappler & Sander (2014) *Nat. Geosci.* 7:195 [doi:10.1038/ngeo2084](https://doi.org/10.1038/ngeo2084) | Electron-accepting capacity regenerates across repeated anoxic periods — the basis for treating memory as a state, not a trend |
-| Thompson, Chadwick, Rancourt & Chorover (2006) *Geochim. Cosmochim. Acta* 70:1710 [doi:10.1016/j.gca.2005.12.005](https://doi.org/10.1016/j.gca.2005.12.005) | Iron-oxide crystallinity increases under redox oscillation — the mineralogical ratchet |
-| Keiluweit, Wanzek, Kleber, Nico & Fendorf (2017) *Nat. Commun.* 8:1771 [doi:10.1038/s41467-017-01406-6](https://doi.org/10.1038/s41467-017-01406-6) | Anaerobic microsites persist in aerobic soil — why connectivity is separated from capacity |
-| Lin (1989) *Biometrics* 45:255 [doi:10.2307/2532051](https://doi.org/10.2307/2532051) | Concordance correlation coefficient, reported by [`rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/rri_accuracy.md) |
-| Kobayashi & Salam (2000) *Agron. J.* 92:345 [doi:10.2134/agronj2000.922345x](https://doi.org/10.2134/agronj2000.922345x) | MSE partition into bias, variance mismatch and lack of correlation |
+| Sander, Hofstetter & Gorski (2015) *Environ. Sci. Technol.* 49:5862 [doi:10.1021/acs.est.5b00006](https://doi.org/10.1021/acs.est.5b00006) | Mediated electrochemical measurement of EAC and EDC in electron equivalents — the capacity *Q* the index scores, rather than an elemental concentration |
+| Dorau et al. (2022) *Eur. J. Soil Sci.* 73:e13165 [doi:10.1111/ejss.13165](https://doi.org/10.1111/ejss.13165) | *Connected* air-filled porosity, not total air content, governs the shift toward oxidising conditions — the measurement behind α |
+| Peiffer et al. (2021) *Nat. Geosci.* 14:264–272 [doi:10.1038/s41561-021-00742-z](https://doi.org/10.1038/s41561-021-00742-z) | Framework coupling redox-active compound pools to hydrological forcing — why inventory and event timescale must be carried separately |
+
+**Why bulk state variables are not enough**
+
+| Reference | What HRRI takes from it |
+|----|----|
+| Rooney et al. (2024) *Commun. Earth Environ.* 5 [doi:10.1038/s43247-024-01927-1](https://doi.org/10.1038/s43247-024-01927-1) | Redox processes decouple from soil saturation — moisture recovery does not imply redox recovery |
+| Keiluweit et al. (2017) *Nat. Commun.* 8:1771 [doi:10.1038/s41467-017-01406-6](https://doi.org/10.1038/s41467-017-01406-6) | Anaerobic microsites persist in aerobic soil — why connectivity is separated from capacity rather than folded into it |
+| Angle et al. (2017) *Nat. Commun.* 8:1567 [doi:10.1038/s41467-017-01753-4](https://doi.org/10.1038/s41467-017-01753-4) | Methanogenesis in oxygenated soils — reducing metabolism where a bulk measurement would not predict it |
+
+**Memory as a state, not a trend**
+
+| Reference | What HRRI takes from it |
+|----|----|
+| Thompson et al. (2006) *Geochim. Cosmochim. Acta* 70:1710–1727 [doi:10.1016/j.gca.2005.12.005](https://doi.org/10.1016/j.gca.2005.12.005) | Iron-oxide crystallinity increases under redox oscillation — the mineralogical ratchet |
+| Aeppli et al. (2019) *Environ. Sci. Technol.* 53:3568–3578 [doi:10.1021/acs.est.8b07190](https://doi.org/10.1021/acs.est.8b07190) | Reducibility falls as ferrihydrite transforms abiotically to goethite and magnetite — why the ratchet lowers the ceiling |
+| Aeppli et al. (2019) *Environ. Sci. Technol.* 53:8736–8746 [doi:10.1021/acs.est.9b01299](https://doi.org/10.1021/acs.est.9b01299) | The same loss of reducibility under *microbial* reductive dissolution — the ratchet is not solely abiotic |
+| Klüpfel et al. (2014) *Nat. Geosci.* 7:195–200 [doi:10.1038/ngeo2084](https://doi.org/10.1038/ngeo2084) | Humic electron-accepting capacity is fully regenerable across repeated anoxic periods — a cycle, not a ratchet, so the two components cannot share one decay term |
+| Meisner et al. (2021) *ISME J.* 15:1207–1221 [doi:10.1038/s41396-020-00844-3](https://doi.org/10.1038/s41396-020-00844-3) | Microbial legacies differ by disturbance type — why soil, plant and microbial legacies are returned separately |
+
+**Limits on what may be inferred**
+
+| Reference | What HRRI takes from it |
+|----|----|
+| Louca et al. (2018) *Nat. Ecol. Evol.* 2:936–943 [doi:10.1038/s41559-018-0519-1](https://doi.org/10.1038/s41559-018-0519-1) | Functional redundancy decouples taxonomy from function — gene abundance indicates potential, not process rate |
+| Gloor et al. (2017) *Front. Microbiol.* 8:2224 [doi:10.3389/fmicb.2017.02224](https://doi.org/10.3389/fmicb.2017.02224) | Microbiome data are compositional — why a log-ratio workflow must be declared rather than assumed |
+
+**Statistics**
+
+| Reference | What HRRI takes from it |
+|----|----|
+| Lin (1989) *Biometrics* 45:255–268 [doi:10.2307/2532051](https://doi.org/10.2307/2532051) | Concordance correlation coefficient — agreement, not merely association, reported by [`rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/rri_accuracy.md) |
+| Kobayashi & Salam (2000) *Agron. J.* 92:345–352 [doi:10.2134/agronj2000.922345x](https://doi.org/10.2134/agronj2000.922345x) | Exact partition of mean squared error into bias, variance mismatch and lack of correlation |
+
+**Rate context for the O₂ demand calculation**
+
+| Reference | What HRRI takes from it |
+|----|----|
+| Stumm & Lee (1961) *Ind. Eng. Chem.* 53:143–146 [doi:10.1021/ie50614a030](https://doi.org/10.1021/ie50614a030) | Fe(II) oxygenation kinetics — stoichiometric demand is pH-independent, the rate is not |
+| Millero, Sotolongo & Izaguirre (1987) *Geochim. Cosmochim. Acta* 51:793–801 [doi:10.1016/0016-7037(87)90093-7](https://doi.org/10.1016/0016-7037(87)90093-7) | The ~100-fold rate increase per unit pH that separates a ceiling from a realised consumption |
 
 ## License
 

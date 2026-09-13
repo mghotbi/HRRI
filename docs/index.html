@@ -234,15 +234,17 @@
 <div class="section level2">
 <h2 id="companion-manuscripts">Companion manuscripts<a class="anchor" aria-label="anchor" href="#companion-manuscripts"></a>
 </h2>
-<p>HRRI is the software component of three manuscripts, none yet published; two are under review. They are listed here because the package implements what they describe. Please cite the published version once available, and treat the entries below as provisional until then.</p>
-<p><strong>Software and diagnostics — the paper this package accompanies</strong> Ghotbi, M., Ghotbi, M., Komluski, J., &amp; Holtgrewe-Stukenbrock, E. H. HRRI: direction-aware diagnostics for soil–plant–microbiome redox recovery across hydroclimatic disturbances. <em>In preparation.</em> → implemented by <code><a href="reference/rri_pipeline_st.html">rri_pipeline_st()</a></code>, <code><a href="reference/rri_property_scores.html">rri_property_scores()</a></code>, <code><a href="reference/rri_recovery_metrics.html">rri_recovery_metrics()</a></code>, <code><a href="reference/rri_accuracy.html">rri_accuracy()</a></code>.</p>
-<p><strong>Theory — where the four hidden states come from</strong> Ghotbi, M., Kolody, B. C., Ghotbi, M., &amp; Holtgrewe-Stukenbrock, E. A Theory of Hydroclimatic Redox Resilience. <em>Submitted to Communications Earth &amp; Environment.</em> → the capacity–connectivity–kinetics–memory decomposition and the accessible-capacity expression <code>C_acc(tau) = sum_j Q_j a_j (1 - exp(-k_j tau))</code>, implemented by <code><a href="reference/rri_accessible_capacity.html">rri_accessible_capacity()</a></code>.</p>
+<p>HRRI is the software component of three manuscripts, none yet published; two are under review. They are listed because the package implements what they describe. Please cite the published version once available.</p>
+<p><strong>Software and framework — the paper this package accompanies</strong> Ghotbi, M., Ghotbi, M., Komluski, J., &amp; Holtgrewe-Stukenbrock, E. H. HRRI: a framework for diagnosing redox recovery in soil–plant–microbiome systems. <em>In preparation.</em> → implemented by <code><a href="reference/rri_pipeline_st.html">rri_pipeline_st()</a></code>, <code><a href="reference/rri_property_scores.html">rri_property_scores()</a></code>, <code><a href="reference/rri_recovery_metrics.html">rri_recovery_metrics()</a></code>, <code><a href="reference/rri_accuracy.html">rri_accuracy()</a></code>.</p>
+<p><strong>Theory — where the four hidden states come from</strong> Ghotbi, M., Kolody, B. C., Ghotbi, M., &amp; Holtgrewe-Stukenbrock, E. A Theory of Hydroclimatic Redox Resilience. <em>Submitted to Communications Earth &amp; Environment.</em> → the capacity–connectivity–kinetics–memory decomposition and the accessible-capacity expression, implemented by <code><a href="reference/rri_accessible_capacity.html">rri_accessible_capacity()</a></code>.</p>
 <p><strong>Mechanistic review — the biology the simulator encodes</strong> Ghotbi, M., Ghotbi, M., Mühling, K. H., &amp; Stukenbrock, E. H. Rhizosphere redox recovery after hydrological disturbances: mechanisms across the soil–plant–microbiome continuum. <em>Submitted to Soil Biology &amp; Biochemistry.</em> → the plant, microbial and mineralogical legacy terms in <code><a href="reference/simulate_redox_holobiont.html">simulate_redox_holobiont()</a></code>.</p>
-<p>None of these is required to use the package, and none is cited in <code>DESCRIPTION</code>: CRAN asks that the <code>Description</code> field carry only references a reader can actually retrieve, so it lists the published methods sources instead.</p>
+<p>None is required to use the package, and none is cited in <code>DESCRIPTION</code>: CRAN asks that the <code>Description</code> field carry only references a reader can retrieve, so it lists the published methods sources instead.</p>
 </div>
 <div class="section level2">
 <h2 id="published-methods-this-package-builds-on">Published methods this package builds on<a class="anchor" aria-label="anchor" href="#published-methods-this-package-builds-on"></a>
 </h2>
+<p>Every DOI below was resolved against Crossref before being listed.</p>
+<p><strong>Measuring the four quantities</strong></p>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -256,33 +258,154 @@
 <tr>
 <td>Sander, Hofstetter &amp; Gorski (2015) <em>Environ. Sci. Technol.</em> 49:5862 <a href="https://doi.org/10.1021/acs.est.5b00006" class="external-link">doi:10.1021/acs.est.5b00006</a>
 </td>
-<td>Mediated electrochemical measurement of EAC and EDC — the capacity the index scores</td>
+<td>Mediated electrochemical measurement of EAC and EDC in electron equivalents — the capacity <em>Q</em> the index scores, rather than an elemental concentration</td>
 </tr>
 <tr>
-<td>Klüpfel, Piepenbrock, Kappler &amp; Sander (2014) <em>Nat. Geosci.</em> 7:195 <a href="https://doi.org/10.1038/ngeo2084" class="external-link">doi:10.1038/ngeo2084</a>
+<td>Dorau et al. (2022) <em>Eur. J. Soil Sci.</em> 73:e13165 <a href="https://doi.org/10.1111/ejss.13165" class="external-link">doi:10.1111/ejss.13165</a>
 </td>
-<td>Electron-accepting capacity regenerates across repeated anoxic periods — the basis for treating memory as a state, not a trend</td>
+<td>
+<em>Connected</em> air-filled porosity, not total air content, governs the shift toward oxidising conditions — the measurement behind α</td>
 </tr>
 <tr>
-<td>Thompson, Chadwick, Rancourt &amp; Chorover (2006) <em>Geochim. Cosmochim. Acta</em> 70:1710 <a href="https://doi.org/10.1016/j.gca.2005.12.005" class="external-link">doi:10.1016/j.gca.2005.12.005</a>
+<td>Peiffer et al. (2021) <em>Nat. Geosci.</em> 14:264–272 <a href="https://doi.org/10.1038/s41561-021-00742-z" class="external-link">doi:10.1038/s41561-021-00742-z</a>
+</td>
+<td>Framework coupling redox-active compound pools to hydrological forcing — why inventory and event timescale must be carried separately</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why bulk state variables are not enough</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Reference</th>
+<th>What HRRI takes from it</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Rooney et al. (2024) <em>Commun. Earth Environ.</em> 5 <a href="https://doi.org/10.1038/s43247-024-01927-1" class="external-link">doi:10.1038/s43247-024-01927-1</a>
+</td>
+<td>Redox processes decouple from soil saturation — moisture recovery does not imply redox recovery</td>
+</tr>
+<tr>
+<td>Keiluweit et al. (2017) <em>Nat. Commun.</em> 8:1771 <a href="https://doi.org/10.1038/s41467-017-01406-6" class="external-link">doi:10.1038/s41467-017-01406-6</a>
+</td>
+<td>Anaerobic microsites persist in aerobic soil — why connectivity is separated from capacity rather than folded into it</td>
+</tr>
+<tr>
+<td>Angle et al. (2017) <em>Nat. Commun.</em> 8:1567 <a href="https://doi.org/10.1038/s41467-017-01753-4" class="external-link">doi:10.1038/s41467-017-01753-4</a>
+</td>
+<td>Methanogenesis in oxygenated soils — reducing metabolism where a bulk measurement would not predict it</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Memory as a state, not a trend</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Reference</th>
+<th>What HRRI takes from it</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Thompson et al. (2006) <em>Geochim. Cosmochim. Acta</em> 70:1710–1727 <a href="https://doi.org/10.1016/j.gca.2005.12.005" class="external-link">doi:10.1016/j.gca.2005.12.005</a>
 </td>
 <td>Iron-oxide crystallinity increases under redox oscillation — the mineralogical ratchet</td>
 </tr>
 <tr>
-<td>Keiluweit, Wanzek, Kleber, Nico &amp; Fendorf (2017) <em>Nat. Commun.</em> 8:1771 <a href="https://doi.org/10.1038/s41467-017-01406-6" class="external-link">doi:10.1038/s41467-017-01406-6</a>
+<td>Aeppli et al. (2019) <em>Environ. Sci. Technol.</em> 53:3568–3578 <a href="https://doi.org/10.1021/acs.est.8b07190" class="external-link">doi:10.1021/acs.est.8b07190</a>
 </td>
-<td>Anaerobic microsites persist in aerobic soil — why connectivity is separated from capacity</td>
+<td>Reducibility falls as ferrihydrite transforms abiotically to goethite and magnetite — why the ratchet lowers the ceiling</td>
 </tr>
 <tr>
-<td>Lin (1989) <em>Biometrics</em> 45:255 <a href="https://doi.org/10.2307/2532051" class="external-link">doi:10.2307/2532051</a>
+<td>Aeppli et al. (2019) <em>Environ. Sci. Technol.</em> 53:8736–8746 <a href="https://doi.org/10.1021/acs.est.9b01299" class="external-link">doi:10.1021/acs.est.9b01299</a>
 </td>
-<td>Concordance correlation coefficient, reported by <code><a href="reference/rri_accuracy.html">rri_accuracy()</a></code>
+<td>The same loss of reducibility under <em>microbial</em> reductive dissolution — the ratchet is not solely abiotic</td>
+</tr>
+<tr>
+<td>Klüpfel et al. (2014) <em>Nat. Geosci.</em> 7:195–200 <a href="https://doi.org/10.1038/ngeo2084" class="external-link">doi:10.1038/ngeo2084</a>
+</td>
+<td>Humic electron-accepting capacity is fully regenerable across repeated anoxic periods — a cycle, not a ratchet, so the two components cannot share one decay term</td>
+</tr>
+<tr>
+<td>Meisner et al. (2021) <em>ISME J.</em> 15:1207–1221 <a href="https://doi.org/10.1038/s41396-020-00844-3" class="external-link">doi:10.1038/s41396-020-00844-3</a>
+</td>
+<td>Microbial legacies differ by disturbance type — why soil, plant and microbial legacies are returned separately</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Limits on what may be inferred</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Reference</th>
+<th>What HRRI takes from it</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Louca et al. (2018) <em>Nat. Ecol. Evol.</em> 2:936–943 <a href="https://doi.org/10.1038/s41559-018-0519-1" class="external-link">doi:10.1038/s41559-018-0519-1</a>
+</td>
+<td>Functional redundancy decouples taxonomy from function — gene abundance indicates potential, not process rate</td>
+</tr>
+<tr>
+<td>Gloor et al. (2017) <em>Front. Microbiol.</em> 8:2224 <a href="https://doi.org/10.3389/fmicb.2017.02224" class="external-link">doi:10.3389/fmicb.2017.02224</a>
+</td>
+<td>Microbiome data are compositional — why a log-ratio workflow must be declared rather than assumed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Statistics</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Reference</th>
+<th>What HRRI takes from it</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Lin (1989) <em>Biometrics</em> 45:255–268 <a href="https://doi.org/10.2307/2532051" class="external-link">doi:10.2307/2532051</a>
+</td>
+<td>Concordance correlation coefficient — agreement, not merely association, reported by <code><a href="reference/rri_accuracy.html">rri_accuracy()</a></code>
 </td>
 </tr>
 <tr>
-<td>Kobayashi &amp; Salam (2000) <em>Agron. J.</em> 92:345 <a href="https://doi.org/10.2134/agronj2000.922345x" class="external-link">doi:10.2134/agronj2000.922345x</a>
+<td>Kobayashi &amp; Salam (2000) <em>Agron. J.</em> 92:345–352 <a href="https://doi.org/10.2134/agronj2000.922345x" class="external-link">doi:10.2134/agronj2000.922345x</a>
 </td>
-<td>MSE partition into bias, variance mismatch and lack of correlation</td>
+<td>Exact partition of mean squared error into bias, variance mismatch and lack of correlation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rate context for the O₂ demand calculation</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Reference</th>
+<th>What HRRI takes from it</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Stumm &amp; Lee (1961) <em>Ind. Eng. Chem.</em> 53:143–146 <a href="https://doi.org/10.1021/ie50614a030" class="external-link">doi:10.1021/ie50614a030</a>
+</td>
+<td>Fe(II) oxygenation kinetics — stoichiometric demand is pH-independent, the rate is not</td>
+</tr>
+<tr>
+<td>Millero, Sotolongo &amp; Izaguirre (1987) <em>Geochim. Cosmochim. Acta</em> 51:793–801 <a href="https://doi.org/10.1016/0016-7037(87)90093-7" class="external-link">doi:10.1016/0016-7037(87)90093-7</a>
+</td>
+<td>The ~100-fold rate increase per unit pH that separates a ceiling from a realised consumption</td>
 </tr>
 </tbody>
 </table>
