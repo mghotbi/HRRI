@@ -143,6 +143,9 @@ support.
 
 ``` r
 
+vignette(package = "HRRI")     
+browseVignettes("HRRI")
+
 vignette("HRRI_workflow", package = "HRRI")
 vignette("HRRI_gallery", package = "HRRI")
 ```
