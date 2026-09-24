@@ -23,6 +23,9 @@ documented limits on what may be inferred.
 ## Installation
 
 ```r
+install.packages("HRRI")
+packageVersion("HRRI")
+
 # install.packages("remotes")
 remotes::install_github("mghotbi/HRRI", build_vignettes = TRUE)
 ```
