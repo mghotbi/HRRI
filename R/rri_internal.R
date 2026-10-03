@@ -116,7 +116,10 @@
   scores <- scores[idx, , drop = FALSE]
   for (nm in intersect(names(id), names(scores))) {
     if (!identical(as.character(id[[nm]]), as.character(scores[[nm]])))
-      stop("Conflicting score identifiers: ", nm)
+      stop("Conflicting score ", if (nm %in% keys) "identifiers" else "metadata",
+           ": ", nm, ". Matched observations have different values in id and scores. ",
+           "Recompute scores from the same input data; do not overwrite metadata to bypass this check.",
+           call. = FALSE)
   }
   out <- cbind(id, scores[, setdiff(names(scores), names(id)), drop = FALSE])
   rownames(out) <- NULL

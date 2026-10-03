@@ -18,6 +18,10 @@
 #'   observations by cluster. Set `FALSE` above roughly 20 clusters, where the
 #'   colouring stops being informative.
 #' @param base_size Base font size passed to [theme_ems()].
+#' @param style Publication layout matching the paper (default), or the
+#'   diagnostic layout with additional annotations.
+#' @param cluster_label Plural display name for the supplied independent units,
+#'   e.g. "Plots". This label does not determine the statistical grouping.
 #' @param ncol Number of columns in the assembled figure. Ignored when
 #'   **patchwork** is unavailable.
 #'
@@ -36,13 +40,21 @@
 #' target against their mean, with the mean difference and the limits of
 #' agreement. A scatter that fans out, or that slopes, shows that disagreement
 #' depends on level, which a correlation coefficient cannot reveal. Because
-#' observations are clustered, the limits come from cluster means; row-level
-#' limits would be far too tight.
+#' the lines summarise cluster means, they describe agreement of cluster means,
+#' not individual observations. They are descriptive normal-theory limits
+#' (mean difference plus or minus 1.96 SD), not confidence intervals; normality
+#' and level-independent dispersion must be assessed separately.
+#'
+#' The paper style keeps detailed qualifications in this documentation and the
+#' figure caption: cluster-mean limits do not apply to individual rows, and
+#' bootstrap precision is conditional on supplied fitted pairs. Kernel densities
+#' use a Gaussian kernel with Scott bandwidth; degenerate draws are shown as points.
 #'
 #' **Panel C, precision.** The bootstrap sampling distribution of \eqn{r} under
-#' row resampling and under trajectory resampling, with both intervals drawn
-#' beneath. The difference in width is the cost of treating repeated
-#' observations of one unit as independent observations of many. The
+#' row resampling and under supplied-cluster resampling, with both intervals drawn
+#' beneath. Widths are conditional on the supplied score-target pairs; the
+#' scoring pipeline is not refitted. The supplied clusters must correspond to
+#' independent sampling units. Row intervals are not necessarily narrower. The
 #' permutation null, when computed, sits behind them for reference.
 #'
 #' **Panel D, error.** Mean squared error split into squared bias, variance
@@ -61,7 +73,7 @@
 #' traj   <- rep(seq_len(k), each = m)
 #'
 #' acc <- rri_accuracy(score, target, cluster = traj,
-#'                     n_boot = 200, n_perm = 200, seed = 1)
+#'                     n_boot = 200, n_perm = 0, seed = 1)
 #' p <- plot_rri_accuracy(acc)
 #' \donttest{
 #' print(p)
@@ -79,10 +91,11 @@ plot_rri_accuracy <- function(acc,
                                          "precision", "error"),
                               score_label = "Score",
                               target_label = "Reference target",
-                              point_alpha = 0.45,
+                              point_alpha = 0.18,
                               show_clusters = NULL,
                               base_size = 11,
-                              ncol = 2) {
+                              ncol = 2, style = c("paper", "diagnostic"),
+                              cluster_label = "Clusters") {
 
   if (!inherits(acc, "rri_accuracy")) {
     stop("`acc` must be an object returned by rri_accuracy().", call. = FALSE)
@@ -92,6 +105,9 @@ plot_rri_accuracy <- function(acc,
          "rri_accuracy(). Re-run it to regenerate.", call. = FALSE)
   }
   panels <- match.arg(panels, several.ok = TRUE)
+  style <- match.arg(style)
+  if(style == "paper") return(.hrri_accuracy_paper(acc,panels,score_label,target_label,
+    point_alpha,show_clusters,base_size,ncol,cluster_label))
 
   ## ---- palette (mirrors vignettes/css/hrri.css) ---------------------------
   col_ink   <- "#1c2321"
@@ -107,7 +123,7 @@ plot_rri_accuracy <- function(acc,
   k <- nlevels(d$cluster)
   if (is.null(show_clusters)) show_clusters <- k <= 20L
 
-  ## Cluster means: the level at which these units are independent.
+  ## Cluster means; independence is a design assumption, not inferred here.
   cm <- data.frame(
     cluster = levels(d$cluster),
     score   = as.numeric(tapply(d$score,  d$cluster, mean)),
@@ -140,7 +156,9 @@ plot_rri_accuracy <- function(acc,
     ## points. acc$calibration reports target ~ score, the direction that
     ## should equal 1 for a calibrated score; both are labelled so the figure
     ## and the table cannot be read as contradicting each other.
-    fit <- stats::coef(stats::lm(score ~ target, data = d))
+    fit <- if (length(unique(d$target)) > 1L) stats::coef(stats::lm(score ~ target, data = d)) else c(NA_real_, NA_real_)
+    fitted_line <- if (all(is.finite(fit)))
+      ggplot2::geom_abline(slope = fit[2], intercept = fit[1], colour = col_fe, linewidth = 0.9) else NULL
 
     p <- ggplot2::ggplot(d, ggplot2::aes(x = .data$target, y = .data$score))
     p <- if (show_clusters) {
@@ -154,8 +172,7 @@ plot_rri_accuracy <- function(acc,
     p <- p +
       ggplot2::geom_abline(slope = 1, intercept = 0, linetype = "dashed",
                            colour = col_soft, linewidth = 0.5) +
-      ggplot2::geom_abline(slope = fit[2], intercept = fit[1],
-                           colour = col_fe, linewidth = 0.9) +
+      fitted_line +
       ggplot2::geom_point(data = cm,
                           ggplot2::aes(x = .data$target, y = .data$score),
                           shape = 21, size = 2.8, stroke = 0.7,
@@ -170,9 +187,10 @@ plot_rri_accuracy <- function(acc,
       ggplot2::labs(
         title = "A  Calibration",
         subtitle = sprintf(
-          "dashed 1:1, fitted slope %.2f; open points are cluster means",
+          "Score ~ target: slope %.2f; dashed = 1:1\nOpen points = cluster means",
           fit[2]),
         x = target_label, y = score_label) +
+      ggplot2::coord_equal(xlim = rng, ylim = rng) +
       base_theme
 
     out$calibration <- p
@@ -187,8 +205,8 @@ plot_rri_accuracy <- function(acc,
     cm$avg  <- (cm$score + cm$target) / 2
     cm$diff <- cm$score - cm$target
 
-    ## Limits of agreement from cluster means, not rows. Row-level limits treat
-    ## dependent observations as independent and come out far too tight.
+    ## Descriptive dispersion of cluster-mean differences, not row-level
+    ## limits or uncertainty intervals for either bias or agreement limits.
     mu  <- mean(cm$diff)
     sg  <- if (nrow(cm) > 1L) stats::sd(cm$diff) else NA_real_
     loa <- c(mu - 1.96 * sg, mu + 1.96 * sg)
@@ -218,9 +236,9 @@ plot_rri_accuracy <- function(acc,
                           fill = "white", colour = col_ink,
                           inherit.aes = FALSE) +
       ggplot2::labs(
-        title = "B  Agreement",
+        title = "B  Agreement of cluster means",
         subtitle = if (is.finite(sg)) {
-          sprintf("bias %+.3f; 95%% limits [%.3f, %.3f] from cluster means",
+          sprintf("Mean bias %+.3f; mean +/- 1.96 SD [%.3f, %.3f]\nDescriptive cluster-mean limits; dots also show individual rows",
                   mu, loa[1], loa[2])
         } else {
           "bias shown; too few clusters for limits of agreement"
@@ -255,10 +273,10 @@ plot_rri_accuracy <- function(acc,
       cl_r <- dr$cluster[, "r"]
       bd <- rbind(
         data.frame(r = dr$naive_r[is.finite(dr$naive_r)],
-                   src = "resampling rows (too narrow)",
+                   src = "resampling rows",
                    stringsAsFactors = FALSE),
         data.frame(r = cl_r[is.finite(cl_r)],
-                   src = "resampling trajectories",
+                   src = "resampling clusters",
                    stringsAsFactors = FALSE)
       )
       if (!is.null(dr$null_r) && any(is.finite(dr$null_r))) {
@@ -266,21 +284,26 @@ plot_rri_accuracy <- function(acc,
                                    src = "permutation null",
                                    stringsAsFactors = FALSE))
       }
-      lev <- c("permutation null", "resampling rows (too narrow)",
-               "resampling trajectories")
+      lev <- c("permutation null", "resampling rows",
+               "resampling clusters")
       bd$src <- factor(bd$src, levels = lev[lev %in% unique(bd$src)])
 
       pal <- c("permutation null"            = col_rule,
-               "resampling rows (too narrow)" = col_mn,
-               "resampling trajectories"     = col_redox)
+               "resampling rows" = col_mn,
+               "resampling clusters"     = col_redox)
 
       a    <- (1 - acc$conf) / 2
-      ci_n <- unname(stats::quantile(dr$naive_r, c(a, 1 - a), na.rm = TRUE))
-      ci_c <- unname(stats::quantile(cl_r,       c(a, 1 - a), na.rm = TRUE))
+      ci_n <- unname(stats::quantile(dr$naive_r[is.finite(dr$naive_r)], c(a, 1 - a)))
+      ci_c <- unname(stats::quantile(cl_r[is.finite(cl_r)], c(a, 1 - a)))
 
+      density_ok <- vapply(split(bd$r, bd$src, drop = TRUE), function(x)
+        length(x) >= 2L && length(unique(x)) >= 2L, logical(1))
+      density_data <- bd[bd$src %in% names(density_ok)[density_ok], , drop = FALSE]
+      point_data <- unique(bd[!bd$src %in% names(density_ok)[density_ok], , drop = FALSE])
       p <- ggplot2::ggplot(bd, ggplot2::aes(x = .data$r, fill = .data$src,
                                             colour = .data$src)) +
-        ggplot2::geom_density(
+        ggplot2::geom_point(data = point_data, ggplot2::aes(y = 0), size = 2) +
+        ggplot2::geom_density(data = density_data,
           ggplot2::aes(y = ggplot2::after_stat(.data$scaled)),
           alpha = 0.32, linewidth = 0.5) +
         ggplot2::scale_fill_manual(values = pal, drop = TRUE) +
@@ -297,15 +320,14 @@ plot_rri_accuracy <- function(acc,
                           label = sprintf("rows: width %.3f", diff(ci_n)),
                           size = base_size / 3.8, colour = col_mn) +
         ggplot2::annotate("text", x = mean(ci_c), y = -0.38,
-                          label = sprintf("trajectories: width %.3f",
+                          label = sprintf("clusters: width %.3f",
                                           diff(ci_c)),
                           size = base_size / 3.8, colour = col_redox) +
         ggplot2::labs(
           title = "C  Precision",
           subtitle = sprintf(
-            "ICC %.2f, design effect %.1f: effective n %.0f of %d rows",
-            acc$dependence$icc, acc$dependence$design_effect,
-            acc$dependence$effective_n, acc$dependence$n_observations),
+            "%d clusters; %d rows; %.0f%% percentile intervals\nConditional on supplied pairs; pipeline not refitted",
+            k, nrow(d), 100 * acc$conf),
           x = "Pearson r", y = "Bootstrap density (scaled)") +
         base_theme +
         ggplot2::theme(
@@ -328,14 +350,16 @@ plot_rri_accuracy <- function(acc,
     dc$label <- factor(unname(lab[dc$component]), levels = rev(unname(lab)))
     pal2 <- stats::setNames(c(col_redox, col_warn, col_fe), levels(dc$label))
 
-    ymax <- max(120, max(dc$percent, na.rm = TRUE) * 1.18)
+    ymax <- if (any(is.finite(dc$percent))) max(120, max(dc$percent, na.rm = TRUE) * 1.18) else 120
+    zero_mse <- isTRUE(all.equal(attr(dc, "mse"), 0, tolerance = 0))
+    if (zero_mse) dc$percent <- 0
 
     p <- ggplot2::ggplot(dc, ggplot2::aes(x = .data$label, y = .data$percent,
                                           fill = .data$label)) +
       ggplot2::geom_col(width = 0.62) +
       ggplot2::scale_fill_manual(values = pal2) +
       ggplot2::geom_text(
-        ggplot2::aes(label = sprintf("%.1f%%", .data$percent)),
+        ggplot2::aes(label = if (zero_mse) "0 (MSE = 0)" else sprintf("%.1f%%", .data$percent)),
         hjust = -0.18, size = base_size / 3.4, colour = col_ink) +
       ggplot2::coord_flip() +
       ggplot2::scale_y_continuous(limits = c(0, ymax), expand = c(0, 0)) +
@@ -343,7 +367,7 @@ plot_rri_accuracy <- function(acc,
         title = "D  Where the error is",
         subtitle = sprintf("MSE %.4g, partitioned exactly (residual %.1e)",
                            attr(dc, "mse"), attr(dc, "residual")),
-        x = NULL, y = "Percent of mean squared error") +
+        x = NULL, y = if (zero_mse) "Zero error; percentage shares undefined" else "Percent of mean squared error") +
       base_theme
 
     out$error <- p

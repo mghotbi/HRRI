@@ -9,8 +9,8 @@ plot_rri_recovery_landscape(
   group_cols = c("plot", "depth", "plant_id"),
   metrics = c("depth_min_frac", "overshoot_frac", "I_norm", "k", "tau_lag", "t_half"),
   order_by = "I_norm",
-  orient = c("concern", "raw"),
-  drop_empty = TRUE,
+  orient = c("raw", "concern"),
+  drop_empty = FALSE,
   base_size = 12
 )
 }
@@ -25,10 +25,10 @@ to the columns returned by \code{\link[=rri_recovery_metrics]{rri_recovery_metri
 
 \item{order_by}{Character scalar. Metric used to order trajectories.}
 
-\item{orient}{Controls what darker colour means. \code{"concern"} (default)
+\item{orient}{Controls what darker colour means. \code{"concern"}
 inverts metrics for which a \emph{smaller} value is the more concerning
-outcome, so a dark cell always reads as "more concerning" across the whole
-panel. \code{"raw"} scales every column upward, meaning dark is high-valued
+outcome. This is a descriptive polarity convention, not a shared scale of
+ecological concern; overshoot remains neutral. \code{"raw"} (default) scales every column upward, meaning dark is high-valued
 regardless of interpretation. See Details.}
 
 \item{drop_empty}{Logical. Drop metric columns that are \code{NA} for every
@@ -64,7 +64,12 @@ absolute sense. Two datasets cannot be compared cell by cell.
 
 If \code{rec} has no \code{trajectory_class} column, one is derived from
 \code{displaced_plateau_flag} and \code{incomplete_return_frac}. The derived labels
-describe the score trajectory only and identify no mechanism.
+describe the score trajectory only and identify no mechanism. A negative
+final displacement below -0.10 is labelled incomplete return; otherwise a
+finite displacement is labelled not flagged, not evidence of equivalence.
+All-missing columns are retained by default. Counts report finite values;
+grey cells remain missing even in constant-valued columns. I_norm is the
+capped absolute final displacement and does not encode its direction.
 }
 \examples{
 sim <- simulate_redox_holobiont(

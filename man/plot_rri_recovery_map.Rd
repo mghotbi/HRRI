@@ -14,7 +14,11 @@ plot_rri_recovery_map(
   perturb_end = NULL,
   palette = "plasma",
   base_size = 11,
-  max_groups = 40L
+  max_groups = 40L,
+  order_by = c("mean", "key"),
+  direction = -1,
+  tile_gap = 0.1,
+  event_colour = "#D62728"
 )
 }
 \arguments{
@@ -42,20 +46,38 @@ trajectory groups (e.g., \code{c("plot", "depth", "plant_id")}).}
 \item{base_size}{Numeric. Base font size.}
 
 \item{max_groups}{Integer. Maximum number of trajectory groups to display.
-Groups are sampled if the total exceeds this value.}
+The first groups in sorted label order are displayed when the total exceeds
+this value; the displayed fraction is reported. No random sampling occurs.}
+
+\item{order_by}{Order trajectories by mean RRI (default) or sorted keys.}
+
+\item{direction}{Viridis colour direction, either 1 or -1.}
+
+\item{tile_gap}{Fraction of each sampling cell left as a gap, in [0, 1).}
+
+\item{event_colour}{Colour of event boundary lines.}
 }
 \value{
 A \code{ggplot} object.
 }
 \description{
 Visualises per-group RRI trajectories through baseline, perturbation and
-recovery phases as a tile-and-line map. Each row is one trajectory group;
+recovery phases as an observation tile map. Each row is one trajectory group;
 time proceeds along the x-axis; tile fill encodes RRI magnitude; vertical
 bands mark the perturbation window; and trajectory class is annotated on
 the right margin.
 
 landscape shows cross-metric comparison per trajectory, while the recovery
 map shows temporal RRI dynamics per group.
+}
+\details{
+Tile width is 90 percent of the smallest distinct observed time
+spacing. This prevents tiles implying continuous observation across long gaps.
+Explicit missing scores are grey with a cross; unsampled times remain blank.
+Event boundaries are shown at the exact supplied times. Scores must be in
+\verb{[0, 1]} or missing. Identifier keys are aligned when supplied in row_scores;
+scores-only output must retain input row order. Duplicate group-time keys
+and ambiguous recovery annotations are rejected.
 }
 \examples{
 sim <- simulate_redox_holobiont(

@@ -12,10 +12,10 @@
 #'   to the columns returned by [rri_recovery_metrics()]. Legacy names
 #'   (`A_norm`, `O_norm`, `tau_r`) are still labelled if supplied.
 #' @param order_by Character scalar. Metric used to order trajectories.
-#' @param orient Controls what darker colour means. `"concern"` (default)
+#' @param orient Controls what darker colour means. `"concern"`
 #'   inverts metrics for which a *smaller* value is the more concerning
-#'   outcome, so a dark cell always reads as "more concerning" across the whole
-#'   panel. `"raw"` scales every column upward, meaning dark is high-valued
+#'   outcome. This is a descriptive polarity convention, not a shared scale of
+#'   ecological concern; overshoot remains neutral. `"raw"` (default) scales every column upward, meaning dark is high-valued
 #'   regardless of interpretation. See Details.
 #' @param drop_empty Logical. Drop metric columns that are `NA` for every
 #'   trajectory rather than drawing a blank column. `k` and `t_half` are `NA`
@@ -42,7 +42,12 @@
 #'
 #' If `rec` has no `trajectory_class` column, one is derived from
 #' `displaced_plateau_flag` and `incomplete_return_frac`. The derived labels
-#' describe the score trajectory only and identify no mechanism.
+#' describe the score trajectory only and identify no mechanism. A negative
+#' final displacement below -0.10 is labelled incomplete return; otherwise a
+#' finite displacement is labelled not flagged, not evidence of equivalence.
+#' All-missing columns are retained by default. Counts report finite values;
+#' grey cells remain missing even in constant-valued columns. I_norm is the
+#' capped absolute final displacement and does not encode its direction.
 #'
 #' @importFrom ggplot2 ggplot aes geom_tile geom_point geom_text
 #' @importFrom ggplot2 scale_fill_gradientn scale_color_manual labs theme_minimal
@@ -94,8 +99,8 @@ plot_rri_recovery_landscape <- function(
     metrics = c("depth_min_frac", "overshoot_frac", "I_norm", "k",
                 "tau_lag", "t_half"),
     order_by = "I_norm",
-    orient = c("concern", "raw"),
-    drop_empty = TRUE,
+    orient = c("raw", "concern"),
+    drop_empty = FALSE,
     base_size = 12
 ) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
@@ -112,6 +117,9 @@ plot_rri_recovery_landscape <- function(
   rec <- as.data.frame(rec)
   if (!nrow(rec)) stop("`rec` has no rows.", call. = FALSE)
 
+  if (!length(metrics) || anyDuplicated(metrics))
+    stop("metrics must be nonempty and unique.", call. = FALSE)
+  dropped <- character()
   missing_metrics <- setdiff(metrics, names(rec))
   if (length(missing_metrics) > 0) {
     stop("Missing metric columns: ", paste(missing_metrics, collapse = ", "),
@@ -132,7 +140,8 @@ plot_rri_recovery_landscape <- function(
     } else rep(NA_real_, nrow(rec))
     rec$trajectory_class <- ifelse(
       flag, "displaced plateau",
-      ifelse(is.finite(inc) & inc < -0.10, "incomplete return", "returned")
+      ifelse(is.finite(inc) & inc < -0.10, "incomplete return",
+             ifelse(is.finite(inc), "not flagged", "unclassified"))
     )
     derived_class <- TRUE
     message("`trajectory_class` not supplied; derived from ",
@@ -167,7 +176,8 @@ plot_rri_recovery_landscape <- function(
 
   plot_df <- rec[, c(".trajectory", "trajectory_class", metrics), drop = FALSE]
   for (metric in metrics) {
-    plot_df[[metric]] <- suppressWarnings(as.numeric(plot_df[[metric]]))
+    if (!is.numeric(plot_df[[metric]])) stop("Metric columns must be numeric.", call. = FALSE)
+    plot_df[[metric]][!is.finite(plot_df[[metric]])] <- NA_real_
   }
 
   ## A metric that is NA for every trajectory renders as a blank grey stripe,
@@ -206,10 +216,12 @@ plot_rri_recovery_landscape <- function(
     long_df$value,
     long_df$metric,
     FUN = function(x) {
-      if (all(is.na(x))) return(rep(NA_real_, length(x)))
-      r <- range(x, na.rm = TRUE)
-      if (!all(is.finite(r)) || diff(r) == 0) return(rep(0.5, length(x)))
-      (x - r[1]) / diff(r)
+      out <- rep(NA_real_, length(x))
+      ok <- is.finite(x)
+      if (!any(ok)) return(out)
+      r <- range(x[ok])
+      out[ok] <- if (diff(r) == 0) 0.5 else (x[ok] - r[1]) / diff(r)
+      out
     }
   )
   if (orient == "concern") {
@@ -222,7 +234,7 @@ plot_rri_recovery_landscape <- function(
   metric_labels <- c(
     depth_min_frac = "Resistance\nloss",
     overshoot_frac = "Overshoot",
-    I_norm         = "Incomplete\nreturn",
+    I_norm         = "Absolute final\ndisplacement",
     k              = "Recovery\nrate",
     k_recovery     = "Recovery\nrate",
     tau_lag        = "Response\nlag",
@@ -231,32 +243,21 @@ plot_rri_recovery_landscape <- function(
     ## legacy aliases so older metric tables still render
     A_norm = "Resistance\nloss", O_norm = "Overshoot", tau_r = "Recovery\ntime"
   )
-  long_df$metric_label <- metric_labels[long_df$metric]
-  long_df$metric_label[is.na(long_df$metric_label)] <-
-    long_df$metric[is.na(long_df$metric_label)]
-  ## Preserve the order the user asked for rather than alphabetising.
-  long_df$metric_label <- factor(
-    long_df$metric_label,
-    levels = unique(metric_labels[metrics][!is.na(metric_labels[metrics])])
-  )
-  if (anyNA(long_df$metric_label)) {
-    long_df$metric_label <- factor(
-      ifelse(is.na(long_df$metric_label),
-             long_df$metric, as.character(long_df$metric_label))
-    )
-  }
-  ## Mark inverted columns so the reader is not misled.
-  if (orient == "concern") {
-    inv <- levels(long_df$metric_label) %in%
-      metric_labels[lower_is_concerning]
-    levels(long_df$metric_label)[inv] <-
-      paste0(levels(long_df$metric_label)[inv], "\n(inverted)")
-  }
+  labels <- unname(metric_labels[metrics])
+  labels[is.na(labels)] <- metrics[is.na(labels)]
+  counts <- vapply(metrics, function(m) sum(is.finite(plot_df[[m]])), integer(1))
+  if (orient == "concern") labels[metrics %in% lower_is_concerning] <-
+    paste0(labels[metrics %in% lower_is_concerning], "\n(inverted)")
+  labels <- paste0(labels, "\nn = ", counts, "/", nrow(rec))
+  duplicate_labels <- duplicated(labels) | duplicated(labels, fromLast = TRUE)
+  labels[duplicate_labels] <- paste0(labels[duplicate_labels], "\n", metrics[duplicate_labels])
+  long_df$metric_label <- factor(long_df$metric, levels = metrics, labels = labels)
 
   ## ---- colours ------------------------------------------------------------
   ## Palette keys must match the labels actually present, including the derived
   ## ones. Anything unmatched falls back to grey and is legended as such.
   class_cols <- c(
+    "not flagged"         = "#555555",
     "returned"            = "#2E7D32",
     "incomplete return"   = "#B2182B",
     "displaced plateau"   = "#7B3294",
@@ -279,7 +280,7 @@ plot_rri_recovery_landscape <- function(
   subtitle <- paste0(
     "Ordered by ", order_by, "; colour = within-column scaled magnitude",
     if (orient == "concern")
-      "; darker is more concerning" else "; darker is higher-valued"
+      "; rate inverted, overshoot neutral" else "; darker is higher-valued"
   )
 
   ggplot2::ggplot(
@@ -290,7 +291,7 @@ plot_rri_recovery_landscape <- function(
     ggplot2::geom_tile(colour = "white", linewidth = 0.45,
                        width = 0.96, height = 0.9) +
     ggplot2::geom_text(
-      ggplot2::aes(label = ifelse(is.na(.data$value), "\u2014",
+      ggplot2::aes(label = ifelse(is.na(.data$value), "-",
                                   signif(.data$value, 2)),
                    colour = .data$.label_col),
       size = base_size / 4, show.legend = FALSE
@@ -318,6 +319,9 @@ plot_rri_recovery_landscape <- function(
     ggplot2::labs(
       title    = "Redox resilience recovery landscape",
       subtitle = subtitle,
+      caption = paste0("Numbers are raw values; grey / dash = unavailable; n = finite trajectories.\n",
+        if (derived_class) "Not flagged is not evidence of return or equivalence. " else "",
+        if (length(dropped)) paste0("Omitted: ", paste(dropped, collapse = ", "), ".") else ""),
       x = NULL, y = NULL
     ) +
     ggplot2::theme_minimal(base_size = base_size) +
@@ -331,13 +335,14 @@ plot_rri_recovery_landscape <- function(
                                           margin = ggplot2::margin(t = 6)),
       axis.text.y = ggplot2::element_text(colour = "#222222",
                                           size = base_size * 0.68),
-      plot.title  = ggplot2::element_text(face = "bold", size = base_size + 6,
+      plot.title  = ggplot2::element_text(face = "bold", size = base_size + 2,
                                           colour = "#111111"),
       plot.subtitle = ggplot2::element_text(size = base_size * 0.85,
                                             colour = "#444444",
                                             margin = ggplot2::margin(b = 12)),
       legend.title    = ggplot2::element_text(face = "bold"),
       legend.position = "right",
+      plot.caption = ggplot2::element_text(size = base_size * 0.65, hjust = 0),
       plot.margin     = ggplot2::margin(15, 20, 15, 34)
     )
 }

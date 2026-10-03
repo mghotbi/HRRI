@@ -38,3 +38,18 @@
   if (sum(ok) < 1) return(NA_real_)
   sqrt(mean((obs[ok] - pred[ok])^2))
 }
+
+.hrri_assemble <- function(plots, ncol=2, widths=NULL) {
+  if(length(plots)==1L) return(plots[[1]])
+  if(requireNamespace("patchwork",quietly=TRUE))
+    return(patchwork::wrap_plots(plots,ncol=ncol,widths=widths))
+  message("Install 'patchwork' to assemble panels; returning named ggplots.")
+  plots
+}
+
+.hrri_vector_colourbar <- function(...) {
+  args <- list(...)
+  if(utils::packageVersion("ggplot2") >= "3.5.0") args$display <- "rectangles"
+  else args$raster <- FALSE
+  do.call(ggplot2::guide_colourbar,args)
+}

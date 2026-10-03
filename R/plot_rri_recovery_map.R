@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Visualises per-group RRI trajectories through baseline, perturbation and
-#' recovery phases as a tile-and-line map. Each row is one trajectory group;
+#' recovery phases as an observation tile map. Each row is one trajectory group;
 #' time proceeds along the x-axis; tile fill encodes RRI magnitude; vertical
 #' bands mark the perturbation window; and trajectory class is annotated on
 #' the right margin.
@@ -24,8 +24,20 @@
 #' @param perturb_end Numeric. End of perturbation phase.
 #' @param palette Character. Viridis palette option for RRI fill.
 #' @param base_size Numeric. Base font size.
+#' @param order_by Order trajectories by mean RRI (default) or sorted keys.
+#' @param tile_gap Fraction of each sampling cell left as a gap, in [0, 1).
+#' @param event_colour Colour of event boundary lines.
+#' @param direction Viridis colour direction, either 1 or -1.
 #' @param max_groups Integer. Maximum number of trajectory groups to display.
-#'   Groups are sampled if the total exceeds this value.
+#'   The first groups in sorted label order are displayed when the total exceeds
+#'   this value; the displayed fraction is reported. No random sampling occurs.
+#' @details Tile width is 90 percent of the smallest distinct observed time
+#' spacing. This prevents tiles implying continuous observation across long gaps.
+#' Explicit missing scores are grey with a cross; unsampled times remain blank.
+#' Event boundaries are shown at the exact supplied times. Scores must be in
+#' `[0, 1]` or missing. Identifier keys are aligned when supplied in row_scores;
+#' scores-only output must retain input row order. Duplicate group-time keys
+#' and ambiguous recovery annotations are rejected.
 #'
 #' @return A \code{ggplot} object.
 #'
@@ -76,12 +88,16 @@ plot_rri_recovery_map <- function(
   perturb_end = NULL,
   palette = "plasma",
   base_size = 11,
-  max_groups = 40L
+  max_groups = 40L,
+  order_by = c("mean", "key"), direction = -1, tile_gap = .1, event_colour = "#D62728"
 ) {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("`plot_rri_recovery_map()` requires {ggplot2}.", call. = FALSE)
   }
 
+  order_by <- match.arg(order_by)
+  if (length(direction) != 1L || !direction %in% c(-1,1)) stop("direction must be 1 or -1.")
+  if(length(tile_gap)!=1L || !is.finite(tile_gap) || tile_gap<0 || tile_gap>=1) stop("tile_gap must be in [0, 1).")
   # -- assemble long data frame --------------------------------------------------
   rs <- as.data.frame(res$row_scores)
   id_df <- as.data.frame(id)
@@ -97,22 +113,41 @@ plot_rri_recovery_map <- function(
   if (any(!group_cols %in% names(id_df))) stop("group_cols absent from id.")
   valid_groups <- group_cols
 
-  df <- cbind(id_df, RRI = as.numeric(rs$RRI))
+  if (!nrow(id_df)) stop("id has no rows.", call. = FALSE)
+  if (length(max_groups) != 1L || !is.finite(max_groups) || max_groups < 1 || max_groups != floor(max_groups))
+    stop("max_groups must be a positive integer.", call. = FALSE)
+  if (!is.numeric(id_df[[time_col]]) || any(!is.finite(id_df[[time_col]])))
+    stop("Time must be finite numeric.", call. = FALSE)
+  if (anyNA(id_df[group_cols])) stop("Group identifiers must not be missing.", call. = FALSE)
+  if (xor(is.null(perturb_start), is.null(perturb_end)))
+    stop("Supply both disturbance interval endpoints.", call. = FALSE)
+  if (!is.null(perturb_start)) {
+    interval <- c(perturb_start, perturb_end)
+    if (!is.numeric(interval) || length(interval) != 2L || any(!is.finite(interval)) || interval[1] >= interval[2])
+      stop("Disturbance endpoints must be finite and increasing.", call. = FALSE)
+  }
+  df <- .rri_align_scores(rs, id_df, c(group_cols, time_col))
+  if (anyDuplicated(.rri_key(id_df, c(group_cols, time_col))))
+    stop("Duplicate group-time observation keys.", call. = FALSE)
+  if (!is.numeric(df$RRI) || any(is.infinite(df$RRI)) || any(df$RRI < 0 | df$RRI > 1, na.rm = TRUE))
+    stop("RRI must be numeric in [0, 1] or missing.", call. = FALSE)
 
   if (length(valid_groups) == 0) {
     df$.group <- "all"
   } else {
-    df$.group <- apply(
-      df[, valid_groups, drop = FALSE], 1,
-      paste,
-      collapse = " | "
-    )
+    df$.group <- do.call(paste, c(lapply(df[valid_groups], as.character), sep = " | "))
+    if (length(unique(df$.group)) != length(unique(.rri_key(df, valid_groups))))
+      stop("Group labels are ambiguous; avoid ' | ' within identifiers.", call. = FALSE)
   }
 
   df$.time <- as.numeric(df[[time_col]])
 
   # -- limit displayed groups ----------------------------------------------------
+  times <- sort(unique(df$.time))
+  spacing <- if (length(times) > 1L) min(diff(times)) else 1
+  tile_width <- (1-tile_gap) * spacing
   unique_groups <- unique(df$.group)
+  n_total_groups <- length(unique_groups)
   if (length(unique_groups) > max_groups) {
     n_total_groups <- length(unique_groups)
     unique_groups <- utils::head(sort(unique_groups), max_groups)
@@ -126,6 +161,7 @@ plot_rri_recovery_map <- function(
   # -- order groups by mean RRI (descending) -------------------------------------
   group_means <- tapply(df$RRI, df$.group, mean, na.rm = TRUE)
   ordered_groups <- names(sort(group_means, decreasing = TRUE, na.last = TRUE))
+  if (order_by == "key") ordered_groups <- sort(unique(as.character(df$.group)))
   df$.group <- factor(df$.group, levels = rev(ordered_groups))
 
   # -- trajectory class annotation (right margin) --------------------------------
@@ -141,28 +177,19 @@ plot_rri_recovery_map <- function(
   annot_df <- NULL
   if (!is.null(rec)) {
     rec_df <- as.data.frame(rec)
-    if ("trajectory_class" %in% names(rec_df) && length(valid_groups) > 0) {
-      rec_df$.group <- apply(
-        rec_df[, intersect(valid_groups, names(rec_df)), drop = FALSE], 1,
-        paste,
-        collapse = " | "
-      )
-      # one row per group --- most severe class if multiple entries
-      severity <- c(
-        incomplete_recovery = 5, hysteresis = 4, overshoot = 3,
-        slow_recovery = 2, fast_recovery = 1, unclassified = 0
-      )
-      rec_df$.sev <- severity[as.character(rec_df$trajectory_class)]
-      rec_df$.sev[is.na(rec_df$.sev)] <- 0L
-
-      annot_df <- do.call(rbind, lapply(split(rec_df, rec_df$.group), function(g) {
-        g[which.max(g$.sev), c(".group", "trajectory_class"), drop = FALSE]
-      }))
+    if ("trajectory_class" %in% names(rec_df)) {
+      if (!all(valid_groups %in% names(rec_df)))
+        stop("Recovery annotations require all group_cols.", call. = FALSE)
+      rec_df$.group <- if (length(valid_groups))
+        do.call(paste, c(lapply(rec_df[valid_groups], as.character), sep = " | ")) else "all"
+      if (anyNA(rec_df[valid_groups]) || anyDuplicated(rec_df$.group))
+        stop("Recovery annotations require one unambiguous row per group.", call. = FALSE)
+      annot_df <- rec_df[rec_df$.group %in% levels(df$.group), c(".group", "trajectory_class"), drop = FALSE]
       annot_df$.group <- factor(annot_df$.group, levels = levels(df$.group))
-
-      # x position for annotation = max time + small offset
-      x_annot <- max(df$.time, na.rm = TRUE) * 1.02
-      annot_df$.x <- x_annot
+      annot_df$.x <- max(df$.time) + max(spacing, diff(range(df$.time)) * 0.03)
+      extra <- setdiff(unique(as.character(annot_df$trajectory_class)), names(class_cols))
+      extra <- extra[!is.na(extra)]
+      class_cols <- c(class_cols, stats::setNames(rep("grey50", length(extra)), extra))
     }
   }
 
@@ -171,10 +198,10 @@ plot_rri_recovery_map <- function(
     df,
     ggplot2::aes(x = .data$.time, y = .data$.group, fill = .data$RRI)
   ) +
-    ggplot2::geom_tile(colour = NA, width = 0.9, height = 0.85) +
+    ggplot2::geom_tile(colour = NA, width = tile_width, height = 1-tile_gap) +
     ggplot2::scale_fill_viridis_c(
       option = palette,
-      direction = -1,
+      direction = direction,
       name = "RRI",
       limits = c(0, 1),
       na.value = "grey85"
@@ -182,28 +209,19 @@ plot_rri_recovery_map <- function(
 
   # -- perturbation window bands -------------------------------------------------
   if (!is.null(perturb_start) && !is.null(perturb_end)) {
-    band_df <- data.frame(
-      xmin = as.numeric(perturb_start) - 0.5,
-      xmax = as.numeric(perturb_end) + 0.5
-    )
     p <- p +
-      ggplot2::geom_rect(
-        data = band_df,
-        ggplot2::aes(
-          xmin = .data$xmin, xmax = .data$xmax,
-          ymin = -Inf, ymax = Inf
-        ),
-        inherit.aes = FALSE,
-        fill = "#D62728", alpha = 0.08
-      ) +
       ggplot2::geom_vline(
         xintercept = c(
-          as.numeric(perturb_start) - 0.5,
-          as.numeric(perturb_end) + 0.5
+          as.numeric(perturb_start),
+          as.numeric(perturb_end)
         ),
-        colour = "#D62728", linewidth = 0.5, linetype = "dashed"
+        colour = event_colour, linewidth = 0.5, linetype = "dashed"
       )
   }
+
+  p <- p + ggplot2::geom_point(data = df[is.na(df$RRI), , drop = FALSE],
+    ggplot2::aes(x = .data$.time, y = .data$.group), inherit.aes = FALSE,
+    shape = 4, size = 1.8, colour = "grey35")
 
   # -- trajectory class annotation dots -----------------------------------------
   if (!is.null(annot_df)) {
@@ -229,12 +247,14 @@ plot_rri_recovery_map <- function(
       title = "RRI Recovery Map",
       subtitle = if (!is.null(perturb_start)) {
         sprintf(
-          "Red band = perturbation window [%s, %s]",
+          "Dashed lines = supplied event boundaries [%s, %s]",
           perturb_start, perturb_end
         )
       } else {
         "Tile fill = per-sample RRI; groups ordered by mean RRI"
       },
+      caption = sprintf("Showing %d/%d groups; grey cross = missing score; blank = unsampled time.\nTile width follows observed spacing; order = %s.",
+                        length(unique_groups), n_total_groups, order_by),
       x = time_col,
       y = NULL
     ) +
@@ -254,6 +274,7 @@ plot_rri_recovery_map <- function(
         size = base_size * 0.85,
         colour = "#555555"
       ),
+      plot.caption = ggplot2::element_text(size = base_size * 0.65, hjust = 0),
       legend.title = ggplot2::element_text(face = "bold"),
       plot.margin = ggplot2::margin(12, 24, 12, 12)
     )

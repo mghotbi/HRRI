@@ -1,8 +1,8 @@
 Package: HRRI
 Type: Package
 Title: Diagnostics for Soil-Plant-Microbial Redox Recovery
-Version: 1.0.6
-Date: 2026-09-12
+Version: 1.0.8
+Date: 2026-10-03
 Authors@R: c(
     person("Mitra", "Ghotbi",
            email = "mitra.ghotbi@gmail.com",
@@ -47,7 +47,7 @@ Depends: R (>= 4.3.0)
 Imports: ggplot2 (>= 3.4.0), graphics, grid, igraph (>= 1.5.0), rlang
         (>= 1.1.0), stats, utils, tidyr, tidyselect
 Suggests: ggtern (>= 3.4.0), knitr, patchwork (>= 1.2.0), psych,
-        rmarkdown, testthat (>= 3.0.0), viridis
+        rmarkdown, svglite, testthat (>= 3.0.0), viridis
 VignetteBuilder: knitr
 URL: https://github.com/mghotbi/HRRI, https://mghotbi.github.io/HRRI/
 BugReports: https://github.com/mghotbi/HRRI/issues
@@ -55,8 +55,7 @@ Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
 NeedsCompilation: no
-Packaged: 2026-09-12 00:00:00 UTC; mitraghotbi
-Author: Mitra Ghotbi [aut, cre] (ORCID:
-    <https://orcid.org/0000-0001-9185-9993>),
-  Marjan Ghotbi [ctb] (ORCID: <https://orcid.org/0000-0003-4655-6445>)
+Packaged: 2026-10-03 21:00:44 UTC; mitraghotbi
+Author: Mitra Ghotbi [aut, cre] (<https://orcid.org/0000-0001-9185-9993>),
+  Marjan Ghotbi [ctb] (<https://orcid.org/0000-0003-4655-6445>)
 Maintainer: Mitra Ghotbi <mitra.ghotbi@gmail.com>

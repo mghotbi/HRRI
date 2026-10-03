@@ -12,7 +12,11 @@ plot_rri_timeseries(
   plant_id = "Plant1",
   perturb_start = NULL,
   perturb_end = NULL,
-  base_size = 9
+  base_size = 9,
+  forcing = NULL,
+  forcing_label = "Pulse (relative)",
+  forcing_threshold = NULL,
+  time_label = "Time (input units; simulator uses days)"
 )
 }
 \arguments{
@@ -25,9 +29,20 @@ plot_rri_timeseries(
 \item{perturb_start, perturb_end}{Optional disturbance interval in input time units.}
 
 \item{base_size}{Base font size.}
+
+\item{forcing}{Optional numeric forcing vector aligned to sim$id; missing
+values remain gaps. NULL uses simulator event_intensity if available.}
+
+\item{forcing_label}{Axis label including forcing units.}
+
+\item{forcing_threshold}{Optional finite scalar marking a declared threshold;
+it is not inferred from the plotted response.}
+
+\item{time_label}{Label including input time units.}
 }
 \value{
-A ggplot with three vertically aligned panels.
+A ggplot with separate vertically aligned panels, including forcing
+when supplied or available. Export at approximately 7.4 by 6 inches.
 }
 \description{
 Shows Eh, EAC and the observation-derived score in separate

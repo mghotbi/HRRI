@@ -1,18 +1,5 @@
 ## ---------------------------------------------------------------------------
 ## check_model_accuracy.R
-##
-## Runs the accuracy assessment against your CURRENTLY INSTALLED HRRI and
-## writes a publication figure. It sources the two new files directly, so you
-## can see the numbers before rebuilding the package.
-##
-##   setwd("<this folder>")
-##   source("check_model_accuracy.R")
-##
-## After installing HRRI 0.99.4 the two source() lines below are unnecessary:
-## rri_accuracy() and plot_rri_accuracy() are exported.
-##
-## Replaces the claim "r = 0.470 on 480 observations" with one a reviewer
-## cannot take apart: those 480 rows are 12 trajectories x 40 time points.
 ## ---------------------------------------------------------------------------
 
 library(HRRI)

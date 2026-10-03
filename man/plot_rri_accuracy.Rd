@@ -9,10 +9,12 @@ plot_rri_accuracy(
   panels = c("calibration", "agreement", "precision", "error"),
   score_label = "Score",
   target_label = "Reference target",
-  point_alpha = 0.45,
+  point_alpha = 0.18,
   show_clusters = NULL,
   base_size = 11,
-  ncol = 2
+  ncol = 2,
+  style = c("paper", "diagnostic"),
+  cluster_label = "Clusters"
 )
 }
 \arguments{
@@ -36,6 +38,12 @@ colouring stops being informative.}
 
 \item{ncol}{Number of columns in the assembled figure. Ignored when
 \strong{patchwork} is unavailable.}
+
+\item{style}{Publication layout matching the paper (default), or the
+diagnostic layout with additional annotations.}
+
+\item{cluster_label}{Plural display name for the supplied independent units,
+e.g. "Plots". This label does not determine the statistical grouping.}
 }
 \value{
 If \strong{patchwork} is installed, a single assembled \code{patchwork}
@@ -59,13 +67,21 @@ means, the level at which these units are independent.
 target against their mean, with the mean difference and the limits of
 agreement. A scatter that fans out, or that slopes, shows that disagreement
 depends on level, which a correlation coefficient cannot reveal. Because
-observations are clustered, the limits come from cluster means; row-level
-limits would be far too tight.
+the lines summarise cluster means, they describe agreement of cluster means,
+not individual observations. They are descriptive normal-theory limits
+(mean difference plus or minus 1.96 SD), not confidence intervals; normality
+and level-independent dispersion must be assessed separately.
+
+The paper style keeps detailed qualifications in this documentation and the
+figure caption: cluster-mean limits do not apply to individual rows, and
+bootstrap precision is conditional on supplied fitted pairs. Kernel densities
+use a Gaussian kernel with Scott bandwidth; degenerate draws are shown as points.
 
 \strong{Panel C, precision.} The bootstrap sampling distribution of \eqn{r} under
-row resampling and under trajectory resampling, with both intervals drawn
-beneath. The difference in width is the cost of treating repeated
-observations of one unit as independent observations of many. The
+row resampling and under supplied-cluster resampling, with both intervals drawn
+beneath. Widths are conditional on the supplied score-target pairs; the
+scoring pipeline is not refitted. The supplied clusters must correspond to
+independent sampling units. Row intervals are not necessarily narrower. The
 permutation null, when computed, sits behind them for reference.
 
 \strong{Panel D, error.} Mean squared error split into squared bias, variance
@@ -84,7 +100,7 @@ score  <- 0.75 * target + 0.10 + rnorm(k * m, 0, 0.06)
 traj   <- rep(seq_len(k), each = m)
 
 acc <- rri_accuracy(score, target, cluster = traj,
-                    n_boot = 200, n_perm = 200, seed = 1)
+                    n_boot = 200, n_perm = 0, seed = 1)
 p <- plot_rri_accuracy(acc)
 \donttest{
 print(p)

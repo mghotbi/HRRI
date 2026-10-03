@@ -23,9 +23,6 @@ documented limits on what may be inferred.
 ## Installation
 
 ```r
-install.packages("HRRI")
-packageVersion("HRRI")
-
 # install.packages("remotes")
 remotes::install_github("mghotbi/HRRI", build_vignettes = TRUE)
 ```
@@ -227,3 +224,53 @@ Every DOI below was resolved against Crossref before being listed.
 ## License
 
 MIT © Mitra Ghotbi. See [LICENSE](LICENSE).
+
+
+## Publication figures (1.0.7)
+
+```r
+p <- plot_rri_properties(props)  # separate descriptors; no centre average
+p_recovery <- plot_rri_recovery_landscape(rec)  # retains unavailable metrics
+p_map <- plot_rri_recovery_map(res, id, rec = rec,
+  perturb_start = event_start, perturb_end = event_end)
+# Use the independent experimental unit as cluster, e.g. plot, not each row.
+p_agreement <- plot_rri_accuracy(acc)
+ggplot2::ggsave("HRRI_profile.pdf", p, width = 7.2, height = 4.5,
+                units = "in", device = "pdf")
+```
+
+All figures are computed from supplied objects. Do not paste manuscript values
+into plotting functions. Keep event definitions, component methods and unavailable
+measurements in figure captions. The default profile replaces the radar display;
+`type = "radar"` is still available explicitly. `orient = "concern"` and
+`drop_empty = TRUE` remain optional for recovery landscapes, but neither removes
+the need to explain cohort-relative scaling and missingness. Agreement limits
+for cluster means do not describe individual observations. Bootstrap intervals
+are conditional on supplied pairs, not a rerun of the complete fitted pipeline.
+
+
+### All six paper figures in R
+
+| Figure | Function |
+|---|---|
+| Framework | `plot_rri_framework()` |
+| Identifiability and accounting | `plot_rri_identifiability()` |
+| Forcing and responses | `plot_rri_timeseries()` |
+| Score dynamics and availability | `plot_rri_recovery_diagnostics()` |
+| Operational profile | `plot_rri_properties()` |
+| Conditional agreement | `plot_rri_accuracy()` |
+
+See `vignette("HRRI_paper_figures")` for the complete map and captions. Both
+original vignettes remain available, with corrected terminology and sampling
+units; their existing references are retained. The paper export is entirely R:
+
+```r
+install.packages(c("patchwork", "svglite"))  # optional figure assembly / SVG
+figure_dir <- file.path(getwd(), "HRRI_paper_figures")
+paper_n_boot <- 2000L
+source(system.file("examples", "export_paper_figures.R", package="HRRI"), local=TRUE)
+```
+
+This writes vector PDF, editable-text SVG and 600-dpi PNG, alongside the recovery
+and agreement tables. During CRAN documentation builds the vignettes use only
+100 resamples and label this explicitly; the export uses the full 2000.
