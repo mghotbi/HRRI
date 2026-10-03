@@ -4,81 +4,98 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HRRI: Holobiont Redox Resilience Index — End-to-End Workflow • HRRI</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Source_Sans_3-0.4.10/font.css" rel="stylesheet">
-<link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
-<link href="../deps/Source_Serif_4-0.4.10/font.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="HRRI: Holobiont Redox Resilience Index — End-to-End Workflow">
+<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
 </head>
-<body>
-    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+<body data-spy="scroll" data-target="#toc">
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <div class="container template-article">
+      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">HRRI</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.8</span>
+      </span>
+    </div>
 
-    <a class="navbar-brand me-2" href="../index.html">HRRI</a>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.6</small>
-
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/HRRI_workflow.html">End-to-end workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/HRRI_gallery.html">Gallery</a></li>
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/HRRI_gallery.html">HRRI: Reading the Figures — A Worked Example</a>
+    </li>
+    <li>
+      <a href="../articles/HRRI_paper_figures.html">HRRI: Reproduce All Six Paper Figures in R</a>
+    </li>
+    <li>
+      <a href="../articles/HRRI_workflow.html">HRRI: Holobiont Redox Resilience Index — End-to-End Workflow</a>
+    </li>
   </ul>
 </li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-news" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">News</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-news">
-<li><h6 class="dropdown-header" data-toc-skip>Releases</h6></li>
-    <li><a class="dropdown-item" href="../news/index.html">Changelog</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../news/index.html">Changelog</a></li>
-  </ul>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
-</form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mghotbi/HRRI/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/mghotbi/HRRI/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+
+  </a>
+</li>
       </ul>
 </div>
-
-
+<!--/.nav-collapse -->
   </div>
-</nav><div class="container template-article">
+<!--/.container -->
+</div>
+<!--/.navbar -->
 
 
 
-
-<div class="row">
-  <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>HRRI: Holobiont Redox Resilience Index — End-to-End Workflow</h1>
+      </header><div class="row">
+  <div class="col-md-9 contents">
+    <div class="page-header toc-ignore">
+      <h1 data-toc-skip>HRRI: Holobiont Redox Resilience Index —
+End-to-End Workflow</h1>
                         <h4 data-toc-skip class="author">Mitra
 Ghotbi</h4>
                   <a class="author_email" href="mailto:#"></a><a href="mailto:mitra.ghotbi@gmail.com" class="email">mitra.ghotbi@gmail.com</a>
       
                   
-            <h4 data-toc-skip class="date">2026-09-13</h4>
+            <h4 data-toc-skip class="date">2026-10-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mghotbi/HRRI/blob/HEAD/vignettes/HRRI_workflow.Rmd" class="external-link"><code>vignettes/HRRI_workflow.Rmd</code></a></small>
-      <div class="d-none name"><code>HRRI_workflow.Rmd</code></div>
+      <div class="hidden name"><code>HRRI_workflow.Rmd</code></div>
+
     </div>
 
     
@@ -133,8 +150,7 @@ system responses</td>
 </tbody>
 </table>
 <p>These combine through the accessible-capacity formula:</p>
-<p><span class="math display">$$C_{\rm acc} = \sum_i Q_i \cdot \alpha_i
-\cdot \left(1 - e^{-k_i \tau}\right)$$</span></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">c</mi></mrow></msub><mo>=</mo><munder><mo>∑</mo><mi>i</mi></munder><msub><mi>Q</mi><mi>i</mi></msub><mo>⋅</mo><msub><mi>α</mi><mi>i</mi></msub><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mi>−</mi><msub><mi>k</mi><mi>i</mi></msub><mi>τ</mi></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">C_{\mathrm{acc}} = \sum_i Q_i \cdot \alpha_i \cdot \left(1 - e^{-k_i \tau}\right)</annotation></semantics></math></p>
 <p>and aggregate into the Holobiont Redox Resilience Index:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">R</mi><mi mathvariant="normal">I</mi></mrow><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>=</mo><msub><mi>w</mi><mi>P</mi></msub><mo>⋅</mo><msub><mi>P</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>w</mi><mi>S</mi></msub><mo>⋅</mo><msub><mi>S</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub><mo>+</mo><msub><mi>w</mi><mi>M</mi></msub><mo>⋅</mo><msub><mi>M</mi><mrow><mi>i</mi><mi>t</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\mathrm{RRI}_{it} = w_P \cdot P_{it} + w_S \cdot S_{it} + w_M \cdot M_{it}</annotation></semantics></math></p>
 <p>where
@@ -165,7 +181,7 @@ checks, not empirical ecological inference.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mghotbi/HRRI" class="external-link">HRRI</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"HRRI"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '1.0.6'</span></span>
+<span><span class="co">#&gt; [1] '1.0.8'</span></span>
 <span></span>
 <span><span class="co">## Compatibility shim -----------------------------------------------------</span></span>
 <span><span class="co">## rri_pipeline() is the convenience wrapper around rri_pipeline_st().</span></span>
@@ -295,10 +311,12 @@ checks, not empirical ecological inference.</p>
 <div class="section level2">
 <h2 id="accessible-capacity-estimation">Accessible-Capacity Estimation<a class="anchor" aria-label="anchor" href="#accessible-capacity-estimation"></a>
 </h2>
-<p><code><a href="../reference/rri_accessible_capacity.html">rri_accessible_capacity()</a></code> computes <span class="math inline">$C_{\rm acc}$</span> for arbitrary mineralogical
-reservoirs with explicitly supplied accessibility and exchange-rate
-parameters. The values below are illustrative model inputs, not
-estimates or validated literature defaults.</p>
+<p><code><a href="../reference/rri_accessible_capacity.html">rri_accessible_capacity()</a></code> computes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>C</mi><mrow><mi mathvariant="normal">a</mi><mi mathvariant="normal">c</mi><mi mathvariant="normal">c</mi></mrow></msub><annotation encoding="application/x-tex">C_{\mathrm{acc}}</annotation></semantics></math>
+for arbitrary mineralogical reservoirs with explicitly supplied
+accessibility and exchange-rate parameters. The values below are
+illustrative model inputs, not estimates or validated literature
+defaults.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Subset one plot-depth unit for illustration</span></span>
 <span><span class="va">idx</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span><span class="op">$</span><span class="va">plot</span> <span class="op">==</span> <span class="st">"P1"</span> <span class="op">&amp;</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span><span class="op">$</span><span class="va">depth</span> <span class="op">==</span> <span class="st">"D1"</span> <span class="op">&amp;</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span><span class="op">$</span><span class="va">plant_id</span> <span class="op">==</span> <span class="st">"Plant1"</span></span>
@@ -422,10 +440,13 @@ checked for conflicts rather than silently overwritten.</p>
 </h3>
 <p>A single pooled correlation is the wrong summary here, for two
 reasons.</p>
-<p>First, these 360 rows are <strong>12 trajectories observed at 30 time
-points</strong>, not 360 independent observations. Rows within a
-trajectory are strongly dependent, so an interval computed from the row
-count is far too narrow.</p>
+<p>First, repeated rows and plant-depth trajectories within a plot are
+not independent experimental units. The small workflow example has only
+two plots. For the agreement illustration below we therefore generate a
+separate set of 24 plots, with 144 nested trajectories and 5760 rows,
+matching the paper design. Intervals resample whole plots; treating rows
+as independent generally understates uncertainty when within-plot
+dependence matters.</p>
 <p>Second, Pearson’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
 measures <em>association</em>, not <em>agreement</em>. A score equal to
@@ -434,87 +455,87 @@ matching it nowhere. Lin’s concordance correlation coefficient penalises
 departure from the 1:1 line and is the quantity that belongs beside
 it.</p>
 <p><code><a href="../reference/rri_accuracy.html">rri_accuracy()</a></code> reports both, with intervals obtained by
-resampling whole trajectories rather than rows.</p>
+resampling whole independent plots rather than rows.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## rri_scored is aligned to sim$id, and hence to its latent_truth vector.</span></span>
-<span><span class="va">truth</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">latent_truth</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">truth</span><span class="op">)</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">truth</span><span class="op">)</span> <span class="op">!=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop</a></span><span class="op">(</span><span class="st">"latent_truth must be a numeric vector with one value per sim$id row."</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co">## One independent experimental unit = one plot x depth x plant trajectory.</span></span>
-<span><span class="va">traj</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/interaction.html" class="external-link">interaction</a></span><span class="op">(</span><span class="va">rri_scored</span><span class="op">$</span><span class="va">plot</span>, <span class="va">rri_scored</span><span class="op">$</span><span class="va">depth</span>, <span class="va">rri_scored</span><span class="op">$</span><span class="va">plant_id</span>,</span>
-<span>                    drop <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"HRRI: starting the 24-plot agreement example (100 bootstrap resamples).\n"</span>,</span>
+<span>    file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/showConnections.html" class="external-link">stderr</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">acc_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_redox_holobiont.html">simulate_redox_holobiont</a></span><span class="op">(</span></span>
+<span>  n_plot<span class="op">=</span><span class="fl">24</span>, n_depth<span class="op">=</span><span class="fl">2</span>, n_plant<span class="op">=</span><span class="fl">3</span>, n_time<span class="op">=</span><span class="fl">40</span>,</span>
+<span>  seed<span class="op">=</span><span class="fl">4096</span>, scenario<span class="op">=</span><span class="st">"flood_drain"</span>, disturbance_strength<span class="op">=</span><span class="fl">.70</span>,</span>
+<span>  n_cycles<span class="op">=</span><span class="fl">2L</span>, disturbance_center<span class="op">=</span><span class="cn">NULL</span>, disturbance_width<span class="op">=</span><span class="fl">.08</span><span class="op">)</span></span>
+<span><span class="va">acc_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_pipeline_st.html">rri_pipeline_st</a></span><span class="op">(</span></span>
+<span>  ROS_flux<span class="op">=</span><span class="va">acc_sim</span><span class="op">$</span><span class="va">plant_data</span>, Eh_stability<span class="op">=</span><span class="va">acc_sim</span><span class="op">$</span><span class="va">Eh_stability</span>,</span>
+<span>  micro_data<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log1p</a></span><span class="op">(</span><span class="va">acc_sim</span><span class="op">$</span><span class="va">micro_gene_abundance</span><span class="op">)</span>, id<span class="op">=</span><span class="va">acc_sim</span><span class="op">$</span><span class="va">id</span>,</span>
+<span>  time_col<span class="op">=</span><span class="st">"time"</span>, group_cols<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>,<span class="st">"depth"</span>,<span class="st">"plant_id"</span><span class="op">)</span>, mode<span class="op">=</span><span class="st">"snapshot"</span>,</span>
+<span>  direction_anchor_phys<span class="op">=</span><span class="st">"FvFm"</span>, direction_anchor_soil<span class="op">=</span><span class="st">"Eh"</span>, direction_anchor_micro<span class="op">=</span><span class="st">"mtrA"</span><span class="op">)</span></span>
 <span><span class="va">acc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_accuracy.html">rri_accuracy</a></span><span class="op">(</span></span>
-<span>  score   <span class="op">=</span> <span class="va">rri_scored</span><span class="op">$</span><span class="va">RRI</span>,</span>
-<span>  target  <span class="op">=</span> <span class="va">truth</span>,</span>
-<span>  cluster <span class="op">=</span> <span class="va">traj</span>,</span>
-<span>  n_boot  <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  n_perm  <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  seed    <span class="op">=</span> <span class="fl">42</span></span>
-<span><span class="op">)</span></span>
-<span></span>
+<span>  score<span class="op">=</span><span class="va">acc_res</span><span class="op">$</span><span class="va">row_scores</span><span class="op">$</span><span class="va">RRI</span>, target<span class="op">=</span><span class="va">acc_sim</span><span class="op">$</span><span class="va">latent_truth</span>,</span>
+<span>  cluster<span class="op">=</span><span class="va">acc_sim</span><span class="op">$</span><span class="va">id</span><span class="op">$</span><span class="va">plot</span>, n_boot<span class="op">=</span><span class="fl">100</span>, n_perm<span class="op">=</span><span class="fl">0</span>, seed<span class="op">=</span><span class="fl">20260913</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"HRRI: agreement calculations finished; preparing figures.\n"</span>, file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/showConnections.html" class="external-link">stderr</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">acc</span></span>
 <span><span class="co">#&gt; Agreement with reference target</span></span>
 <span><span class="co">#&gt; -------------------------------------------------------------- </span></span>
 <span><span class="co">#&gt;  statistic row_level cluster_mean_level ci_lower ci_upper</span></span>
-<span><span class="co">#&gt;  pearson_r    0.4668             0.5454   0.3037   0.5959</span></span>
-<span><span class="co">#&gt;   lins_ccc    0.1412             0.0782   0.0829   0.2147</span></span>
-<span><span class="co">#&gt;       rmse    0.1732             0.1631   0.1296   0.2052</span></span>
-<span><span class="co">#&gt;        mae    0.1415             0.1264   0.0971   0.1836</span></span>
-<span><span class="co">#&gt;       bias   -0.1124            -0.1124  -0.1688  -0.0497</span></span>
-<span><span class="co">#&gt;         r2  -21.5196           -98.0483 -34.2773 -14.7249</span></span>
+<span><span class="co">#&gt;  pearson_r    0.6447             0.6508   0.6097   0.6788</span></span>
+<span><span class="co">#&gt;   lins_ccc    0.3332             0.0414   0.2986   0.3654</span></span>
+<span><span class="co">#&gt;       rmse    0.1092             0.0673   0.1054   0.1120</span></span>
+<span><span class="co">#&gt;        mae    0.0871             0.0657   0.0840   0.0893</span></span>
+<span><span class="co">#&gt;       bias   -0.0657            -0.0657  -0.0707  -0.0601</span></span>
+<span><span class="co">#&gt;         r2   -5.5592           -65.2364  -7.5747  -4.1295</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Dependence structure</span></span>
-<span><span class="co">#&gt;   360 observations in 12 clusters (mean size 30.0)</span></span>
-<span><span class="co">#&gt;   ICC 0.768, design effect 23.3, effective n 15</span></span>
+<span><span class="co">#&gt;   5760 observations in 24 clusters (mean size 240.0)</span></span>
+<span><span class="co">#&gt;   ICC 0.025, design effect 7.0, effective n 819</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Error decomposition (percent of MSE)</span></span>
-<span><span class="co">#&gt;   squared_bias          42.1%</span></span>
-<span><span class="co">#&gt;   variance_mismatch     39.1%</span></span>
-<span><span class="co">#&gt;   lack_of_correlation   18.8%</span></span>
+<span><span class="co">#&gt;   squared_bias          36.2%</span></span>
+<span><span class="co">#&gt;   variance_mismatch     36.3%</span></span>
+<span><span class="co">#&gt;   lack_of_correlation   27.5%</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Calibration: target = 0.565 + 0.118 x score  (ideal 0 and 1)</span></span>
-<span><span class="co">#&gt; Cluster permutation test: p = 0.0220 (500 permutations)</span></span>
+<span><span class="co">#&gt; Calibration: target = 0.483 + 0.254 x score  (ideal 0 and 1)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Notes</span></span>
-<span><span class="co">#&gt;   Rows are strongly clustered (ICC 0.77, design effect 23.3). The 360</span></span>
-<span><span class="co">#&gt;   observations carry roughly the information of 15 independent ones; quote</span></span>
-<span><span class="co">#&gt;   the cluster bootstrap interval, not one based on n = 360. </span></span>
-<span><span class="co">#&gt;   Ignoring clustering would give a 95% interval for r of width 0.145;</span></span>
-<span><span class="co">#&gt;   resampling whole trajectories gives width 0.292, 2.0 times wider. Report</span></span>
+<span><span class="co">#&gt;   Rows are strongly clustered (ICC 0.03, design effect 7.0). The 5760</span></span>
+<span><span class="co">#&gt;   observations carry roughly the information of 819 independent ones; quote</span></span>
+<span><span class="co">#&gt;   the cluster bootstrap interval, not one based on n = 5760. </span></span>
+<span><span class="co">#&gt;   Ignoring clustering would give a 95% interval for r of width 0.027;</span></span>
+<span><span class="co">#&gt;   resampling whole trajectories gives width 0.069, 2.6 times wider. Report</span></span>
 <span><span class="co">#&gt;   the latter. </span></span>
-<span><span class="co">#&gt;   Correlation (0.467) exceeds concordance (0.141). The score tracks the</span></span>
+<span><span class="co">#&gt;   Correlation (0.645) exceeds concordance (0.333). The score tracks the</span></span>
 <span><span class="co">#&gt;   target's pattern but does not agree with it in level or scale; see</span></span>
 <span><span class="co">#&gt;   calibration. </span></span>
-<span><span class="co">#&gt;   Calibration slope is 0.12 rather than 1: the score compresses or</span></span>
+<span><span class="co">#&gt;   Calibration slope is 0.25 rather than 1: the score compresses or</span></span>
 <span><span class="co">#&gt;   exaggerates the target's range. </span></span>
 <span><span class="co">#&gt;   R2 is negative: as an absolute predictor the score does worse than the</span></span>
 <span><span class="co">#&gt;   target's own mean. It may still rank correctly; check pearson_r. </span></span>
-<span><span class="co">#&gt;   Error is dominated by squared_bias (42% of MSE). </span></span>
+<span><span class="co">#&gt;   Error is dominated by variance_mismatch (36% of MSE). </span></span>
 <span><span class="co">#&gt;   If score and target derive from the same generator, this is internal</span></span>
 <span><span class="co">#&gt;   consistency, not validation.</span></span></code></pre></div>
+<p>This fast documentation example uses 100 bootstrap resamples. The
+complete paper-export example uses 2000. The intervals condition on
+supplied fitted scores and do not include pipeline refitting. No
+permutation P value is quoted: exchangeability and time alignment
+require a separately justified design.</p>
 <div class="method">
-<p><code>effective_n</code> in the dependence table, not the row count,
-is what governs precision. Where the design effect is well above one,
-the naive interval should not be quoted: the function prints both widths
-so the difference is visible rather than asserted.</p>
+<p><code>effective_n</code> is an ICC-based heuristic, not the effective
+sample size for every statistic. Precision depends on the sampling
+design and estimand. Compare the actual bootstrap intervals and retain
+the plot as the independent unit.</p>
 </div>
 <p>Splitting the error says which kind of disagreement is present, and
 the three components sum to the mean squared error exactly.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">acc</span><span class="op">$</span><span class="va">decomposition</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"component"</span>, <span class="st">"percent"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;             component  percent</span></span>
-<span><span class="co">#&gt; 1        squared_bias 42.10174</span></span>
-<span><span class="co">#&gt; 2   variance_mismatch 39.10814</span></span>
-<span><span class="co">#&gt; 3 lack_of_correlation 18.79012</span></span>
+<span><span class="co">#&gt; 1        squared_bias 36.20809</span></span>
+<span><span class="co">#&gt; 2   variance_mismatch 36.25295</span></span>
+<span><span class="co">#&gt; 3 lack_of_correlation 27.53896</span></span>
 <span></span>
 <span><span class="co">## Exactness check: the residual is numerical noise, not a rounding allowance.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>mse      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">acc</span><span class="op">$</span><span class="va">decomposition</span>, <span class="st">"mse"</span><span class="op">)</span>,</span>
 <span>  residual <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">acc</span><span class="op">$</span><span class="va">decomposition</span>, <span class="st">"residual"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt;           mse      residual </span></span>
-<span><span class="co">#&gt;  3.000571e-02 -1.040834e-17</span></span></code></pre></div>
+<span><span class="co">#&gt;          mse     residual </span></span>
+<span><span class="co">#&gt; 1.193062e-02 1.040834e-17</span></span></code></pre></div>
 <p>Large squared bias is a systematic offset, removable by recentring.
 Large variance mismatch means the score is flatter or more volatile than
 the target. Large lack of correlation means the score does not track the
@@ -522,21 +543,38 @@ target’s pattern, and no rescaling will repair it.</p>
 <p><code><a href="../reference/plot_rri_accuracy.html">plot_rri_accuracy()</a></code> draws the same four questions as one
 figure.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rri_accuracy.html">plot_rri_accuracy</a></span><span class="op">(</span><span class="va">acc</span>,</span>
-<span>                  score_label  <span class="op">=</span> <span class="st">"RRI"</span>,</span>
-<span>                  target_label <span class="op">=</span> <span class="st">"Prescribed target"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HRRI_workflow_files/figure-html/validation_figure-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="co"># Use the installed namespace, avoiding a stale function in the workspace.</span></span>
+<span><span class="va">accuracy_plot</span> <span class="op">&lt;-</span> <span class="fu">HRRI</span><span class="fu">::</span><span class="va"><a href="../reference/plot_rri_accuracy.html">plot_rri_accuracy</a></span></span>
+<span><span class="va">plot_formals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals</a></span><span class="op">(</span><span class="va">accuracy_plot</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">plot_args</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>acc <span class="op">=</span> <span class="va">acc</span>, score_label <span class="op">=</span> <span class="st">"RRI"</span>,</span>
+<span>                  target_label <span class="op">=</span> <span class="st">"Prescribed target"</span>,</span>
+<span>                  base_size <span class="op">=</span> <span class="fl">9</span>, show_clusters <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co"># Older HRRI builds do not accept these presentation arguments.</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="st">"cluster_label"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">plot_formals</span><span class="op">)</span> <span class="va">plot_args</span><span class="op">$</span><span class="va">cluster_label</span> <span class="op">&lt;-</span> <span class="st">"Plots"</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="st">"style"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">plot_formals</span><span class="op">)</span> <span class="va">plot_args</span><span class="op">$</span><span class="va">style</span> <span class="op">&lt;-</span> <span class="st">"paper"</span></span>
+<span><span class="va">accuracy_figure</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">accuracy_plot</span>, <span class="va">plot_args</span><span class="op">)</span></span>
+<span><span class="co"># Without optional patchwork, HRRI returns a named list of plots.</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">inherits</a></span><span class="op">(</span><span class="va">accuracy_figure</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ggplot"</span>, <span class="st">"patchwork"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">accuracy_figure</span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">panel</span> <span class="kw">in</span> <span class="va">accuracy_figure</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">panel</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p><img src="HRRI_workflow_files/figure-html/validation_figure-1.png" class="r-plt" alt="Agreement with the prescribed target" width="100%" style="display: block; margin: auto;"></p>
 <div class="note">
-<p><strong>Reading it.</strong> <strong>A</strong> puts the fitted line
-against the dashed 1:1 line; a flatter fit means the score compresses
-the target’s range. Open points are trajectory means, the level at which
-the units are independent. <strong>B</strong> is a Bland-Altman plot: a
-scatter that slopes or fans out shows disagreement that depends on
-level, which no correlation coefficient can reveal. <strong>C</strong>
-is the headline: the violet distribution resamples rows and is too
-narrow, the teal one resamples trajectories and is honest; the bars
-beneath give both widths. <strong>D</strong> partitions the mean squared
-error exactly.</p>
+<p><strong>Reading it.</strong> The calibration panel compares the
+scores with the prescribed target and the 1:1 line; correlation alone
+does not establish agreement. Open points represent plot means. The
+difference panel shows score minus target against their average, with
+descriptive limits for plot-mean differences, not individual
+observations. The precision panel compares row resampling with
+whole-plot resampling. Its intervals condition on supplied score-target
+pairs and do not refit the scoring pipeline. The error panel partitions
+mean squared error into squared bias, variance mismatch and lack of
+correlation.</p>
+<p>The updated package uses the paper layout; older builds use their
+diagnostic layout. The compatibility code changes presentation arguments
+only. Install the updated package to reproduce the paper’s figure
+styling.</p>
 <p><strong>What it does not show.</strong> None of the four panels
 speaks to out-of-sample performance. The target is prescribed by the
 same simulator that produced the inputs, so a tight panel A means the
@@ -694,6 +732,17 @@ An empirical claim about hydrological memory requires independent
 observations.</p>
 </div>
 <div class="section level2">
+<h2 id="publication-figures">Publication figures<a class="anchor" aria-label="anchor" href="#publication-figures"></a>
+</h2>
+<p><code><a href="../articles/HRRI_paper_figures.html">vignette("HRRI_paper_figures")</a></code> contains all six
+manuscript figures, their function mapping and interpretation. The
+original gallery and this workflow remain available. All figures can be
+generated entirely in R; export vector PDF or editable-text SVG at the
+supplied physical dimensions. The framework is a schematic, the
+identifiability illustration is analytical, and the gallery and
+agreement panels use different explicitly declared simulations.</p>
+</div>
+<div class="section level2">
 <h2 id="session-information">Session Information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -716,21 +765,21 @@ observations.</p>
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] HRRI_1.0.6</span></span>
+<span><span class="co">#&gt; [1] HRRI_1.0.8</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    </span></span>
 <span><span class="co">#&gt;  [5] tidyselect_1.2.1   tidyr_1.3.2        jquerylib_0.1.4    systemfonts_1.3.2 </span></span>
 <span><span class="co">#&gt;  [9] scales_1.4.0       textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0     </span></span>
 <span><span class="co">#&gt; [13] ggplot2_4.0.3      R6_2.6.1           labeling_0.4.3     patchwork_1.3.2   </span></span>
-<span><span class="co">#&gt; [17] generics_0.1.4     igraph_2.3.3       knitr_1.51         htmlwidgets_1.6.4 </span></span>
+<span><span class="co">#&gt; [17] generics_0.1.4     igraph_2.3.3       knitr_1.52         htmlwidgets_1.6.4 </span></span>
 <span><span class="co">#&gt; [21] tibble_3.3.1       desc_1.4.3         bslib_0.12.0       pillar_1.11.1     </span></span>
 <span><span class="co">#&gt; [25] RColorBrewer_1.1-3 rlang_1.3.0        cachem_1.1.0       xfun_0.60         </span></span>
 <span><span class="co">#&gt; [29] fs_2.1.0           sass_0.4.10        S7_0.2.2           otel_0.2.0        </span></span>
 <span><span class="co">#&gt; [33] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    </span></span>
 <span><span class="co">#&gt; [37] digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0  lifecycle_1.0.5   </span></span>
 <span><span class="co">#&gt; [41] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      </span></span>
-<span><span class="co">#&gt; [45] ragg_1.5.2         purrr_1.2.2        rmarkdown_2.31     tools_4.5.1       </span></span>
+<span><span class="co">#&gt; [45] ragg_1.5.2         purrr_1.2.2        rmarkdown_2.32     tools_4.5.1       </span></span>
 <span><span class="co">#&gt; [49] pkgconfig_2.0.3    htmltools_0.5.9</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -781,22 +830,29 @@ across the soil–plant–microbiome continuum. <em>Submitted to Soil
 Biology &amp; Biochemistry.</em></p>
 </div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
+  </div>
+
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+
+      </div>
+
 </div>
 
 
 
-    <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mitra Ghotbi.</p>
+      <footer><div class="copyright">
+  <p></p>
+<p>Developed by Mitra Ghotbi.</p>
 </div>
 
-<div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
+<div class="pkgdown">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
-    </footer>
+      </footer>
 </div>
+
 
 
 

@@ -4,81 +4,98 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HRRI: Reading the Figures — A Worked Example • HRRI</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Source_Sans_3-0.4.10/font.css" rel="stylesheet">
-<link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
-<link href="../deps/Source_Serif_4-0.4.10/font.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
 <meta property="og:title" content="HRRI: Reading the Figures — A Worked Example">
+<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
 </head>
-<body>
-    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+<body data-spy="scroll" data-target="#toc">
 
 
-    <nav class="navbar navbar-expand-lg fixed-top bg-light" data-bs-theme="light" aria-label="Site navigation"><div class="container">
+    <div class="container template-article">
+      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">HRRI</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.8</span>
+      </span>
+    </div>
 
-    <a class="navbar-brand me-2" href="../index.html">HRRI</a>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.6</small>
-
-
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto">
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="active nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/HRRI_workflow.html">End-to-end workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/HRRI_gallery.html">Gallery</a></li>
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="../articles/HRRI_gallery.html">HRRI: Reading the Figures — A Worked Example</a>
+    </li>
+    <li>
+      <a href="../articles/HRRI_paper_figures.html">HRRI: Reproduce All Six Paper Figures in R</a>
+    </li>
+    <li>
+      <a href="../articles/HRRI_workflow.html">HRRI: Holobiont Redox Resilience Index — End-to-End Workflow</a>
+    </li>
   </ul>
 </li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-news" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">News</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-news">
-<li><h6 class="dropdown-header" data-toc-skip>Releases</h6></li>
-    <li><a class="dropdown-item" href="../news/index.html">Changelog</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><a class="dropdown-item" href="../news/index.html">Changelog</a></li>
-  </ul>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="navbar-nav">
-<li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
-</form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/mghotbi/HRRI/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/mghotbi/HRRI/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
+
+  </a>
+</li>
       </ul>
 </div>
-
-
+<!--/.nav-collapse -->
   </div>
-</nav><div class="container template-article">
+<!--/.container -->
+</div>
+<!--/.navbar -->
 
 
 
-
-<div class="row">
-  <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>HRRI: Reading the Figures — A Worked Example</h1>
+      </header><div class="row">
+  <div class="col-md-9 contents">
+    <div class="page-header toc-ignore">
+      <h1 data-toc-skip>HRRI: Reading the Figures — A Worked
+Example</h1>
                         <h4 data-toc-skip class="author">Mitra
 Ghotbi</h4>
                   <a class="author_email" href="mailto:#"></a><a href="mailto:mitra.ghotbi@gmail.com" class="email">mitra.ghotbi@gmail.com</a>
       
                   
-            <h4 data-toc-skip class="date">2026-09-13</h4>
+            <h4 data-toc-skip class="date">2026-10-03</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/mghotbi/HRRI/blob/HEAD/vignettes/HRRI_gallery.Rmd" class="external-link"><code>vignettes/HRRI_gallery.Rmd</code></a></small>
-      <div class="d-none name"><code>HRRI_gallery.Rmd</code></div>
+      <div class="hidden name"><code>HRRI_gallery.Rmd</code></div>
+
     </div>
 
     
@@ -107,14 +124,15 @@ part of the method, not disclaimers bolted on afterwards.</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mghotbi/HRRI" class="external-link">HRRI</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"HRRI"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '1.0.6'</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] '1.0.8'</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="the-experiment">The experiment<a class="anchor" aria-label="anchor" href="#the-experiment"></a>
 </h2>
 <p>One flood–drain cycle across two plots, two depths and three plants,
-observed daily for 40 steps. The disturbance runs from day 12 to day
-22.</p>
+observed daily for 40 steps. The classified disturbance spans days
+12–22; the Gaussian forcing extends beyond those classified days. The
+pulse centre, width and threshold are explicit.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">PERTURB_START</span> <span class="op">&lt;-</span> <span class="fl">12</span></span>
 <span><span class="va">PERTURB_END</span>   <span class="op">&lt;-</span> <span class="fl">22</span></span>
@@ -124,12 +142,13 @@ observed daily for 40 steps. The disturbance runs from day 12 to day
 <span>  n_depth              <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  n_plant              <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>  n_time               <span class="op">=</span> <span class="fl">40</span>,</span>
-<span>  p_micro              <span class="op">=</span> <span class="fl">25</span>,</span>
 <span>  seed                 <span class="op">=</span> <span class="fl">2026</span>,</span>
 <span>  scenario             <span class="op">=</span> <span class="st">"flood_drain"</span>,</span>
 <span>  n_cycles             <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  disturbance_strength <span class="op">=</span> <span class="fl">0.72</span>,</span>
-<span>  history_strength     <span class="op">=</span> <span class="fl">0.55</span></span>
+<span>  disturbance_center   <span class="op">=</span> <span class="fl">17</span>,</span>
+<span>  disturbance_width    <span class="op">=</span> <span class="fl">5.5</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">0.35</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">40</span>,</span>
+<span>  include_graph        <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">id</span><span class="op">)</span>          <span class="co"># 2 x 2 x 3 x 40 = 480 observations</span></span>
@@ -141,10 +160,10 @@ observed daily for 40 steps. The disturbance runs from day 12 to day
 <span><span class="co">#&gt; [10] "redox_position"        "Cacc_EAC"              "Cacc_EDC"             </span></span>
 <span><span class="co">#&gt; [13] "net_oxidative_balance"</span></span></code></pre></div>
 <div class="caution">
-<p><code>latent_state</code> is the simulator’s ground truth. It exists
-so we can check whether HRRI recovers what it is meant to recover. With
-real data there is no such column, and nothing in the scoring path is
-allowed to read it.</p>
+<p><code>latent_state</code> contains prescribed synthetic states. It
+allows internal comparisons, not validation of those states against real
+biological mechanisms. With real data there is no such column, and
+nothing in the scoring path is allowed to read it.</p>
 </div>
 </div>
 <div class="section level2">
@@ -238,18 +257,16 @@ measured legacy effects in any field system.</p>
 </h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_pipeline_st.html">rri_pipeline_st</a></span><span class="op">(</span></span>
-<span>  ROS_flux     <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">ROS_flux</span>,</span>
+<span>  ROS_flux     <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">plant_data</span>,</span>
 <span>  Eh_stability <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">Eh_stability</span>,</span>
-<span>  micro_data   <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">micro_data</span>,</span>
+<span>  micro_data   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log1p</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">micro_gene_abundance</span><span class="op">)</span>,</span>
 <span>  id           <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span>,</span>
 <span>  time_col     <span class="op">=</span> <span class="st">"time"</span>,</span>
 <span>  group_cols   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span><span class="op">)</span>,</span>
 <span>  mode         <span class="op">=</span> <span class="st">"snapshot"</span>,</span>
-<span>  reducer      <span class="op">=</span> <span class="st">"per_domain"</span>,</span>
-<span>  scaling      <span class="op">=</span> <span class="st">"pnorm"</span>,</span>
 <span>  direction_anchor_phys  <span class="op">=</span> <span class="st">"FvFm"</span>,</span>
 <span>  direction_anchor_soil  <span class="op">=</span> <span class="st">"Eh"</span>,</span>
-<span>  direction_anchor_micro <span class="op">=</span> <span class="st">"ASV1"</span></span>
+<span>  direction_anchor_micro <span class="op">=</span> <span class="st">"mtrA"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">scored</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/attach_hrri_ids.html">attach_hrri_ids</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">row_scores</span>, <span class="va">sim</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
@@ -276,7 +293,7 @@ measured legacy effects in any field system.</p>
 <span><span class="co">#&gt; [13] "WFPS"            "water_table_cm"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">scored</span><span class="op">$</span><span class="va">RRI</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
-<span><span class="co">#&gt;  0.1485  0.3859  0.4887  0.5024  0.6454  0.8065</span></span></code></pre></div>
+<span><span class="co">#&gt;  0.1775  0.4704  0.5646  0.5619  0.6745  0.8174</span></span></code></pre></div>
 <div class="caution">
 <p>The <code>direction_anchor_*</code> arguments are not optional in
 practice. Latent axes from PCA have arbitrary sign; without an anchor
@@ -295,15 +312,17 @@ missing.</p>
 <span>  depth_id      <span class="op">=</span> <span class="st">"D1"</span>,</span>
 <span>  plant_id      <span class="op">=</span> <span class="st">"Plant1"</span>,</span>
 <span>  perturb_start <span class="op">=</span> <span class="va">PERTURB_START</span>,</span>
-<span>  perturb_end   <span class="op">=</span> <span class="va">PERTURB_END</span></span>
+<span>  perturb_end   <span class="op">=</span> <span class="va">PERTURB_END</span>,</span>
+<span>  forcing_threshold <span class="op">=</span> <span class="fl">0.35</span>, time_label <span class="op">=</span> <span class="st">"Time (days)"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="HRRI_gallery_files/figure-html/timeseries-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="HRRI_gallery_files/figure-html/timeseries-1.png" class="r-plt" alt="One trajectory in context" width="100%" style="display: block; margin: auto;"></p>
 <div class="note">
-<p><strong>Reading it</strong> — Eh, accessible capacity and the
-composite RRI on a shared time axis in separate panels, each in its own
-units. Look for whether RRI returns to its pre-event level, and whether
-it returns at the same time as Eh. A gap between the two is the
-interesting case.</p>
+<p><strong>Reading it</strong> — forcing, Eh, electron-accepting
+capacity (EAC) and the composite RRI on a shared time axis in separate
+panels, each in its own units. EAC is an inventory, not event-window
+accessible capacity. Look for whether RRI returns to its pre-event
+level, and whether it returns at the same time as Eh. A gap between the
+two is the interesting case.</p>
 </div>
 <div class="caution">
 <p><strong>What it does not show</strong> — panels are not placed on a
@@ -361,7 +380,7 @@ three domains:</p>
 <code class="sourceCode R"><span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">row_scores_comp</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Physio"</span>, <span class="st">"Soil"</span>, <span class="st">"Micro"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">comp</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>          <span class="co"># centroid</span></span>
 <span><span class="co">#&gt; Physio   Soil  Micro </span></span>
-<span><span class="co">#&gt;  0.357  0.301  0.342</span></span>
+<span><span class="co">#&gt;  0.430  0.282  0.288</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">comp</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span>    <span class="co"># closure check: both 1</span></span>
 <span><span class="co">#&gt; [1] 1 1</span></span></code></pre></div>
 <div class="note">
@@ -389,7 +408,7 @@ the ternary alongside Section 4.</p>
 <span>  colour_by  <span class="op">=</span> <span class="st">"RRI"</span>,</span>
 <span>  group_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="HRRI_gallery_files/figure-html/state-space-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="HRRI_gallery_files/figure-html/state-space-1.png" class="r-plt" alt="Domain-score state space" width="100%" style="display: block; margin: auto;"></p>
 <div class="note">
 <p><strong>Reading it</strong> — the trajectory through domain space.
 Disturbance typically pushes points toward the origin; recovery is the
@@ -407,13 +426,15 @@ properties would be a category error.</p>
 <h2 id="recovery-signatures">Recovery signatures<a class="anchor" aria-label="anchor" href="#recovery-signatures"></a>
 </h2>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_recovery_metrics.html">rri_recovery_metrics</a></span><span class="op">(</span></span>
-<span>  res           <span class="op">=</span> <span class="va">res</span>,</span>
-<span>  id            <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">id</span>,</span>
+<code class="sourceCode R"><span><span class="va">recovery_scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/attach_hrri_ids.html">attach_hrri_ids</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">row_scores</span>, <span class="va">sim</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
+<span><span class="va">recovery_scores</span><span class="op">$</span><span class="va">WFPS</span> <span class="op">&lt;-</span> <span class="va">sim</span><span class="op">$</span><span class="va">forcing</span><span class="op">$</span><span class="va">WFPS</span></span>
+<span><span class="va">rec</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_recovery_metrics.html">rri_recovery_metrics</a></span><span class="op">(</span></span>
+<span>  res           <span class="op">=</span> <span class="va">recovery_scores</span>,</span>
 <span>  time_col      <span class="op">=</span> <span class="st">"time"</span>,</span>
 <span>  group_cols    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"plot"</span>, <span class="st">"depth"</span>, <span class="st">"plant_id"</span><span class="op">)</span>,</span>
 <span>  perturb_start <span class="op">=</span> <span class="va">PERTURB_START</span>,</span>
 <span>  perturb_end   <span class="op">=</span> <span class="va">PERTURB_END</span>,</span>
+<span>  forcing_col   <span class="op">=</span> <span class="st">"WFPS"</span>,</span>
 <span>  rri_col       <span class="op">=</span> <span class="st">"RRI"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -421,22 +442,24 @@ properties would be a category error.</p>
 <span>           <span class="st">"tau_lag"</span>, <span class="st">"overshoot_frac"</span>, <span class="st">"incomplete_return_frac"</span>,</span>
 <span>           <span class="st">"displaced_plateau_flag"</span>, <span class="st">"fit_status"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;   plot depth plant_id baseline_rri depth_min_frac tau_lag overshoot_frac</span></span>
-<span><span class="co">#&gt; 1   P1    D1   Plant1    0.4909106    0.000000000      NA      0.5748788</span></span>
-<span><span class="co">#&gt; 2   P2    D1   Plant1    0.5445569    0.000000000      NA      0.4606396</span></span>
-<span><span class="co">#&gt; 3   P1    D2   Plant1    0.2922408    0.378237014       1      0.6628952</span></span>
-<span><span class="co">#&gt; 4   P2    D2   Plant1    0.2971187    0.005848721       1      0.7475780</span></span>
+<span><span class="co">#&gt; 1   P1    D1   Plant1    0.6448073     0.11508131       1     0.18396092</span></span>
+<span><span class="co">#&gt; 2   P2    D1   Plant1    0.6506149     0.02123078       2     0.25641955</span></span>
+<span><span class="co">#&gt; 3   P1    D2   Plant1    0.4749897     0.54463493       2     0.09421443</span></span>
+<span><span class="co">#&gt; 4   P2    D2   Plant1    0.4973984     0.43234366       1     0.19233332</span></span>
 <span><span class="co">#&gt;   incomplete_return_frac displaced_plateau_flag                     fit_status</span></span>
-<span><span class="co">#&gt; 1              0.3616705                  FALSE          no_resolvable_decline</span></span>
-<span><span class="co">#&gt; 2              0.3180095                  FALSE          no_resolvable_decline</span></span>
-<span><span class="co">#&gt; 3              0.3403944                  FALSE insufficient_positive_deficits</span></span>
-<span><span class="co">#&gt; 4              0.6611020                  FALSE insufficient_positive_deficits</span></span></code></pre></div>
+<span><span class="co">#&gt; 1            0.093634235                  FALSE insufficient_positive_deficits</span></span>
+<span><span class="co">#&gt; 2            0.168288397                  FALSE insufficient_positive_deficits</span></span>
+<span><span class="co">#&gt; 3            0.004632638                  FALSE insufficient_positive_deficits</span></span>
+<span><span class="co">#&gt; 4            0.055263755                  FALSE fitted_conditional_exponential</span></span></code></pre></div>
 <div class="note">
 <p><strong>Reading it</strong> — one row per trajectory.
 <code>depth_min_frac</code> is how far the score fell relative to
 baseline; <code>tau_lag</code> is how long recovery took to begin;
-<code>incomplete_return_frac</code> is the terminal shortfall.
-<code>fit_status</code> reports whether the rate estimate is trustworthy
-— always read <code>k</code> together with it.</p>
+<code>incomplete_return_frac</code> is signed terminal displacement from
+baseline. <code>fit_status</code> reports whether the computational
+fitting criteria were met; it does not establish precision or ecological
+validity. Read <code>k</code>, <code>n_fit</code> and fit quality
+together.</p>
 </div>
 <div class="caution">
 <p><strong>What it does not show</strong> —
@@ -459,7 +482,7 @@ displacement.</p>
 <span>  perturb_start <span class="op">=</span> <span class="va">PERTURB_START</span>,</span>
 <span>  perturb_end   <span class="op">=</span> <span class="va">PERTURB_END</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="HRRI_gallery_files/figure-html/recovery-map-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="HRRI_gallery_files/figure-html/recovery-map-1.png" class="r-plt" alt="Recovery map across all trajectories" width="100%" style="display: block; margin: auto;"></p>
 <div class="note">
 <p><strong>Reading it</strong> — one row per trajectory, colour = RRI
 through time. Scan vertically at any time point to compare units; scan
@@ -483,12 +506,14 @@ disturbance band did not recover.</p>
 <span>  <span class="op">)</span>,</span>
 <span>  order_by <span class="op">=</span> <span class="st">"I_norm"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><img src="HRRI_gallery_files/figure-html/landscape-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<p><img src="HRRI_gallery_files/figure-html/landscape-1.png" class="r-plt" alt="Ranking trajectories by signature" width="100%" style="display: block; margin: auto;"></p>
 <div class="note">
 <p><strong>Reading it</strong> — trajectories as rows, recovery
 signatures as columns, each column scaled within the cohort. It answers
 “which units behaved similarly, and on which signature do they differ?”
-— the ordering is by incomplete return.</p>
+— the ordering is by absolute final displacement. Headers report the
+number of finite trajectories. Grey cells with dashes mean unavailable,
+never zero.</p>
 </div>
 <div class="caution">
 <p><strong>What it does not show</strong> — scaling is cohort-relative,
@@ -502,26 +527,28 @@ absolute terms. Two datasets cannot be compared cell-by-cell.</p>
 </h2>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## soil_df is what makes Capacity available. Without it the Capacity axis is</span></span>
-<span><span class="co">## returned as NA and the radar shows a short spoke.</span></span>
+<span><span class="co">## returned as NA and the profile labels it as missing.</span></span>
 <span><span class="va">props</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_property_scores.html">rri_property_scores</a></span><span class="op">(</span><span class="va">res</span>, rec <span class="op">=</span> <span class="va">rec</span>, soil_df <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">soil_data</span><span class="op">)</span></span>
 <span><span class="va">props</span><span class="op">$</span><span class="va">property_table</span></span>
-<span><span class="co">#&gt;       property     score                                         method</span></span>
-<span><span class="co">#&gt; 1     Capacity 0.5090211 Oxidative-oriented feature composite; not Cacc</span></span>
-<span><span class="co">#&gt; 2 Connectivity 0.5576013                         cross_domain_magnitude</span></span>
-<span><span class="co">#&gt; 3     Kinetics 0.8333333                 Cohort-relative recovery speed</span></span>
-<span><span class="co">#&gt; 4       Memory 0.4247667   Loop-area/persistent-displacement diagnostic</span></span>
+<span><span class="co">#&gt;       property      score                                         method</span></span>
+<span><span class="co">#&gt; 1     Capacity 0.50702772 Oxidative-oriented feature composite; not Cacc</span></span>
+<span><span class="co">#&gt; 2 Connectivity 0.60843147                         cross_domain_magnitude</span></span>
+<span><span class="co">#&gt; 3     Kinetics 0.72424242                 Cohort-relative recovery speed</span></span>
+<span><span class="co">#&gt; 4       Memory 0.09245574   Loop-area/persistent-displacement diagnostic</span></span>
 <span><span class="co">#&gt;   available</span></span>
 <span><span class="co">#&gt; 1      TRUE</span></span>
 <span><span class="co">#&gt; 2      TRUE</span></span>
 <span><span class="co">#&gt; 3      TRUE</span></span>
 <span><span class="co">#&gt; 4      TRUE</span></span>
 <span></span>
-<span><span class="fu"><a href="../reference/plot_rri_properties.html">plot_rri_properties</a></span><span class="op">(</span><span class="va">props</span>, rri_value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">scored</span><span class="op">$</span><span class="va">RRI</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HRRI_gallery_files/figure-html/properties-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<span><span class="fu"><a href="../reference/plot_rri_properties.html">plot_rri_properties</a></span><span class="op">(</span><span class="va">props</span>, rec <span class="op">=</span> <span class="va">rec</span>, base_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
+<p><img src="HRRI_gallery_files/figure-html/properties-1.png" class="r-plt" alt="Property diagnostics" width="100%" style="display: block; margin: auto;"></p>
 <div class="note">
-<p><strong>Reading it</strong> — the four diagnostics on one radar.
-Unavailable properties stay missing rather than being imputed, so a
-short spoke means “not supported by the supplied data”, not “low”.</p>
+<p><strong>Reading it</strong> — four separate operational descriptors,
+without an overall mean or shared favourable direction. Missing
+descriptors are labelled explicitly. Use <code>type = "radar"</code>
+only when a radar display is specifically needed; polygon area has no
+quantitative meaning.</p>
 </div>
 <div class="caution">
 <p><strong>What it does not show</strong> — these are <em>named
@@ -540,24 +567,19 @@ score.</p>
 directly. This is an internal consistency check, not empirical
 validation.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ok</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">scored</span><span class="op">$</span><span class="va">RRI</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/is.finite.html" class="external-link">is.finite</a></span><span class="op">(</span><span class="va">sim</span><span class="op">$</span><span class="va">latent_truth</span><span class="op">)</span></span>
-<span><span class="va">r</span>  <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">scored</span><span class="op">$</span><span class="va">RRI</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span>, <span class="va">sim</span><span class="op">$</span><span class="va">latent_truth</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"r(RRI, latent_truth) ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">r</span>, <span class="fl">3</span><span class="op">)</span>, <span class="st">"on"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">ok</span><span class="op">)</span>, <span class="st">"observations\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; r(RRI, latent_truth) = 0.47 on 480 observations</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>truth <span class="op">=</span> <span class="va">sim</span><span class="op">$</span><span class="va">latent_truth</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span>, RRI <span class="op">=</span> <span class="va">scored</span><span class="op">$</span><span class="va">RRI</span><span class="op">[</span><span class="va">ok</span><span class="op">]</span><span class="op">)</span>,</span>
-<span>       <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">truth</span>, <span class="va">RRI</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.25</span>, size <span class="op">=</span> <span class="fl">1.1</span>, colour <span class="op">=</span> <span class="st">"#2f6b6b"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth</a></span><span class="op">(</span>method <span class="op">=</span> <span class="st">"lm"</span>, formula <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, se <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>              colour <span class="op">=</span> <span class="st">"#8c4a2f"</span>, fill <span class="op">=</span> <span class="st">"#8c4a2f"</span>, alpha <span class="op">=</span> <span class="fl">0.12</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Simulator target  z(t)"</span>, y <span class="op">=</span> <span class="st">"HRRI score"</span>,</span>
-<span>       title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Agreement with the prescribed target (r = %.3f)"</span>, <span class="va">r</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="HRRI_gallery_files/figure-html/validation-1.png" class="r-plt" alt="" width="100%" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="co"># Two plots are insufficient for a stable plot-level uncertainty assessment.</span></span>
+<span><span class="co"># Show descriptive association/agreement; Figure 6 uses a separate 24-plot design.</span></span>
+<span><span class="va">a_gallery</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_accuracy.html">rri_accuracy</a></span><span class="op">(</span><span class="va">scored</span><span class="op">$</span><span class="va">RRI</span>, <span class="va">sim</span><span class="op">$</span><span class="va">latent_truth</span>,</span>
+<span>  cluster <span class="op">=</span> <span class="va">scored</span><span class="op">$</span><span class="va">plot</span>, n_boot <span class="op">=</span> <span class="fl">0</span>, n_perm <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_rri_accuracy.html">plot_rri_accuracy</a></span><span class="op">(</span><span class="va">a_gallery</span>, panels <span class="op">=</span> <span class="st">"calibration"</span>, base_size <span class="op">=</span> <span class="fl">9</span>,</span>
+<span>  score_label <span class="op">=</span> <span class="st">"Observation-derived score"</span>, target_label <span class="op">=</span> <span class="st">"Prescribed target"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="HRRI_gallery_files/figure-html/validation-1.png" class="r-plt" alt="Did HRRI recover the hidden state?" width="100%" style="display: block; margin: auto;"></p>
 <div class="caution">
 <p><strong>What it does not show</strong> — this is agreement with a
-target <em>we defined</em>. It demonstrates that the scoring path is
-internally coherent. It is not predictive accuracy, not held-out error,
-and not evidence that HRRI tracks resilience in any real soil.</p>
+target <em>we defined</em>. It describes numerical internal agreement
+under the declared simulation. It is not predictive accuracy, not
+held-out error, and not evidence that HRRI tracks resilience in any real
+soil.</p>
 </div>
 </div>
 <div class="section level2">
@@ -566,7 +588,7 @@ and not evidence that HRRI tracks resilience in any real soil.</p>
 <p>Every function above accepts plain data frames. Replace the simulator
 with your own measurements, keeping rows aligned across blocks:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_pipeline.html">rri_pipeline</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">my_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rri_pipeline.html">rri_pipeline</a></span><span class="op">(</span></span>
 <span>  soil  <span class="op">=</span> <span class="va">my_soil</span>,      <span class="co"># Eh, pH, Fe pools, EAC/EDC ...</span></span>
 <span>  plant <span class="op">=</span> <span class="va">my_plant</span>,     <span class="co"># SPAD, Fv/Fm, ROL ...</span></span>
 <span>  micro <span class="op">=</span> <span class="va">my_micro</span>,     <span class="co"># ASV table or functional genes</span></span>
@@ -585,9 +607,29 @@ a three-domain run are not interchangeable; compare them through
 </div>
 </div>
 <div class="section level2">
+<h2 id="complete-paper-figure-set">Complete paper figure set<a class="anchor" aria-label="anchor" href="#complete-paper-figure-set"></a>
+</h2>
+<p>The companion <code><a href="../articles/HRRI_paper_figures.html">vignette("HRRI_paper_figures")</a></code> maps and
+renders all six paper figures. The framework and analytical
+identifiability panels are available as
+<code><a href="../reference/plot_rri_framework.html">plot_rri_framework()</a></code> and
+<code><a href="../reference/plot_rri_identifiability.html">plot_rri_identifiability()</a></code>. Recovery availability is paired
+with the score map below; counts are calculated from
+<code>rec</code>.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rri_recovery_diagnostics.html">plot_rri_recovery_diagnostics</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">sim</span><span class="op">$</span><span class="va">id</span>, <span class="va">rec</span>,</span>
+<span>  perturb_start<span class="op">=</span><span class="va">PERTURB_START</span>, perturb_end<span class="op">=</span><span class="va">PERTURB_END</span><span class="op">)</span></span></code></pre></div>
+<p><img src="HRRI_gallery_files/figure-html/recovery-availability-1.png" class="r-plt" alt="Complete paper figure set" width="100%" style="display: block; margin: auto;"></p>
+<p>For publication export, use the supplied
+<code>export_paper_figures.R</code> example: PDF and SVG retain vector
+geometry, with optional editable-text SVG via svglite. Use the export
+script’s physical dimensions rather than shrinking a large plot inside a
+document. A high raster dpi alone cannot repair cramped labels.</p>
+</div>
+<div class="section level2">
 <h2 id="session-information">Session information<a class="anchor" aria-label="anchor" href="#session-information"></a>
 </h2>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.5.1 (2025-06-13)</span></span>
 <span><span class="co">#&gt; Platform: aarch64-apple-darwin20</span></span>
@@ -607,40 +649,46 @@ a three-domain run are not interchangeable; compare them through
 <span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; other attached packages:</span></span>
-<span><span class="co">#&gt; [1] ggplot2_4.0.3 HRRI_1.0.6   </span></span>
+<span><span class="co">#&gt; [1] ggplot2_4.0.3 HRRI_1.0.8   </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
-<span><span class="co">#&gt;  [1] sass_0.4.10        generics_0.1.4     tidyr_1.3.2        lattice_0.23-1    </span></span>
-<span><span class="co">#&gt;  [5] digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5     grid_4.5.1        </span></span>
-<span><span class="co">#&gt;  [9] RColorBrewer_1.1-3 fastmap_1.2.0      jsonlite_2.0.0     Matrix_1.7-6      </span></span>
-<span><span class="co">#&gt; [13] mgcv_1.9-4         purrr_1.2.2        viridisLite_0.4.3  scales_1.4.0      </span></span>
-<span><span class="co">#&gt; [17] textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6          rlang_1.3.0       </span></span>
-<span><span class="co">#&gt; [21] splines_4.5.1      withr_3.0.3        cachem_1.1.0       yaml_2.3.12       </span></span>
-<span><span class="co">#&gt; [25] otel_0.2.0         tools_4.5.1        dplyr_1.2.1        vctrs_0.7.3       </span></span>
-<span><span class="co">#&gt; [29] R6_2.6.1           lifecycle_1.0.5    fs_2.1.0           htmlwidgets_1.6.4 </span></span>
-<span><span class="co">#&gt; [33] ragg_1.5.2         pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.1     </span></span>
-<span><span class="co">#&gt; [37] pillar_1.11.1      bslib_0.12.0       gtable_0.3.6       glue_1.8.1        </span></span>
-<span><span class="co">#&gt; [41] systemfonts_1.3.2  xfun_0.60          tibble_3.3.1       tidyselect_1.2.1  </span></span>
-<span><span class="co">#&gt; [45] rstudioapi_0.18.0  knitr_1.51         farver_2.1.2       htmltools_0.5.9   </span></span>
-<span><span class="co">#&gt; [49] nlme_3.1-170       igraph_2.3.3       rmarkdown_2.31     labeling_0.4.3    </span></span>
-<span><span class="co">#&gt; [53] compiler_4.5.1     S7_0.2.2</span></span></code></pre></div>
+<span><span class="co">#&gt;  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    </span></span>
+<span><span class="co">#&gt;  [5] tidyselect_1.2.1   tidyr_1.3.2        jquerylib_0.1.4    scales_1.4.0      </span></span>
+<span><span class="co">#&gt;  [9] systemfonts_1.3.2  textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0     </span></span>
+<span><span class="co">#&gt; [13] R6_2.6.1           patchwork_1.3.2    labeling_0.4.3     generics_0.1.4    </span></span>
+<span><span class="co">#&gt; [17] igraph_2.3.3       knitr_1.52         htmlwidgets_1.6.4  tibble_3.3.1      </span></span>
+<span><span class="co">#&gt; [21] desc_1.4.3         RColorBrewer_1.1-3 bslib_0.12.0       pillar_1.11.1     </span></span>
+<span><span class="co">#&gt; [25] rlang_1.3.0        cachem_1.1.0       xfun_0.60          S7_0.2.2          </span></span>
+<span><span class="co">#&gt; [29] fs_2.1.0           sass_0.4.10        otel_0.2.0         viridisLite_0.4.3 </span></span>
+<span><span class="co">#&gt; [33] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    </span></span>
+<span><span class="co">#&gt; [37] digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0  lifecycle_1.0.5   </span></span>
+<span><span class="co">#&gt; [41] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      </span></span>
+<span><span class="co">#&gt; [45] ragg_1.5.2         rmarkdown_2.32     purrr_1.2.2        tools_4.5.1       </span></span>
+<span><span class="co">#&gt; [49] pkgconfig_2.0.3    htmltools_0.5.9</span></span></code></pre></div>
 </div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside>
-</div>
+  </div>
 
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
+      </div>
 
-    <footer><div class="pkgdown-footer-left">
-  <p>Developed by Mitra Ghotbi.</p>
 </div>
 
-<div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
+
+
+      <footer><div class="copyright">
+  <p></p>
+<p>Developed by Mitra Ghotbi.</p>
 </div>
 
-    </footer>
+<div class="pkgdown">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
+
+      </footer>
+</div>
+
 
 
 
