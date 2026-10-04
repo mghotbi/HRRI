@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/1465048/2d6dc78821c84fe69425d8a555000ba1
+bundleId: https://api.rpubs.com/api/v1/document/1465048/2d6dc78821c84fe69425d8a555000ba1
+url: http://rpubs.com/mgh/1465048/edit
+version: 1
