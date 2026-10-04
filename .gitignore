@@ -1,3 +1,9 @@
 .Rproj.user
 /doc/
 /Meta/
+
+*.Rcheck/
+
+*.Rcheck/
+
+*.Rcheck/

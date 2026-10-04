@@ -26,3 +26,9 @@
 ^.*\.tar\.gz$
 ^.*\.zip$
 ^\.DS_Store$
+
+^.*[.]Rcheck$
+
+^.*[.]Rcheck$
+
+^.*[.]Rcheck$
