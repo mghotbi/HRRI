@@ -895,8 +895,7 @@ plot_rri_recovery_diagnostics(res, sim$id, rec,
 
 For publication export, use the supplied `export_paper_figures.R` example:
 PDF and SVG retain vector geometry, with optional editable-text SVG via svglite.
-Use the export script's physical dimensions rather than shrinking a large plot
-inside a document. A high raster dpi alone cannot repair cramped labels.
+ 
 
 # Session information
 

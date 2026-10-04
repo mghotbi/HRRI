@@ -535,9 +535,7 @@ set](HRRI_gallery_files/figure-html/recovery-availability-1.png)
 
 For publication export, use the supplied `export_paper_figures.R`
 example: PDF and SVG retain vector geometry, with optional editable-text
-SVG via svglite. Use the export script’s physical dimensions rather than
-shrinking a large plot inside a document. A high raster dpi alone cannot
-repair cramped labels.
+SVG via svglite.
 
 ## Session information
 
