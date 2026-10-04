@@ -1,3 +1,7 @@
+# HRRI 1.0.9
+
+* Resubmission of 1.0.8 with <what changed>.
+
 # HRRI 1.0.8
 
 * Distinct maintenance release to distinguish the corrected plot/vignette API
