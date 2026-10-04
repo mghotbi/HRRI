@@ -5,7 +5,6 @@
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/HRRI)](https://CRAN.R-project.org/package=HRRI)
 [![CRAN checks](https://badges.cranchecks.info/worst/HRRI.svg)](https://cran.r-project.org/web/checks/check_results_HRRI.html)
-[![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/HRRI)](https://CRAN.R-project.org/package=HRRI)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![R >= 4.3](https://img.shields.io/badge/R-%3E%3D%204.3-276DC3.svg)](https://cran.r-project.org/)
 [![Vignette: workflow](https://img.shields.io/badge/vignette-workflow-2f6b6b.svg)](https://rpubs.com/mgh/1465048)
