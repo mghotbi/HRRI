@@ -7,7 +7,7 @@
 [![CRAN checks](https://badges.cranchecks.info/worst/HRRI.svg)](https://cran.r-project.org/web/checks/check_results_HRRI.html)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![R >= 4.3](https://img.shields.io/badge/R-%3E%3D%204.3-276DC3.svg)](https://cran.r-project.org/)
-[![Vignette: workflow](https://img.shields.io/badge/vignette-workflow-2f6b6b.svg)](https://rpubs.com/mgh/1465048)
+[![Vignette: workflow](https://img.shields.io/badge/vignette-workflow-2f6b6b.svg)](https://rpubs.com/mgh/HRRIWorkFlow)
  
 <!-- badges: end -->
 
