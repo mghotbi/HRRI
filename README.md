@@ -1,11 +1,14 @@
-# HRRI
+# HRRI <img src="man/figures/logo.png" align="right" height="139" alt="HRRI hex logo" />
 
 <!-- badges: start -->
+
+[![CRAN status](https://www.r-pkg.org/badges/version/HRRI)](https://CRAN.R-project.org/package=HRRI)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
 [![R >= 4.3](https://img.shields.io/badge/R-%3E%3D%204.3-276DC3.svg)](https://cran.r-project.org/)
 [![Vignette: workflow](https://img.shields.io/badge/vignette-workflow-2f6b6b.svg)](https://rpubs.com/mgh/1458235)
 [![Vignette: gallery](https://img.shields.io/badge/vignette-gallery-8c4a2f.svg)](https://rpubs.com/mgh/1458237)
+
 <!-- badges: end -->
 
 > Diagnostics for soil–plant–microbial redox recovery across hydroclimatic
@@ -23,6 +26,9 @@ documented limits on what may be inferred.
 ## Installation
 
 ```r
+# CRAN release
+# install.packages("HRRI")
+
 # install.packages("remotes")
 remotes::install_github("mghotbi/HRRI", build_vignettes = TRUE)
 ```
@@ -226,7 +232,7 @@ Every DOI below was resolved against Crossref before being listed.
 MIT © Mitra Ghotbi. See [LICENSE](LICENSE).
 
 
-## Publication figures (1.0.7)
+## Publication figures (1.0.8)
 
 ```r
 p <- plot_rri_properties(props)  # separate descriptors; no centre average

@@ -1,4 +1,4 @@
-# Radar Chart of Available HRRI Diagnostics
+# Profile of Available HRRI Diagnostics
 
 Displays available diagnostic summaries labelled Capacity, Connectivity,
 Kinetics and Memory. The composite RRI is not an axis: it is built from
@@ -19,8 +19,11 @@ plot_rri_properties(
   fill_alpha = 0.2,
   colours = c("#1A3A5C", "#E07B39", "#2E7D32", "#7B3294", "#B2182B"),
   show_values = TRUE,
-  title = "HRRI Diagnostic Profile",
-  base_size = 13
+  title = "Operational descriptors and their input coverage",
+  base_size = 10,
+  type = c("profile", "radar"),
+  rec = NULL,
+  notes = NULL
 )
 ```
 
@@ -36,15 +39,15 @@ plot_rri_properties(
 - rri_value:
 
   Optional numeric. Composite RRI, reported in the subtitle for
-  reference. It is not plotted as an axis and does not enter the centre
-  value, which is the mean of the resolved property axes. Defaults to
+  reference. It is not plotted as an axis and does not enter any average
+  across property axes; no such average is calculated. Defaults to
   `props$rri_summary` if available.
 
 - group_list:
 
   Optional named list of property score vectors, one per group (e.g.,
-  per thaw stage or treatment). If supplied, multiple overlapping
-  polygons are drawn, one per group.
+  per thaw stage or treatment). If supplied, multiple groups are
+  displayed in separate panels.
 
 - fill_alpha:
 
@@ -67,17 +70,37 @@ plot_rri_properties(
 
   Numeric. Base font size.
 
+- type:
+
+  Display type: separate-axis dot profile (default), or an explicit
+  radar display for compatibility. Radar area is not a quantitative
+  summary.
+
+- rec:
+
+  Optional recovery table for data-derived coverage notes; use only the
+  same recovery table used to calculate props. With multiple groups
+  supply explicit notes instead.
+
+- notes:
+
+  Optional named character vector (one note per property), or a named
+  list of such vectors matching group_list. Describes score provenance.
+
 ## Value
 
 A `ggplot` object.
 
 ## Details
 
-The chart uses Cartesian coordinates constructed with `ggplot2`; no
-external radar-chart package is required. Each available axis runs from
-0 (centre) to 1 (rim). Polygon area has no quantitative meaning, and
-axes based on different transformations are not necessarily
-commensurable.
+The default profile displays each descriptor separately, without an
+overall mean or a common favourable direction. Missing values are
+labelled explicitly. Out-of-range finite scores and infinite values are
+rejected, not clipped. The optional radar chart uses Cartesian
+coordinates constructed with `ggplot2`; no external radar-chart package
+is required. Each available axis runs from 0 (centre) to 1 (rim).
+Polygon area has no quantitative meaning, and axes based on different
+transformations are not necessarily commensurable.
 
 **Axis meanings:**
 

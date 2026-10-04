@@ -1,5 +1,96 @@
 # Changelog
 
+## HRRI 1.0.8
+
+- Distinct maintenance release to distinguish the corrected
+  plot/vignette API from earlier 1.0.7 builds with the same version
+  number.
+- Vignettes check the installed plotting API before running
+  calculations.
+- Paper-figure vignette includes its calculation code directly; it no
+  longer depends on locating an installed helper script during knitting.
+- Alignment errors distinguish conflicting metadata from observation
+  keys and explain how to recompute a consistent simulation/score pair.
+  Conflicting forcing values continue to stop plotting; no values are
+  silently overwritten.
+- Added regression checks for simulation/score alignment, row reordering
+  and WFPS conflicts. Scientific estimators, references and plotting
+  styles retained.
+
+## HRRI 1.0.7
+
+### Complete native R paper figures
+
+- All six manuscript figures now have native R implementations using a
+  shared publication palette, panel spacing and typography. Added vector
+  framework, analytical identifiability/accounting and combined
+  recovery/availability plots.
+- Time series include supplied forcing, explicit thresholds and missing
+  gaps. Property profiles show separate coloured scales and data-derived
+  coverage. The default agreement layout matches the paper;
+  style=“diagnostic” retains the expanded diagnostic view. Existing
+  plotting functions remain exported.
+- Updated both existing Rmd vignettes and added HRRI_paper_figures.Rmd
+  with a complete figure-to-function map. Corrected EAC terminology,
+  nested sampling units and fit-status interpretation. Existing
+  references are preserved.
+- Added reproducible R-only figure object and PDF/SVG/600-dpi PNG export
+  scripts; svglite is an optional suggested dependency. Vignettes use
+  100 bootstrap draws for build speed, explicitly distinguished from
+  2000 in the paper export.
+
+### Scientific graphics and interpretation
+
+- [`plot_rri_properties()`](https://mghotbi.github.io/HRRI/reference/plot_rri_properties.md)
+  now defaults to a separate-axis dot profile. No average of Capacity,
+  Connectivity, Kinetics and Memory is calculated. `type = "radar"`
+  retains an explicit radar option, without the centre mean. Groups use
+  facets; missing descriptors are labelled. Invalid scores are rejected
+  instead of clipped. Existing positional arguments are preserved.
+- [`plot_rri_recovery_landscape()`](https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_landscape.md)
+  defaults to raw within-column magnitude and keeps all-missing columns.
+  Headers report finite-value counts. Missing cells stay missing even in
+  constant columns. I_norm is labelled absolute final displacement.
+  Derived labels say “not flagged”, not “returned”; they do not
+  establish equivalence to baseline. Explicitly omitted columns are
+  captioned.
+- [`plot_rri_recovery_map()`](https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_map.md)
+  aligns keyed scores, checks group-time uniqueness, uses observed
+  sampling intervals for tile width, marks missing scores and reports
+  the displayed group count. Event boundaries use exact supplied times;
+  no coloured overlay distorts the quantitative score fill. Ambiguous
+  recovery annotations are rejected instead of choosing a purported
+  severity class.
+- [`plot_rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/plot_rri_accuracy.md)
+  distinguishes descriptive cluster-mean agreement limits from row-level
+  limits and confidence intervals. Bootstrap labels state their
+  conditioning and no longer assert that row intervals must be narrower.
+  Calibration axes share units and full data ranges; zero-MSE percentage
+  shares are identified as undefined.
+- Updated function help, gallery and workflow guidance, plus regression
+  tests for missingness, out-of-range scores, key alignment and plotting
+  semantics. Numerical scoring and recovery estimators are unchanged.
+
+## HRRI 1.0.6
+
+CRAN release: 2026-09-23
+
+### Changes
+
+- [`plot_rri_properties()`](https://mghotbi.github.io/HRRI/reference/plot_rri_properties.md)
+  no longer places the composite RRI on a fifth spoke. RRI is built from
+  the plant, soil and microbial domains; Capacity, Connectivity,
+  Kinetics and Memory are property descriptors built from different
+  inputs. Drawing them on one radar invited the polygon to be read as
+  averaging across incommensurable quantities.
+
+  The chart now has four axes. The centre shows the mean of the
+  *resolved* property axes, with the count of resolved axes beneath it,
+  so a mean resting on two axes is not mistaken for one resting on four.
+  An axis whose supporting measurement was absent is excluded from the
+  mean rather than counted as zero. The composite is reported in the
+  subtitle for reference.
+
 ## HRRI 1.0.5
 
 ### Fixes

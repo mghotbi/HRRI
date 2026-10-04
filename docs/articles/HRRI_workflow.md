@@ -17,8 +17,9 @@ identifiable from a single observation curve:
 
 These combine through the accessible-capacity formula:
 
-\$\$C\_{\rm acc} = \sum_i Q_i \cdot \alpha_i \cdot \left(1 - e^{-k_i
-\tau}\right)\$\$
+``` math
+C_{\mathrm{acc}} = \sum_i Q_i \cdot \alpha_i \cdot \left(1 - e^{-k_i \tau}\right)
+```
 
 and aggregate into the Holobiont Redox Resilience Index:
 
@@ -50,7 +51,7 @@ empirical ecological inference.
 
 library(HRRI)
 packageVersion("HRRI")
-#> [1] '1.0.6'
+#> [1] '1.0.8'
 
 ## Compatibility shim -----------------------------------------------------
 ## rri_pipeline() is the convenience wrapper around rri_pipeline_st().
@@ -186,8 +187,8 @@ summary(sim$micro_gene_abundance[, "mcrA"])   # methanogenesis gene
 ## Accessible-Capacity Estimation
 
 [`rri_accessible_capacity()`](https://mghotbi.github.io/HRRI/reference/rri_accessible_capacity.md)
-computes \$C\_{\rm acc}\$ for arbitrary mineralogical reservoirs with
-explicitly supplied accessibility and exchange-rate parameters. The
+computes $`C_{\mathrm{acc}}`$ for arbitrary mineralogical reservoirs
+with explicitly supplied accessibility and exchange-rate parameters. The
 values below are illustrative model inputs, not estimates or validated
 literature defaults.
 
@@ -318,10 +319,13 @@ overwritten.
 
 A single pooled correlation is the wrong summary here, for two reasons.
 
-First, these 360 rows are **12 trajectories observed at 30 time
-points**, not 360 independent observations. Rows within a trajectory are
-strongly dependent, so an interval computed from the row count is far
-too narrow.
+First, repeated rows and plant-depth trajectories within a plot are not
+independent experimental units. The small workflow example has only two
+plots. For the agreement illustration below we therefore generate a
+separate set of 24 plots, with 144 nested trajectories and 5760 rows,
+matching the paper design. Intervals resample whole plots; treating rows
+as independent generally understates uncertainty when within-plot
+dependence matters.
 
 Second, Pearson’s $`r`$ measures *association*, not *agreement*. A score
 equal to twice the target plus a constant correlates with it perfectly
@@ -330,76 +334,77 @@ penalises departure from the 1:1 line and is the quantity that belongs
 beside it.
 
 [`rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/rri_accuracy.md)
-reports both, with intervals obtained by resampling whole trajectories
-rather than rows.
+reports both, with intervals obtained by resampling whole independent
+plots rather than rows.
 
 ``` r
 
-## rri_scored is aligned to sim$id, and hence to its latent_truth vector.
-truth <- sim$latent_truth
-if (!is.numeric(truth) || length(truth) != nrow(rri_scored)) {
-  stop("latent_truth must be a numeric vector with one value per sim$id row.")
-}
-
-## One independent experimental unit = one plot x depth x plant trajectory.
-traj <- interaction(rri_scored$plot, rri_scored$depth, rri_scored$plant_id,
-                    drop = TRUE)
-
+cat("HRRI: starting the 24-plot agreement example (100 bootstrap resamples).\n",
+    file = stderr())
+acc_sim <- simulate_redox_holobiont(
+  n_plot=24, n_depth=2, n_plant=3, n_time=40,
+  seed=4096, scenario="flood_drain", disturbance_strength=.70,
+  n_cycles=2L, disturbance_center=NULL, disturbance_width=.08)
+acc_res <- rri_pipeline_st(
+  ROS_flux=acc_sim$plant_data, Eh_stability=acc_sim$Eh_stability,
+  micro_data=log1p(acc_sim$micro_gene_abundance), id=acc_sim$id,
+  time_col="time", group_cols=c("plot","depth","plant_id"), mode="snapshot",
+  direction_anchor_phys="FvFm", direction_anchor_soil="Eh", direction_anchor_micro="mtrA")
 acc <- rri_accuracy(
-  score   = rri_scored$RRI,
-  target  = truth,
-  cluster = traj,
-  n_boot  = 500,
-  n_perm  = 500,
-  seed    = 42
-)
-
+  score=acc_res$row_scores$RRI, target=acc_sim$latent_truth,
+  cluster=acc_sim$id$plot, n_boot=100, n_perm=0, seed=20260913)
+cat("HRRI: agreement calculations finished; preparing figures.\n", file = stderr())
 acc
 #> Agreement with reference target
 #> -------------------------------------------------------------- 
 #>  statistic row_level cluster_mean_level ci_lower ci_upper
-#>  pearson_r    0.4668             0.5454   0.3037   0.5959
-#>   lins_ccc    0.1412             0.0782   0.0829   0.2147
-#>       rmse    0.1732             0.1631   0.1296   0.2052
-#>        mae    0.1415             0.1264   0.0971   0.1836
-#>       bias   -0.1124            -0.1124  -0.1688  -0.0497
-#>         r2  -21.5196           -98.0483 -34.2773 -14.7249
+#>  pearson_r    0.6447             0.6508   0.6097   0.6788
+#>   lins_ccc    0.3332             0.0414   0.2986   0.3654
+#>       rmse    0.1092             0.0673   0.1054   0.1120
+#>        mae    0.0871             0.0657   0.0840   0.0893
+#>       bias   -0.0657            -0.0657  -0.0707  -0.0601
+#>         r2   -5.5592           -65.2364  -7.5747  -4.1295
 #> 
 #> Dependence structure
-#>   360 observations in 12 clusters (mean size 30.0)
-#>   ICC 0.768, design effect 23.3, effective n 15
+#>   5760 observations in 24 clusters (mean size 240.0)
+#>   ICC 0.025, design effect 7.0, effective n 819
 #> 
 #> Error decomposition (percent of MSE)
-#>   squared_bias          42.1%
-#>   variance_mismatch     39.1%
-#>   lack_of_correlation   18.8%
+#>   squared_bias          36.2%
+#>   variance_mismatch     36.3%
+#>   lack_of_correlation   27.5%
 #> 
-#> Calibration: target = 0.565 + 0.118 x score  (ideal 0 and 1)
-#> Cluster permutation test: p = 0.0220 (500 permutations)
+#> Calibration: target = 0.483 + 0.254 x score  (ideal 0 and 1)
 #> 
 #> Notes
-#>   Rows are strongly clustered (ICC 0.77, design effect 23.3). The 360
-#>   observations carry roughly the information of 15 independent ones; quote
-#>   the cluster bootstrap interval, not one based on n = 360. 
-#>   Ignoring clustering would give a 95% interval for r of width 0.145;
-#>   resampling whole trajectories gives width 0.292, 2.0 times wider. Report
+#>   Rows are strongly clustered (ICC 0.03, design effect 7.0). The 5760
+#>   observations carry roughly the information of 819 independent ones; quote
+#>   the cluster bootstrap interval, not one based on n = 5760. 
+#>   Ignoring clustering would give a 95% interval for r of width 0.027;
+#>   resampling whole trajectories gives width 0.069, 2.6 times wider. Report
 #>   the latter. 
-#>   Correlation (0.467) exceeds concordance (0.141). The score tracks the
+#>   Correlation (0.645) exceeds concordance (0.333). The score tracks the
 #>   target's pattern but does not agree with it in level or scale; see
 #>   calibration. 
-#>   Calibration slope is 0.12 rather than 1: the score compresses or
+#>   Calibration slope is 0.25 rather than 1: the score compresses or
 #>   exaggerates the target's range. 
 #>   R2 is negative: as an absolute predictor the score does worse than the
 #>   target's own mean. It may still rank correctly; check pearson_r. 
-#>   Error is dominated by squared_bias (42% of MSE). 
+#>   Error is dominated by variance_mismatch (36% of MSE). 
 #>   If score and target derive from the same generator, this is internal
 #>   consistency, not validation.
 ```
 
-`effective_n` in the dependence table, not the row count, is what
-governs precision. Where the design effect is well above one, the naive
-interval should not be quoted: the function prints both widths so the
-difference is visible rather than asserted.
+This fast documentation example uses 100 bootstrap resamples. The
+complete paper-export example uses 2000. The intervals condition on
+supplied fitted scores and do not include pipeline refitting. No
+permutation P value is quoted: exchangeability and time alignment
+require a separately justified design.
+
+`effective_n` is an ICC-based heuristic, not the effective sample size
+for every statistic. Precision depends on the sampling design and
+estimand. Compare the actual bootstrap intervals and retain the plot as
+the independent unit.
 
 Splitting the error says which kind of disagreement is present, and the
 three components sum to the mean squared error exactly.
@@ -408,15 +413,15 @@ three components sum to the mean squared error exactly.
 
 acc$decomposition[, c("component", "percent")]
 #>             component  percent
-#> 1        squared_bias 42.10174
-#> 2   variance_mismatch 39.10814
-#> 3 lack_of_correlation 18.79012
+#> 1        squared_bias 36.20809
+#> 2   variance_mismatch 36.25295
+#> 3 lack_of_correlation 27.53896
 
 ## Exactness check: the residual is numerical noise, not a rounding allowance.
 c(mse      = attr(acc$decomposition, "mse"),
   residual = attr(acc$decomposition, "residual"))
-#>           mse      residual 
-#>  3.000571e-02 -1.040834e-17
+#>          mse     residual 
+#> 1.193062e-02 1.040834e-17
 ```
 
 Large squared bias is a systematic offset, removable by recentring.
@@ -429,22 +434,41 @@ draws the same four questions as one figure.
 
 ``` r
 
-plot_rri_accuracy(acc,
-                  score_label  = "RRI",
-                  target_label = "Prescribed target")
+# Use the installed namespace, avoiding a stale function in the workspace.
+accuracy_plot <- HRRI::plot_rri_accuracy
+plot_formals <- names(formals(accuracy_plot))
+plot_args <- list(acc = acc, score_label = "RRI",
+                  target_label = "Prescribed target",
+                  base_size = 9, show_clusters = FALSE)
+# Older HRRI builds do not accept these presentation arguments.
+if ("cluster_label" %in% plot_formals) plot_args$cluster_label <- "Plots"
+if ("style" %in% plot_formals) plot_args$style <- "paper"
+accuracy_figure <- do.call(accuracy_plot, plot_args)
+# Without optional patchwork, HRRI returns a named list of plots.
+if (inherits(accuracy_figure, c("ggplot", "patchwork"))) {
+  print(accuracy_figure)
+} else {
+  for (panel in accuracy_figure) print(panel)
+}
 ```
 
-![](HRRI_workflow_files/figure-html/validation_figure-1.png)
+![Agreement with the prescribed
+target](HRRI_workflow_files/figure-html/validation_figure-1.png)
 
-**Reading it.** **A** puts the fitted line against the dashed 1:1 line;
-a flatter fit means the score compresses the target’s range. Open points
-are trajectory means, the level at which the units are independent.
-**B** is a Bland-Altman plot: a scatter that slopes or fans out shows
-disagreement that depends on level, which no correlation coefficient can
-reveal. **C** is the headline: the violet distribution resamples rows
-and is too narrow, the teal one resamples trajectories and is honest;
-the bars beneath give both widths. **D** partitions the mean squared
-error exactly.
+**Reading it.** The calibration panel compares the scores with the
+prescribed target and the 1:1 line; correlation alone does not establish
+agreement. Open points represent plot means. The difference panel shows
+score minus target against their average, with descriptive limits for
+plot-mean differences, not individual observations. The precision panel
+compares row resampling with whole-plot resampling. Its intervals
+condition on supplied score-target pairs and do not refit the scoring
+pipeline. The error panel partitions mean squared error into squared
+bias, variance mismatch and lack of correlation.
+
+The updated package uses the paper layout; older builds use their
+diagnostic layout. The compatibility code changes presentation arguments
+only. Install the updated package to reproduce the paper’s figure
+styling.
 
 **What it does not show.** None of the four panels speaks to
 out-of-sample performance. The target is prescribed by the same
@@ -606,6 +630,17 @@ Interpret the direction and magnitude as a model sensitivity result. An
 empirical claim about hydrological memory requires independent
 observations.
 
+## Publication figures
+
+[`vignette("HRRI_paper_figures")`](https://mghotbi.github.io/HRRI/articles/HRRI_paper_figures.md)
+contains all six manuscript figures, their function mapping and
+interpretation. The original gallery and this workflow remain available.
+All figures can be generated entirely in R; export vector PDF or
+editable-text SVG at the supplied physical dimensions. The framework is
+a schematic, the identifiability illustration is analytical, and the
+gallery and agreement panels use different explicitly declared
+simulations.
+
 ## Session Information
 
 ``` r
@@ -629,21 +664,21 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] HRRI_1.0.6
+#> [1] HRRI_1.0.8
 #> 
 #> loaded via a namespace (and not attached):
 #>  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    
 #>  [5] tidyselect_1.2.1   tidyr_1.3.2        jquerylib_0.1.4    systemfonts_1.3.2 
 #>  [9] scales_1.4.0       textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0     
 #> [13] ggplot2_4.0.3      R6_2.6.1           labeling_0.4.3     patchwork_1.3.2   
-#> [17] generics_0.1.4     igraph_2.3.3       knitr_1.51         htmlwidgets_1.6.4 
+#> [17] generics_0.1.4     igraph_2.3.3       knitr_1.52         htmlwidgets_1.6.4 
 #> [21] tibble_3.3.1       desc_1.4.3         bslib_0.12.0       pillar_1.11.1     
 #> [25] RColorBrewer_1.1-3 rlang_1.3.0        cachem_1.1.0       xfun_0.60         
 #> [29] fs_2.1.0           sass_0.4.10        S7_0.2.2           otel_0.2.0        
 #> [33] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    
 #> [37] digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0  lifecycle_1.0.5   
 #> [41] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      
-#> [45] ragg_1.5.2         purrr_1.2.2        rmarkdown_2.31     tools_4.5.1       
+#> [45] ragg_1.5.2         purrr_1.2.2        rmarkdown_2.32     tools_4.5.1       
 #> [49] pkgconfig_2.0.3    htmltools_0.5.9
 ```
 

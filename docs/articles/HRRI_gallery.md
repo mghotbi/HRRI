@@ -24,13 +24,15 @@ method, not disclaimers bolted on afterwards.
 library(HRRI)
 library(ggplot2)
 packageVersion("HRRI")
-#> [1] '1.0.6'
+#> [1] '1.0.8'
 ```
 
 ## The experiment
 
 One flood–drain cycle across two plots, two depths and three plants,
-observed daily for 40 steps. The disturbance runs from day 12 to day 22.
+observed daily for 40 steps. The classified disturbance spans days
+12–22; the Gaussian forcing extends beyond those classified days. The
+pulse centre, width and threshold are explicit.
 
 ``` r
 
@@ -42,12 +44,13 @@ sim <- simulate_redox_holobiont(
   n_depth              = 2,
   n_plant              = 3,
   n_time               = 40,
-  p_micro              = 25,
   seed                 = 2026,
   scenario             = "flood_drain",
   n_cycles             = 1,
   disturbance_strength = 0.72,
-  history_strength     = 0.55
+  disturbance_center   = 17,
+  disturbance_width    = 5.5 / sqrt(-2 * log(0.35)) / 40,
+  include_graph        = TRUE
 )
 
 nrow(sim$id)          # 2 x 2 x 3 x 40 = 480 observations
@@ -60,10 +63,10 @@ names(sim$latent_state)
 #> [13] "net_oxidative_balance"
 ```
 
-`latent_state` is the simulator’s ground truth. It exists so we can
-check whether HRRI recovers what it is meant to recover. With real data
-there is no such column, and nothing in the scoring path is allowed to
-read it.
+`latent_state` contains prescribed synthetic states. It allows internal
+comparisons, not validation of those states against real biological
+mechanisms. With real data there is no such column, and nothing in the
+scoring path is allowed to read it.
 
 ## The four hidden states, made visible
 
@@ -159,18 +162,16 @@ field system.
 ``` r
 
 res <- rri_pipeline_st(
-  ROS_flux     = sim$ROS_flux,
+  ROS_flux     = sim$plant_data,
   Eh_stability = sim$Eh_stability,
-  micro_data   = sim$micro_data,
+  micro_data   = log1p(sim$micro_gene_abundance),
   id           = sim$id,
   time_col     = "time",
   group_cols   = c("plot", "depth", "plant_id"),
   mode         = "snapshot",
-  reducer      = "per_domain",
-  scaling      = "pnorm",
   direction_anchor_phys  = "FvFm",
   direction_anchor_soil  = "Eh",
-  direction_anchor_micro = "ASV1"
+  direction_anchor_micro = "mtrA"
 )
 
 scored <- attach_hrri_ids(res$row_scores, sim$id)
@@ -197,7 +198,7 @@ attr(scored, "id_alignment")
 #> [13] "WFPS"            "water_table_cm"
 summary(scored$RRI)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>  0.1485  0.3859  0.4887  0.5024  0.6454  0.8065
+#>  0.1775  0.4704  0.5646  0.5619  0.6745  0.8174
 ```
 
 The `direction_anchor_*` arguments are not optional in practice. Latent
@@ -215,16 +216,19 @@ plot_rri_timeseries(
   depth_id      = "D1",
   plant_id      = "Plant1",
   perturb_start = PERTURB_START,
-  perturb_end   = PERTURB_END
+  perturb_end   = PERTURB_END,
+  forcing_threshold = 0.35, time_label = "Time (days)"
 )
 ```
 
-![](HRRI_gallery_files/figure-html/timeseries-1.png)
+![One trajectory in
+context](HRRI_gallery_files/figure-html/timeseries-1.png)
 
-**Reading it** — Eh, accessible capacity and the composite RRI on a
-shared time axis in separate panels, each in its own units. Look for
-whether RRI returns to its pre-event level, and whether it returns at
-the same time as Eh. A gap between the two is the interesting case.
+**Reading it** — forcing, Eh, electron-accepting capacity (EAC) and the
+composite RRI on a shared time axis in separate panels, each in its own
+units. EAC is an inventory, not event-window accessible capacity. Look
+for whether RRI returns to its pre-event level, and whether it returns
+at the same time as Eh. A gap between the two is the interesting case.
 
 **What it does not show** — panels are not placed on a common axis,
 because Eh (mV) and RRI (dimensionless) are not commensurable. Visual
@@ -283,7 +287,7 @@ three domains:
 comp <- res$row_scores_comp[, c("Physio", "Soil", "Micro")]
 round(colMeans(comp, na.rm = TRUE), 3)          # centroid
 #> Physio   Soil  Micro 
-#>  0.357  0.301  0.342
+#>  0.430  0.282  0.288
 round(range(rowSums(comp, na.rm = TRUE)), 6)    # closure check: both 1
 #> [1] 1 1
 ```
@@ -312,7 +316,8 @@ plot_rri_state_space(
 )
 ```
 
-![](HRRI_gallery_files/figure-html/state-space-1.png)
+![Domain-score state
+space](HRRI_gallery_files/figure-html/state-space-1.png)
 
 **Reading it** — the trajectory through domain space. Disturbance
 typically pushes points toward the origin; recovery is the return path.
@@ -328,13 +333,15 @@ error.
 
 ``` r
 
+recovery_scores <- attach_hrri_ids(res$row_scores, sim$id)
+recovery_scores$WFPS <- sim$forcing$WFPS
 rec <- rri_recovery_metrics(
-  res           = res,
-  id            = sim$id,
+  res           = recovery_scores,
   time_col      = "time",
   group_cols    = c("plot", "depth", "plant_id"),
   perturb_start = PERTURB_START,
   perturb_end   = PERTURB_END,
+  forcing_col   = "WFPS",
   rri_col       = "RRI"
 )
 
@@ -342,22 +349,23 @@ rec[1:4, c("plot", "depth", "plant_id", "baseline_rri", "depth_min_frac",
            "tau_lag", "overshoot_frac", "incomplete_return_frac",
            "displaced_plateau_flag", "fit_status")]
 #>   plot depth plant_id baseline_rri depth_min_frac tau_lag overshoot_frac
-#> 1   P1    D1   Plant1    0.4909106    0.000000000      NA      0.5748788
-#> 2   P2    D1   Plant1    0.5445569    0.000000000      NA      0.4606396
-#> 3   P1    D2   Plant1    0.2922408    0.378237014       1      0.6628952
-#> 4   P2    D2   Plant1    0.2971187    0.005848721       1      0.7475780
+#> 1   P1    D1   Plant1    0.6448073     0.11508131       1     0.18396092
+#> 2   P2    D1   Plant1    0.6506149     0.02123078       2     0.25641955
+#> 3   P1    D2   Plant1    0.4749897     0.54463493       2     0.09421443
+#> 4   P2    D2   Plant1    0.4973984     0.43234366       1     0.19233332
 #>   incomplete_return_frac displaced_plateau_flag                     fit_status
-#> 1              0.3616705                  FALSE          no_resolvable_decline
-#> 2              0.3180095                  FALSE          no_resolvable_decline
-#> 3              0.3403944                  FALSE insufficient_positive_deficits
-#> 4              0.6611020                  FALSE insufficient_positive_deficits
+#> 1            0.093634235                  FALSE insufficient_positive_deficits
+#> 2            0.168288397                  FALSE insufficient_positive_deficits
+#> 3            0.004632638                  FALSE insufficient_positive_deficits
+#> 4            0.055263755                  FALSE fitted_conditional_exponential
 ```
 
 **Reading it** — one row per trajectory. `depth_min_frac` is how far the
 score fell relative to baseline; `tau_lag` is how long recovery took to
-begin; `incomplete_return_frac` is the terminal shortfall. `fit_status`
-reports whether the rate estimate is trustworthy — always read `k`
-together with it.
+begin; `incomplete_return_frac` is signed terminal displacement from
+baseline. `fit_status` reports whether the computational fitting
+criteria were met; it does not establish precision or ecological
+validity. Read `k`, `n_fit` and fit quality together.
 
 **What it does not show** — `alt_routing_flag` is retained as `NA` on
 purpose. A displaced plateau is consistent with alternative electron
@@ -380,7 +388,8 @@ plot_rri_recovery_map(
 )
 ```
 
-![](HRRI_gallery_files/figure-html/recovery-map-1.png)
+![Recovery map across all
+trajectories](HRRI_gallery_files/figure-html/recovery-map-1.png)
 
 **Reading it** — one row per trajectory, colour = RRI through time. Scan
 vertically at any time point to compare units; scan horizontally to
@@ -405,12 +414,14 @@ plot_rri_recovery_landscape(
 )
 ```
 
-![](HRRI_gallery_files/figure-html/landscape-1.png)
+![Ranking trajectories by
+signature](HRRI_gallery_files/figure-html/landscape-1.png)
 
 **Reading it** — trajectories as rows, recovery signatures as columns,
 each column scaled within the cohort. It answers “which units behaved
 similarly, and on which signature do they differ?” — the ordering is by
-incomplete return.
+absolute final displacement. Headers report the number of finite
+trajectories. Grey cells with dashes mean unavailable, never zero.
 
 **What it does not show** — scaling is cohort-relative, so a “high” cell
 means high *within this run*, not high in absolute terms. Two datasets
@@ -421,28 +432,29 @@ cannot be compared cell-by-cell.
 ``` r
 
 ## soil_df is what makes Capacity available. Without it the Capacity axis is
-## returned as NA and the radar shows a short spoke.
+## returned as NA and the profile labels it as missing.
 props <- rri_property_scores(res, rec = rec, soil_df = sim$soil_data)
 props$property_table
-#>       property     score                                         method
-#> 1     Capacity 0.5090211 Oxidative-oriented feature composite; not Cacc
-#> 2 Connectivity 0.5576013                         cross_domain_magnitude
-#> 3     Kinetics 0.8333333                 Cohort-relative recovery speed
-#> 4       Memory 0.4247667   Loop-area/persistent-displacement diagnostic
+#>       property      score                                         method
+#> 1     Capacity 0.50702772 Oxidative-oriented feature composite; not Cacc
+#> 2 Connectivity 0.60843147                         cross_domain_magnitude
+#> 3     Kinetics 0.72424242                 Cohort-relative recovery speed
+#> 4       Memory 0.09245574   Loop-area/persistent-displacement diagnostic
 #>   available
 #> 1      TRUE
 #> 2      TRUE
 #> 3      TRUE
 #> 4      TRUE
 
-plot_rri_properties(props, rri_value = mean(scored$RRI, na.rm = TRUE))
+plot_rri_properties(props, rec = rec, base_size = 10)
 ```
 
-![](HRRI_gallery_files/figure-html/properties-1.png)
+![Property diagnostics](HRRI_gallery_files/figure-html/properties-1.png)
 
-**Reading it** — the four diagnostics on one radar. Unavailable
-properties stay missing rather than being imputed, so a short spoke
-means “not supported by the supplied data”, not “low”.
+**Reading it** — four separate operational descriptors, without an
+overall mean or shared favourable direction. Missing descriptors are
+labelled explicitly. Use `type = "radar"` only when a radar display is
+specifically needed; polygon area has no quantitative meaning.
 
 **What it does not show** — these are *named after* the four controls
 but are not measurements of them. Capacity here is an oxidative-oriented
@@ -458,26 +470,21 @@ This is an internal consistency check, not empirical validation.
 
 ``` r
 
-ok <- is.finite(scored$RRI) & is.finite(sim$latent_truth)
-r  <- stats::cor(scored$RRI[ok], sim$latent_truth[ok])
-cat("r(RRI, latent_truth) =", round(r, 3), "on", sum(ok), "observations\n")
-#> r(RRI, latent_truth) = 0.47 on 480 observations
-
-ggplot(data.frame(truth = sim$latent_truth[ok], RRI = scored$RRI[ok]),
-       aes(truth, RRI)) +
-  geom_point(alpha = 0.25, size = 1.1, colour = "#2f6b6b") +
-  geom_smooth(method = "lm", formula = y ~ x, se = TRUE,
-              colour = "#8c4a2f", fill = "#8c4a2f", alpha = 0.12) +
-  labs(x = "Simulator target  z(t)", y = "HRRI score",
-       title = sprintf("Agreement with the prescribed target (r = %.3f)", r))
+# Two plots are insufficient for a stable plot-level uncertainty assessment.
+# Show descriptive association/agreement; Figure 6 uses a separate 24-plot design.
+a_gallery <- rri_accuracy(scored$RRI, sim$latent_truth,
+  cluster = scored$plot, n_boot = 0, n_perm = 0)
+plot_rri_accuracy(a_gallery, panels = "calibration", base_size = 9,
+  score_label = "Observation-derived score", target_label = "Prescribed target")
 ```
 
-![](HRRI_gallery_files/figure-html/validation-1.png)
+![Did HRRI recover the hidden
+state?](HRRI_gallery_files/figure-html/validation-1.png)
 
 **What it does not show** — this is agreement with a target *we
-defined*. It demonstrates that the scoring path is internally coherent.
-It is not predictive accuracy, not held-out error, and not evidence that
-HRRI tracks resilience in any real soil.
+defined*. It describes numerical internal agreement under the declared
+simulation. It is not predictive accuracy, not held-out error, and not
+evidence that HRRI tracks resilience in any real soil.
 
 ## Using your own data
 
@@ -486,7 +493,7 @@ with your own measurements, keeping rows aligned across blocks:
 
 ``` r
 
-res <- rri_pipeline(
+my_res <- rri_pipeline(
   soil  = my_soil,      # Eh, pH, Fe pools, EAC/EDC ...
   plant = my_plant,     # SPAD, Fv/Fm, ROL ...
   micro = my_micro,     # ASV table or functional genes
@@ -504,6 +511,33 @@ A reduced panel changes the estimand. Scores from a soil-only run and a
 three-domain run are not interchangeable; compare them through
 [`rri_sensitivity()`](https://mghotbi.github.io/HRRI/reference/rri_sensitivity.md)
 rather than assuming equivalence.
+
+## Complete paper figure set
+
+The companion
+[`vignette("HRRI_paper_figures")`](https://mghotbi.github.io/HRRI/articles/HRRI_paper_figures.md)
+maps and renders all six paper figures. The framework and analytical
+identifiability panels are available as
+[`plot_rri_framework()`](https://mghotbi.github.io/HRRI/reference/plot_rri_framework.md)
+and
+[`plot_rri_identifiability()`](https://mghotbi.github.io/HRRI/reference/plot_rri_identifiability.md).
+Recovery availability is paired with the score map below; counts are
+calculated from `rec`.
+
+``` r
+
+plot_rri_recovery_diagnostics(res, sim$id, rec,
+  perturb_start=PERTURB_START, perturb_end=PERTURB_END)
+```
+
+![Complete paper figure
+set](HRRI_gallery_files/figure-html/recovery-availability-1.png)
+
+For publication export, use the supplied `export_paper_figures.R`
+example: PDF and SVG retain vector geometry, with optional editable-text
+SVG via svglite. Use the export script’s physical dimensions rather than
+shrinking a large plot inside a document. A high raster dpi alone cannot
+repair cramped labels.
 
 ## Session information
 
@@ -528,21 +562,20 @@ sessionInfo()
 #> [1] stats     graphics  grDevices utils     datasets  methods   base     
 #> 
 #> other attached packages:
-#> [1] ggplot2_4.0.3 HRRI_1.0.6   
+#> [1] ggplot2_4.0.3 HRRI_1.0.8   
 #> 
 #> loaded via a namespace (and not attached):
-#>  [1] sass_0.4.10        generics_0.1.4     tidyr_1.3.2        lattice_0.23-1    
-#>  [5] digest_0.6.39      magrittr_2.0.5     evaluate_1.0.5     grid_4.5.1        
-#>  [9] RColorBrewer_1.1-3 fastmap_1.2.0      jsonlite_2.0.0     Matrix_1.7-6      
-#> [13] mgcv_1.9-4         purrr_1.2.2        viridisLite_0.4.3  scales_1.4.0      
-#> [17] textshaping_1.0.5  jquerylib_0.1.4    cli_3.6.6          rlang_1.3.0       
-#> [21] splines_4.5.1      withr_3.0.3        cachem_1.1.0       yaml_2.3.12       
-#> [25] otel_0.2.0         tools_4.5.1        dplyr_1.2.1        vctrs_0.7.3       
-#> [29] R6_2.6.1           lifecycle_1.0.5    fs_2.1.0           htmlwidgets_1.6.4 
-#> [33] ragg_1.5.2         pkgconfig_2.0.3    desc_1.4.3         pkgdown_2.2.1     
-#> [37] pillar_1.11.1      bslib_0.12.0       gtable_0.3.6       glue_1.8.1        
-#> [41] systemfonts_1.3.2  xfun_0.60          tibble_3.3.1       tidyselect_1.2.1  
-#> [45] rstudioapi_0.18.0  knitr_1.51         farver_2.1.2       htmltools_0.5.9   
-#> [49] nlme_3.1-170       igraph_2.3.3       rmarkdown_2.31     labeling_0.4.3    
-#> [53] compiler_4.5.1     S7_0.2.2
+#>  [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.2.1        compiler_4.5.1    
+#>  [5] tidyselect_1.2.1   tidyr_1.3.2        jquerylib_0.1.4    scales_1.4.0      
+#>  [9] systemfonts_1.3.2  textshaping_1.0.5  yaml_2.3.12        fastmap_1.2.0     
+#> [13] R6_2.6.1           patchwork_1.3.2    labeling_0.4.3     generics_0.1.4    
+#> [17] igraph_2.3.3       knitr_1.52         htmlwidgets_1.6.4  tibble_3.3.1      
+#> [21] desc_1.4.3         RColorBrewer_1.1-3 bslib_0.12.0       pillar_1.11.1     
+#> [25] rlang_1.3.0        cachem_1.1.0       xfun_0.60          S7_0.2.2          
+#> [29] fs_2.1.0           sass_0.4.10        otel_0.2.0         viridisLite_0.4.3 
+#> [33] cli_3.6.6          withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5    
+#> [37] digest_0.6.39      grid_4.5.1         rstudioapi_0.18.0  lifecycle_1.0.5   
+#> [41] vctrs_0.7.3        evaluate_1.0.5     glue_1.8.1         farver_2.1.2      
+#> [45] ragg_1.5.2         rmarkdown_2.32     purrr_1.2.2        tools_4.5.1       
+#> [49] pkgconfig_2.0.3    htmltools_0.5.9
 ```

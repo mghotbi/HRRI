@@ -347,8 +347,49 @@ vignette: >
 
 ```{r setup, include=FALSE}
 
-library(HRRI)
+# ---------------------------------------------------------------------
+# This vignette runs against the INSTALLED HRRI, not the source tree, so a
+# missing or outdated installation must fail with instructions rather than
+# with R's generic "there is no package called" message.
+# ---------------------------------------------------------------------
+.hrri_needs <- c("plot_rri_framework", "plot_rri_identifiability",
+                 "plot_rri_recovery_diagnostics", "plot_rri_timeseries",
+                 "plot_rri_accuracy")
 
+if (!requireNamespace("HRRI", quietly = TRUE)) {
+  stop("HRRI is not installed, so this vignette cannot run.\n",
+       "Install it from the package source, without vignettes, then retry:\n",
+       "  install.packages(\"~/Desktop/HRRI\", repos = NULL, type = \"source\",\n",
+       "                   INSTALL_opts = \"--no-docs\")\n",
+       "Libraries searched: ", paste(.libPaths(), collapse = "; "),
+       call. = FALSE)
+}
+
+.hrri_missing <- setdiff(.hrri_needs, getNamespaceExports("HRRI"))
+.hrri_args_ok <-
+  all(c("forcing_threshold", "time_label") %in%
+        names(formals(getExportedValue("HRRI", "plot_rri_timeseries")))) &&
+  "cluster_label" %in%
+    names(formals(getExportedValue("HRRI", "plot_rri_accuracy")))
+
+if (length(.hrri_missing) > 0 || !.hrri_args_ok) {
+  stop("The installed HRRI is version ",
+       as.character(utils::packageVersion("HRRI")),
+       ", which predates the API this vignette uses.\n",
+       if (length(.hrri_missing) > 0)
+         paste0("Missing functions: ",
+                paste(.hrri_missing, collapse = ", "), "\n") else "",
+       if (!.hrri_args_ok)
+         "plot_rri_timeseries() lacks forcing_threshold / time_label.\n" else "",
+       "Version 1.0.6 on CRAN is the usual cause. Install 1.0.8 from source:\n",
+       "  install.packages(\"~/Desktop/HRRI\", repos = NULL, type = \"source\",\n",
+       "                   INSTALL_opts = \"--no-docs\")\n",
+       "Currently installed at: ", find.package("HRRI"),
+       call. = FALSE)
+}
+
+library(HRRI)
+rm(.hrri_needs, .hrri_missing, .hrri_args_ok)
 knitr::opts_chunk$set(dev = "png", 
   collapse   = TRUE,
   comment    = "#>",
@@ -378,6 +419,7 @@ if (requireNamespace("ggplot2", quietly = TRUE)) {
       )
   )
 }
+
 ```
 
 # How to use this vignette

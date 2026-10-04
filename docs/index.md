@@ -17,6 +17,9 @@ inferred.
 
 ``` r
 
+# CRAN release
+# install.packages("HRRI")
+
 # install.packages("remotes")
 remotes::install_github("mghotbi/HRRI", build_vignettes = TRUE)
 ```
@@ -249,3 +252,45 @@ Every DOI below was resolved against Crossref before being listed.
 
 MIT © Mitra Ghotbi. See
 [LICENSE](https://mghotbi.github.io/HRRI/LICENSE).
+
+## Publication figures (1.0.8)
+
+``` r
+
+p <- plot_rri_properties(props)  # separate descriptors; no centre average
+p_recovery <- plot_rri_recovery_landscape(rec)  # retains unavailable metrics
+p_map <- plot_rri_recovery_map(res, id, rec = rec,
+  perturb_start = event_start, perturb_end = event_end)
+# Use the independent experimental unit as cluster, e.g. plot, not each row.
+p_agreement <- plot_rri_accuracy(acc)
+ggplot2::ggsave("HRRI_profile.pdf", p, width = 7.2, height = 4.5,
+                units = "in", device = "pdf")
+```
+
+All figures are computed from supplied objects. Do not paste manuscript
+values into plotting functions. Keep event definitions, component
+methods and unavailable measurements in figure captions. The default
+profile replaces the radar display; `type = "radar"` is still available
+explicitly. `orient = "concern"` and `drop_empty = TRUE` remain optional
+for recovery landscapes, but neither removes the need to explain
+cohort-relative scaling and missingness. Agreement limits for cluster
+means do not describe individual observations. Bootstrap intervals are
+conditional on supplied pairs, not a rerun of the complete fitted
+pipeline.
+
+### All six paper figures in R
+
+| Figure | Function |
+|----|----|
+| Framework | [`plot_rri_framework()`](https://mghotbi.github.io/HRRI/reference/plot_rri_framework.md) |
+| Identifiability and accounting | [`plot_rri_identifiability()`](https://mghotbi.github.io/HRRI/reference/plot_rri_identifiability.md) |
+| Forcing and responses | [`plot_rri_timeseries()`](https://mghotbi.github.io/HRRI/reference/plot_rri_timeseries.md) |
+| Score dynamics and availability | [`plot_rri_recovery_diagnostics()`](https://mghotbi.github.io/HRRI/reference/plot_rri_recovery_diagnostics.md) |
+| Operational profile | [`plot_rri_properties()`](https://mghotbi.github.io/HRRI/reference/plot_rri_properties.md) |
+| Conditional agreement | [`plot_rri_accuracy()`](https://mghotbi.github.io/HRRI/reference/plot_rri_accuracy.md) |
+
+See
+[`vignette("HRRI_paper_figures")`](https://mghotbi.github.io/HRRI/articles/HRRI_paper_figures.md)
+for the complete map and captions. Both original vignettes remain
+available, with corrected terminology and sampling units; their existing
+references are retained.

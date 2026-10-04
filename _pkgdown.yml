@@ -1,0 +1,147 @@
+# ---------------------------------------------------------------------------
+# pkgdown configuration for HRRI
+#
+# Place this file at the root of the package source (next to DESCRIPTION) and
+# add "^_pkgdown\.yml$" and "^docs$" to .Rbuildignore so neither ships in the
+# tarball.
+#
+# Colours are the package's own plotting palette, taken from
+# plot_rri_identifiability(): navy #274b6a, teal #167c80, rust #c6633b,
+# gold #b58130, ink #233441. The site therefore matches the figures.
+# ---------------------------------------------------------------------------
+
+url: https://mghotbi.github.io/HRRI/
+
+template:
+  bootstrap: 5
+  bslib:
+    base_font:    {google: "Source Sans 3"}
+    heading_font: {google: "Source Serif 4"}
+    code_font:    {google: "JetBrains Mono"}
+    primary:      "#274b6a"
+    link-color:   "#167c80"
+    bg:           "#ffffff"
+    fg:           "#233441"
+    border-radius: "0.4rem"
+    btn-border-radius: "0.4rem"
+
+home:
+  title: Diagnostics for soil–plant–microbial redox recovery
+  description: >
+    Event-window accessible electron capacity, stoichiometric oxygen demand,
+    and multivariate recovery diagnostics that keep declared mechanistic inputs
+    separate from observation-derived scores.
+  sidebar:
+    structure: [links, license, citation, authors, dev]
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: End-to-end workflow
+        href: articles/HRRI_workflow.html
+      - text: Reading the figures
+        href: articles/HRRI_gallery.html
+      - text: Reproduce the six paper figures
+        href: articles/HRRI_paper_figures.html
+
+articles:
+- title: Get started
+  navbar: ~
+  contents:
+  - HRRI_workflow
+  - HRRI_gallery
+  - HRRI_paper_figures
+
+# ---------------------------------------------------------------------------
+# Reference index, grouped by the task a user is trying to do rather than by
+# source file. All 39 exported functions are listed; pkgdown errors if any
+# topic is missing, so run the companion check script after editing.
+# ---------------------------------------------------------------------------
+reference:
+
+- title: Simulation and bundled example inputs
+  desc: >
+    Generate illustrative soil–plant–microbe trajectories and the declared
+    reservoir template used by the demonstrations.
+  contents:
+  - simulate_redox_holobiont
+  - rri_simulation_demo
+  - rri_default_reservoirs
+  - HRRI_workflow_example
+
+- title: Mechanistic calculation from declared inputs
+  desc: >
+    Quantities computed from inventories, accessibility and exchange rates that
+    the user supplies. These are never estimated from the scores.
+  contents:
+  - rri_accessible_capacity
+  - rri_o2_demand
+
+- title: Domain scoring from aligned observations
+  desc: >
+    Build oriented soil, plant and microbial scores, with coverage and
+    missingness retained rather than recoded as zero.
+  contents:
+  - rri_pipeline
+  - rri_pipeline_st
+  - attach_hrri_ids
+  - rri_reference_scores
+  - rri_capacity_index
+  - rri_root_physio
+  - rri_micro_functional_score
+  - rri_kinetics_score
+  - rri_connectivity_score
+  - rri_compensation_index
+
+- title: Recovery and memory descriptors
+  desc: >
+    Descriptive diagnostics for a single disturbance, reported with fit status
+    and estimability so an unsupported quantity stays missing.
+  contents:
+  - rri_recovery_metrics
+  - rri_memory_index
+
+- title: Agreement, sensitivity and benchmarking
+  desc: >
+    Compare a score with a reference target while respecting clustering, and
+    probe how the result depends on weights and specification.
+  contents:
+  - rri_accuracy
+  - rri_latent_correlation
+  - rri_property_scores
+  - rri_domain_influence
+  - rri_sensitivity
+  - benchmark_hrri
+  - validate_architecture
+  - hrri_infer_architecture
+
+- title: Figures
+  desc: >
+    Publication figures used in the manuscript, plus the general-purpose
+    diagnostic plots and the shared theme.
+  contents:
+  - plot_rri_framework
+  - plot_rri_identifiability
+  - plot_rri_timeseries
+  - plot_rri_recovery_diagnostics
+  - plot_rri_properties
+  - plot_rri_accuracy
+  - plot_rri_recovery_map
+  - plot_rri_recovery_landscape
+  - plot_rri_state_space
+  - plot_rri_validation
+  - plot_RRI_ternary
+  - plot_hrri_benchmark
+  - plot_rri_simulation_demo
+  - theme_ems
+
+footer:
+  structure:
+    left: developed_by
+    right: built_with
+

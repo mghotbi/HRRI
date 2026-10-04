@@ -14,7 +14,11 @@ plot_rri_timeseries(
   plant_id = "Plant1",
   perturb_start = NULL,
   perturb_end = NULL,
-  base_size = 9
+  base_size = 9,
+  forcing = NULL,
+  forcing_label = "Pulse (relative)",
+  forcing_threshold = NULL,
+  time_label = "Time (input units; simulator uses days)"
 )
 ```
 
@@ -40,9 +44,28 @@ plot_rri_timeseries(
 
   Base font size.
 
+- forcing:
+
+  Optional numeric forcing vector aligned to sim\$id; missing values
+  remain gaps. NULL uses simulator event_intensity if available.
+
+- forcing_label:
+
+  Axis label including forcing units.
+
+- forcing_threshold:
+
+  Optional finite scalar marking a declared threshold; it is not
+  inferred from the plotted response.
+
+- time_label:
+
+  Label including input time units.
+
 ## Value
 
-A ggplot with three vertically aligned panels.
+A ggplot with separate vertically aligned panels, including forcing when
+supplied or available. Export at approximately 7.4 by 6 inches.
 
 ## Examples
 

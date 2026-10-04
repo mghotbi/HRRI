@@ -337,6 +337,7 @@ vignette: >
 ---
 
 ```{r setup, include=FALSE}
+
 library(HRRI)
 
 knitr::opts_chunk$set(dev = "png", collapse=TRUE,comment="#>",fig.width=7.4,
