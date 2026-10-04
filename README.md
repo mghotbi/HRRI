@@ -27,7 +27,7 @@ documented limits on what may be inferred.
 
 ```r
 # CRAN release
-# install.packages("HRRI")
+install.packages("HRRI")
 
 # install.packages("remotes")
 remotes::install_github("mghotbi/HRRI", build_vignettes = TRUE)
