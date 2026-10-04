@@ -347,42 +347,8 @@ vignette: >
 
 ```{r setup, include=FALSE}
 
-# Select a compatible installed HRRI before any calculations.
-# Check the required API, rather than rejecting a compatible 1.0.7 build.
-.hrri_ready <- function(ns) {
-  required <- c("plot_rri_framework", "plot_rri_identifiability",
-                "plot_rri_recovery_diagnostics", "plot_rri_timeseries",
-                "plot_rri_accuracy")
-  all(required %in% getNamespaceExports(ns)) &&
-    all(c("forcing_threshold", "time_label") %in%
-          names(formals(getExportedValue("HRRI", "plot_rri_timeseries")))) &&
-    "cluster_label" %in%
-      names(formals(getExportedValue("HRRI", "plot_rri_accuracy")))
-}
-.hrri_select <- function() {
-  if ("HRRI" %in% loadedNamespaces() && .hrri_ready(asNamespace("HRRI")))
-    return(invisible(getNamespaceInfo(asNamespace("HRRI"), "path")))
+library(HRRI)
 
-  candidates <- unique(c(path.expand("~/R/HRRI-1.0.8"),
-                         path.expand("~/R/HRRI-repaired"), .libPaths()))
-  candidates <- candidates[file.exists(file.path(candidates, "HRRI", "DESCRIPTION"))]
-  if ("package:HRRI" %in% search())
-    detach("package:HRRI", unload = FALSE, character.only = TRUE)
-  if ("HRRI" %in% loadedNamespaces()) unloadNamespace("HRRI")
-
-  for (lib in candidates) {
-    ns <- tryCatch(loadNamespace("HRRI", lib.loc = lib), error = function(e) NULL)
-    if (!is.null(ns) && .hrri_ready(ns))
-      return(invisible(getNamespaceInfo(ns, "path")))
-    if ("HRRI" %in% loadedNamespaces()) unloadNamespace("HRRI")
-  }
-  stop("No installed HRRI provides the functions and arguments used by this vignette. ",
-       "Install the supplied HRRI_1.0.8.tar.gz. Libraries checked: ",
-       paste(candidates, collapse = "; "), call. = FALSE)
-}
-.hrri_selected_path <- .hrri_select()
-library(HRRI, lib.loc = dirname(.hrri_selected_path))
-rm(.hrri_ready, .hrri_select)
 knitr::opts_chunk$set(dev = "png", 
   collapse   = TRUE,
   comment    = "#>",
