@@ -264,13 +264,4 @@ See `vignette("HRRI_paper_figures")` for the complete map and captions. Both
 original vignettes remain available, with corrected terminology and sampling
 units; their existing references are retained. The paper export is entirely R:
 
-```r
-install.packages(c("patchwork", "svglite"))  # optional figure assembly / SVG
-figure_dir <- file.path(getwd(), "HRRI_paper_figures")
-paper_n_boot <- 2000L
-source(system.file("examples", "export_paper_figures.R", package="HRRI"), local=TRUE)
-```
 
-This writes vector PDF, editable-text SVG and 600-dpi PNG, alongside the recovery
-and agreement tables. During CRAN documentation builds the vignettes use only
-100 resamples and label this explicitly; the export uses the full 2000.
