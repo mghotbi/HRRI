@@ -262,6 +262,6 @@ are conditional on supplied pairs, not a rerun of the complete fitted pipeline.
 
 See `vignette("HRRI_paper_figures")` for the complete map and captions. Both
 original vignettes remain available, with corrected terminology and sampling
-units; their existing references are retained. The paper export is entirely R:
+units; their existing references are retained. 
 
 
